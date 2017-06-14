@@ -13,6 +13,8 @@
 #include <time.h>
 
 #include "hog.h"
+#include "utils.h"
+#include "featureExtraction.h"
 
 using namespace std;
 using namespace cv;
