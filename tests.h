@@ -9,5 +9,6 @@
 
 //declare functions here
 void testDrawBoundingBox();
+void testOverlapBoundingBox();
 
 #endif

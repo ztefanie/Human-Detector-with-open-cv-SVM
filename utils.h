@@ -10,5 +10,7 @@
 //declare functions here
 cv::Mat showBoundingBox(std::string filename);
 std::vector<int> getBoundingBoxes(std::string file);
+double ComputeOverlap(std::vector<int> truth, std::vector<int> detected);
+bool isOverlapCorrect(double overlap);
 
 #endif

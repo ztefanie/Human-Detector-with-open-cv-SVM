@@ -10,10 +10,53 @@
 using namespace std;
 using namespace cv;
 
-//define functions here
+
+//compute overlap
+double ComputeOverlap(std::vector<int> truth, std::vector<int> detected) {
+	int intersect;
+	int union1;
+
+	//compute intersect
+	int width_intersect;
+	int height_intersect;
+	if (truth.at(0) < detected.at(0)) {
+		width_intersect = truth.at(2) - detected.at(0);
+	} else {
+		width_intersect = detected.at(2) - truth.at(0);
+	}
+	if (truth.at(1) < detected.at(1)) {
+		height_intersect = truth.at(3) - detected.at(1);
+	}
+	else {
+		height_intersect = detected.at(3) - truth.at(1);
+	}
+	width_intersect < 0 ? width_intersect = 0 : 0;
+	height_intersect < 0 ? height_intersect = 0 : 0;
+
+	intersect = width_intersect * height_intersect;
+
+	//compute union
+	int size_truth = (truth.at(0) - truth.at(2))*(truth.at(1) - truth.at(3));
+	int size_detected = (detected.at(0) - detected.at(2))*(detected.at(1) - detected.at(3));
+	union1 = size_truth + size_detected - intersect;
+
+	//compute overlap
+	double overlap = (double)intersect / union1;
+	return overlap;
+}
+
+//compate
+bool isOverlapCorrect(double overlap) {
+	if (overlap > 0.5) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
 
 
-//Read Files and BoundingBoxes
+//Read Picture, draw boundingBox inside and show
 Mat showBoundingBox(string file) {
 	string get = "INRIAPerson\\Train\\pos\\" + file + ".png";
 	Mat img = imread(get, 1);
@@ -34,6 +77,7 @@ std:vector<int> boxes = getBoundingBoxes(file);
 	return img;
 }
 
+//Read annotation file and get BoundingBoxes
 std::vector<int> getBoundingBoxes(string file) {
 	string line;
 	string get = "INRIAPerson\\Train\\annotations\\" + file + ".txt";

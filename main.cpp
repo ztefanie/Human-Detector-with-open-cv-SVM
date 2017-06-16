@@ -20,7 +20,12 @@ using namespace cv;
 int main(int argc, char* argv[]) {
 
 	//Task 1.1
-	testDrawBoundingBox();
+	//testDrawBoundingBox();
+
+	//Task 1.2
+	testOverlapBoundingBox();
+
+	getchar();
 
 	return 0;
 }
