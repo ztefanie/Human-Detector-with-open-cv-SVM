@@ -7,7 +7,7 @@
 
 
 typedef unsigned char uint8;
-
+const int cell_size = 6; //Best option according to Dalal and Triggs Paper
 
 // compute HOG features from a color image
 //
@@ -17,6 +17,7 @@ typedef unsigned char uint8;
 //
 // return: 3D HOG features
 double*** computeHoG(const cv::Mat &img, const int sbin, std::vector<int> &dims);
+
 
 
 #endif

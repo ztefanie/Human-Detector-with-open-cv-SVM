@@ -23,9 +23,12 @@ int main(int argc, char* argv[]) {
 	//testDrawBoundingBox();
 
 	//Task 1.2
-	testOverlapBoundingBox();
+	//testOverlapBoundingBox();
 
-	getchar();
+	//Task 1.3
+	testHog();
+
+	waitKey();
 
 	return 0;
 }

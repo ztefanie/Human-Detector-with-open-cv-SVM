@@ -6,10 +6,17 @@
 #include <fstream>
 
 #include "utils.h"
+#include "hog.h"
 
 using namespace std;
 using namespace cv;
 
+//Task 1.3
+double*** extractHOGFeatures(string folder, string filename, std::vector<int> &dims) {
+	String get = folder + "\\" + filename;
+	Mat img = imread(get, 1);
+	return computeHoG(img, cell_size, dims);
+}
 
 //compute overlap
 double ComputeOverlap(std::vector<int> truth, std::vector<int> detected) {

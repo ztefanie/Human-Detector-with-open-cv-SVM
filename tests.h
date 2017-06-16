@@ -10,5 +10,7 @@
 //declare functions here
 void testDrawBoundingBox();
 void testOverlapBoundingBox();
+void testHog();
+cv::Mat visualizeGradOrientations(double*** hog, std::vector<int> &dims);
 
 #endif
