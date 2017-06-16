@@ -12,7 +12,7 @@ using namespace std;
 using namespace cv;
 
 void testDrawBoundingBox() {
-	Mat out = showBoundingBox("crop_000010");
+	Mat out = showBoundingBox("crop_000607");
 	imshow("BoundingBox", out);
 	waitKey();
 }

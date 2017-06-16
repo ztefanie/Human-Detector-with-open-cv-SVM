@@ -19,11 +19,19 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="featureExtraction.cpp" />
     <ClCompile Include="hog.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="tests.cpp" />
+    <ClCompile Include="trainSVM.cpp" />
+    <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="featureExtraction.h" />
     <ClInclude Include="hog.h" />
+    <ClInclude Include="tests.h" />
+    <ClInclude Include="trainSVM.h" />
+    <ClInclude Include="utils.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{4A5D7093-2909-4334-AA1B-EAE39CBCD043}</ProjectGuid>

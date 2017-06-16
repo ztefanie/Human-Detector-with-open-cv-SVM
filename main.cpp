@@ -6,23 +6,21 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/ml/ml.hpp>
 #include <string>
-#include <sstream>
-#include <algorithm>
-#include <iterator>
-#include <math.h>
-#include <time.h>
 
 #include "hog.h"
 #include "utils.h"
 #include "featureExtraction.h"
+#include "trainSVM.h"
+#include "tests.h"
 
 using namespace std;
 using namespace cv;
 
 
 int main(int argc, char* argv[]) {
-	Mat img;
-	vector<int> dims;
-	computeHoG(img, 3, dims);
+
+	//Task 1.1
+	testDrawBoundingBox();
+
 	return 0;
 }
