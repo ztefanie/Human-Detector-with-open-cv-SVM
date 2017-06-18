@@ -242,3 +242,8 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+
+#my stuff - Fabio
+mmp2.sln
+mmp2.vcxproj
+mmp2.vcxproj.filters

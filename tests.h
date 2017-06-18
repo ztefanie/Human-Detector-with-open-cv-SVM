@@ -13,4 +13,7 @@ void testOverlapBoundingBox();
 void testHog();
 cv::Mat visualizeGradOrientations(double*** hog, std::vector<int> &dims);
 
+//1.5
+void testDownScale(int l);
+
 #endif

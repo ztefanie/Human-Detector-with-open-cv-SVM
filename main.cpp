@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
 
 	//Task 1.3
 	testHog();
-
+	testDownScale(5);
 	waitKey();
 
 	return 0;
