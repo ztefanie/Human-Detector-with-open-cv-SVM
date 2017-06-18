@@ -9,11 +9,12 @@
 #include "tests.h"
 #include "utils.h"
 #include "hog.h"
+#include "main.h"
 
 using namespace std;
 using namespace cv;
 
-void testDownScale(int l) {
+void testDownScale() {
 	String file = "INRIAPerson/Train/pos/crop_000607.png";
 	Mat img = imread(file);
 	int count = 0;
@@ -24,19 +25,17 @@ void testDownScale(int l) {
 		return;
 	}
 
-	double scale = pow(2.0, 1.0/l);
+	double scale = pow(2.0, 1.0/LAMBDA);
 
-	int tmpl_width = 64;
-	int tmpl_height = 128;
 	double akt_width = img.cols;
 	double akt_height = img.rows;
 	int int_akt_height = floor(akt_height);
 	int int_akt_width = floor(akt_width);
 	double hig_scale = 1;
 	//Mat oldM = img.clone();
-	while (floor(akt_width) >= tmpl_width && floor(akt_height) >= tmpl_height) {
-		if (count % l == 0) {
-			double help = pow(2, count / l);
+	while (floor(akt_width) >= TEMPLATE_WIDTH && floor(akt_height) >= TEMPLATE_HEIGHT) {
+		if (count % LAMBDA == 0) {
+			double help = pow(2, count / LAMBDA);
 			akt_width = img.cols / help;
 			akt_height = img.rows / help;
 			/*for (int i = 0; i < floor(akt_height); i++) {
@@ -70,24 +69,24 @@ void testDownScale(int l) {
 		vector<Point> real_temp_pos;
 		vector<Point> real_temp_size;
 		int counter = 0;
-		double calc_size = (int_akt_height * int_akt_width * 2) / (tmpl_width * tmpl_height);
+		double calc_size = (int_akt_height * int_akt_width * 2) / (TEMPLATE_WIDTH * TEMPLATE_HEIGHT);
 		temp_pos.resize(calc_size);
 		real_temp_pos.resize(calc_size);
 		real_temp_size.resize(calc_size);
 		Mat m2 = img.clone(); //just for viso
-		for (int i = 0; i + tmpl_height <= int_akt_height; i+= floor(tmpl_height/2)) {
-			for (int j = 0; j + tmpl_width <= int_akt_width; j+= floor(tmpl_width/2)) {
+		for (int i = 0; i + TEMPLATE_HEIGHT <= int_akt_height; i+= floor(TEMPLATE_HEIGHT/2)) {
+			for (int j = 0; j + TEMPLATE_WIDTH <= int_akt_width; j+= floor(TEMPLATE_WIDTH/2)) {
 				temp_pos[counter] = Point(j, i);
 				real_temp_pos[counter] = Point(j * hig_scale, i * hig_scale);
-				real_temp_size[counter] = Point(tmpl_width * hig_scale + j * hig_scale, tmpl_height * hig_scale + i * hig_scale);
+				real_temp_size[counter] = Point(TEMPLATE_WIDTH * hig_scale + j * hig_scale, TEMPLATE_HEIGHT * hig_scale + i * hig_scale);
 				//just for viso:
-				rectangle(m, temp_pos[counter], Point(j + tmpl_width, i + tmpl_height), CV_RGB(255, 255, 0), 1, 8);
+				rectangle(m, temp_pos[counter], Point(j + TEMPLATE_WIDTH, i + TEMPLATE_HEIGHT), CV_RGB(255, 255, 0), 1, 8);
 				rectangle(m2, real_temp_pos[counter], real_temp_size[counter], CV_RGB(255, 255, 0), 1, 8);
 			}
 		}
 		//just for viso
-		rectangle(m, Point(0, 0), Point(tmpl_width, tmpl_height), CV_RGB(0, 0, 255), 1, 8);
-		rectangle(m2, Point(0, 0), Point(tmpl_width * hig_scale, tmpl_height * hig_scale), CV_RGB(0, 0, 255), 1, 8);
+		rectangle(m, Point(0, 0), Point(TEMPLATE_WIDTH, TEMPLATE_HEIGHT), CV_RGB(0, 0, 255), 1, 8);
+		rectangle(m2, Point(0, 0), Point(TEMPLATE_WIDTH * hig_scale, TEMPLATE_HEIGHT * hig_scale), CV_RGB(0, 0, 255), 1, 8);
 		imshow("ori", m2);
 		imshow("smaler", m);
 		waitKey();

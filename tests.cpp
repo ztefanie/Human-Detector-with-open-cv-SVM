@@ -10,9 +10,26 @@
 #include "tests.h"
 #include "utils.h"
 #include "hog.h"
+#include "main.h"
 
 using namespace std;
 using namespace cv;
+
+
+void test3DTemplate() {
+	vector<int> dims;
+	double*** hog = extractHOGFeatures("INRIAPerson\\Train\\pos", "crop_000603.png", dims);
+	Mat out = visualizeGradOrientations(hog, dims);
+	imshow("Grad", out);
+
+	vector<int> dims2 = vector<int>(3);
+	dims2[0] = TEMPLATE_HEIGHT_CELLS;
+	dims2[1] = TEMPLATE_WIDTH_CELLS;
+	dims2[2] = HOG_DEPTH;
+	double*** featureTemplate = compute3DTemplate(hog, dims, 16, 0, 0);
+	Mat out2 = visualizeGradOrientations(featureTemplate, dims2);
+	imshow("Grad template", out2);
+}
 
 void testHog() {
 	vector<int> dims;
@@ -98,7 +115,7 @@ Mat visualizeGradOrientations(double*** hog, vector<int> &dims) {
 	int cellCols = dims.at(1);
 	int bins = dims.at(2);
 
-	Mat img_out(cellRows * cell_size, cellCols * cell_size, CV_8UC1, Scalar(0));
+	Mat img_out(cellRows * CELL_SIZE, cellCols * CELL_SIZE, CV_8UC1, Scalar(0));
 
 	for (int i = 0; i < cellRows; i++)
 	{
@@ -129,10 +146,10 @@ Mat visualizeGradOrientations(double*** hog, vector<int> &dims) {
 					int degree = ((b * 180) / bins) + int(0.5 * (180. / bins));
 					double gradDir = toRadiant(degree);
 
-					int centerX = j * cell_size + cell_size / 2;
-					int centerY = i * cell_size + cell_size / 2;
+					int centerX = j * CELL_SIZE + CELL_SIZE / 2;
+					int centerY = i * CELL_SIZE + CELL_SIZE / 2;
 
-					int length = cell_size;
+					int length = CELL_SIZE;
 
 					int xOffset = int((cos(gradDir) * length) / 2);
 					int yOffset = int((sin(gradDir) * length) / 2);

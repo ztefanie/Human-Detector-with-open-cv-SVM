@@ -33,6 +33,9 @@
     <ClCompile Include="tests.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="a1.5.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="hog.h">
@@ -48,6 +51,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="tests.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="main.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

@@ -7,7 +7,6 @@
 
 
 typedef unsigned char uint8;
-const int cell_size = 6; //Best option according to Dalal and Triggs Paper
 
 // compute HOG features from a color image
 //

@@ -7,6 +7,7 @@
 
 #include "utils.h"
 #include "hog.h"
+#include "main.h"
 
 using namespace std;
 using namespace cv;
@@ -15,7 +16,7 @@ using namespace cv;
 double*** extractHOGFeatures(string folder, string filename, std::vector<int> &dims) {
 	String get = folder + "\\" + filename;
 	Mat img = imread(get, 1);
-	return computeHoG(img, cell_size, dims);
+	return computeHoG(img, CELL_SIZE, dims);
 }
 
 //compute overlap
@@ -52,7 +53,7 @@ double ComputeOverlap(std::vector<int> truth, std::vector<int> detected) {
 	return overlap;
 }
 
-//compate
+//compare
 bool isOverlapCorrect(double overlap) {
 	if (overlap > 0.5) {
 		return true;
@@ -89,7 +90,7 @@ std::vector<int> getBoundingBoxes(string file) {
 	string line;
 	string get = "INRIAPerson\\Train\\annotations\\" + file + ".txt";
 	ifstream myfile(get);
-	int Xmin, Ymin, Xmax, Ymax;
+	//int Xmin, Ymin, Xmax, Ymax;
 
 	std::vector<int> out;
 	int pos = 0;

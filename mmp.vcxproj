@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="a1.5.cpp" />
     <ClCompile Include="featureExtraction.cpp" />
     <ClCompile Include="hog.cpp" />
     <ClCompile Include="main.cpp" />
@@ -29,6 +30,7 @@
   <ItemGroup>
     <ClInclude Include="featureExtraction.h" />
     <ClInclude Include="hog.h" />
+    <ClInclude Include="main.h" />
     <ClInclude Include="tests.h" />
     <ClInclude Include="trainSVM.h" />
     <ClInclude Include="utils.h" />
