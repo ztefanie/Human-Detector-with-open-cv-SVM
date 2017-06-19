@@ -15,6 +15,11 @@
 using namespace std;
 using namespace cv;
 
+void testMultiscale() {
+	String file = "INRIAPerson/Train/pos/crop_000607.png";
+	Mat img = imread(file);
+	multiscale(img);
+}
 
 void test3DTemplate() {
 	vector<int> dims;
@@ -26,9 +31,12 @@ void test3DTemplate() {
 	dims2[0] = TEMPLATE_HEIGHT_CELLS;
 	dims2[1] = TEMPLATE_WIDTH_CELLS;
 	dims2[2] = HOG_DEPTH;
-	double*** featureTemplate = compute3DTemplate(hog, dims, 16, 0, 0);
+	double*** featureTemplate = compute3DTemplate(hog, dims, 16, 0);
 	Mat out2 = visualizeGradOrientations(featureTemplate, dims2);
 	imshow("Grad template", out2);
+
+	destroy_3Darray(hog, dims[0], dims[1]);
+	destroy_3Darray(featureTemplate, dims2[0], dims2[1]);
 }
 
 void testHog() {
@@ -36,6 +44,7 @@ void testHog() {
 	double*** hog = extractHOGFeatures("INRIAPerson\\Train\\pos", "crop_000607.png", dims);
 	Mat out = visualizeGradOrientations(hog, dims);
 	imshow("Grad", out);
+	destroy_3Darray(hog, dims[0], dims[1]);
 }
 
 void testDrawBoundingBox() {
@@ -101,9 +110,7 @@ void testOverlapBoundingBox() {
 double toRadiant(double degree)
 {
 	assert(degree >= 0 && degree <= 360.);
-
-	double rad = (2 * degree * M_PI) / (double)360;
-
+	double rad = (2 * degree * M_PI) / ((double)360);
 	return rad;
 }
 

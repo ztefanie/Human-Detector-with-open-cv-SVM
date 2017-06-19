@@ -12,6 +12,17 @@
 using namespace std;
 using namespace cv;
 
+
+void destroy_3Darray(double*** inputArray, int width, int height) {
+	for (int i = 0; i < width; i++) {
+		for (int j = 0; j < height; j++) {
+			delete[] inputArray[i][j];
+		}
+		delete[] inputArray[i];
+	}
+	delete[] inputArray;
+}
+
 //Task 1.3
 double*** extractHOGFeatures(string folder, string filename, std::vector<int> &dims) {
 	String get = folder + "\\" + filename;
