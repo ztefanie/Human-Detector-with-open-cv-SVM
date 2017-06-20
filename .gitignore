@@ -247,3 +247,7 @@ ModelManifest.xml
 mmp2.sln
 mmp2.vcxproj
 mmp2.vcxproj.filters
+
+#Markus
+ConsoleApplication2.vcxproj
+ConsoleApplication2.vcxproj.filters
