@@ -74,7 +74,7 @@ void multiscale(Mat img) {
 	int int_akt_height = floor(akt_height);
 	int int_akt_width = floor(akt_width);
 	double hig_scale = 1;
-	
+
 	//scale down every loop
 	while (floor(akt_width) >= TEMPLATE_WIDTH && floor(akt_height) >= TEMPLATE_HEIGHT) {
 		//octave full
@@ -100,34 +100,39 @@ void multiscale(Mat img) {
 		//compute HOG for every size
 		vector<int> dims;
 		double*** hog = computeHoG(m, CELL_SIZE, dims);
-		//double*** hog = extractHOGFeatures("INRIAPerson\\Train\\pos", "crop_000603.png", dims);
 		Mat out = visualizeGradOrientations(hog, dims);
 		String pic = "Gradients at scale: " + to_string(count);
-		imshow(pic, out);
-		/*dims[0] = int_akt_width;
-		dims[1] = int_akt_height;
-		vector<int> dims_template;*/
-		//double*** featureTemplate = compute3DTemplate(hog, dims, 0, 0);
+		//imshow(pic, out);
 
-		//erstmal 50% überlappung; bei 75% durch 4 teilen:
-		int counter = 0;
 
-		for (int i = 0; i + TEMPLATE_HEIGHT <= int_akt_height; i += floor(TEMPLATE_HEIGHT / 2)) {
-			for (int j = 0; j + TEMPLATE_WIDTH <= int_akt_width; j += floor(TEMPLATE_WIDTH / 2)) {
-				//compute templates at every position
-				//double*** featureTemplate = compute3DTemplate(hog, dims, 0, 0);
+		if (dims.at(0) > TEMPLATE_HEIGHT_CELLS && dims.at(1) > TEMPLATE_HEIGHT_CELLS) {
+			double*** featureTemplate = compute3DTemplate(hog, dims, 0, 0);
+			vector<int> dims_template{ TEMPLATE_HEIGHT_CELLS,TEMPLATE_WIDTH_CELLS, HOG_DEPTH };
+			Mat out = visualizeGradOrientations(featureTemplate, dims_template);
+			String pic = "first template at scale: " + to_string(count);
+			//imshow(pic, out);
+		}
 
-					//Show (just for testing)
-				/*if (count == 5) {
-					vector<int> dims2 = vector<int>(3);
-					dims2[0] = TEMPLATE_HEIGHT_CELLS;
-					dims2[1] = TEMPLATE_WIDTH_CELLS;
-					dims2[2] = HOG_DEPTH;
-					Mat out2 = visualizeGradOrientations(featureTemplate, dims2);
-					imshow("Iterate over scale = 5", out2);
-				}*/
+		if (dims.at(0) > TEMPLATE_HEIGHT_CELLS && dims.at(1) > TEMPLATE_HEIGHT_CELLS) {
+			//for (int i = 0; i + TEMPLATE_HEIGHT <= int_akt_height; i += floor(TEMPLATE_HEIGHT / 2)) {
+				//for (int j = 0; j + TEMPLATE_WIDTH <= int_akt_width; j += floor(TEMPLATE_WIDTH / 2)) {
+			for (int i = 0; i + TEMPLATE_HEIGHT_CELLS < dims.at(0); i += floor(TEMPLATE_HEIGHT_CELLS / 2)) {
+				for (int j = 0; j + TEMPLATE_WIDTH_CELLS < dims.at(1); j += floor(TEMPLATE_WIDTH_CELLS / 2)) {
+					//Show only for a specific count (just for testing)
+					if (count == 5) {
+						//if (i_cells + TEMPLATE_HEIGHT_CELLS < dims.at(0)) {
+						cout << i <<" " << j << endl;
+							double*** featureTemplate = compute3DTemplate(hog, dims, j, i);
+							vector<int> dims_template{ TEMPLATE_HEIGHT_CELLS,TEMPLATE_WIDTH_CELLS, HOG_DEPTH };
+							Mat out = visualizeGradOrientations(featureTemplate, dims_template);
+							String pic = "template at " + to_string(i) + to_string(j);
+							imshow(pic, out);
+						//}
+					}
+				}
 			}
 		}
+
 		count++;
 		hig_scale *= scale;
 

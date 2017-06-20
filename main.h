@@ -23,10 +23,13 @@ using namespace cv;
 
 #define CELL_SIZE				8		// size of a cell (in pixels) - best option according to Dalal and Triggs Paper
 #define LAMBDA					5		// steps in one octave
-#define TEMPLATE_HEIGHT			128		// the height of a template (in pixels)
-#define TEMPLATE_WIDTH			64		// the width of a window (in pixels)
-#define TEMPLATE_HEIGHT_CELLS	16		// the height of a template (in cells)
-#define TEMPLATE_WIDTH_CELLS	8		// the width of a window (in cells)
+#define TEMPLATE_HEIGHT			128*2		// the height of a template (in pixels)
+#define TEMPLATE_WIDTH			64*2
+
+
+// the width of a window (in pixels)
+#define TEMPLATE_HEIGHT_CELLS	16*2		// the height of a template (in cells)
+#define TEMPLATE_WIDTH_CELLS	8*2		// the width of a window (in cells)
 #define HOG_DEPTH				32		// dims_z from the hog-implementation
 
 
