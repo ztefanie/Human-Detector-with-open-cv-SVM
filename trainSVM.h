@@ -5,7 +5,9 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-//declare functions here
-
+void firstStepTrain();
+Mat createFirstSet(int N);
+Mat createFirstLabels(int N);
+double* getTemplate(int i, bool positiv);
 
 #endif

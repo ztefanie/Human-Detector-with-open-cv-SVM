@@ -17,9 +17,11 @@ int main(int argc, char* argv[]) {
 
 	//Task 1.5
 	//testDownScale();
-	testMultiscale();	//computes HoG for every size (working)
-						//and creates templates on relevant positions - overlap 0.5 (in progress)
+	//testMultiscale();	//computes HoG for every size (working) and creates templates on relevant positions - (overlap 0.5)
 	
+	//Task 2.1
+	firstStepTrain();
+
 	waitKey();
 
 	return 0;
