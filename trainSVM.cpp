@@ -6,11 +6,10 @@
 #include <iostream>
 
 #include "trainSVM.h"
-#include "hog.cpp"
+#include "hog.h"
 #include "featureExtraction.h"
 #include "main.h"
 #include "utils.h"
-
 
 
 using namespace std;

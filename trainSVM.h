@@ -6,8 +6,8 @@
 #include <opencv2/imgproc/imgproc.hpp>
 
 void firstStepTrain();
-Mat createFirstSet(int N);
-Mat createFirstLabels(int N);
+cv::Mat createFirstSet(int N);
+cv::Mat createFirstLabels(int N);
 double* getTemplate(int i, bool positiv);
 
 #endif
