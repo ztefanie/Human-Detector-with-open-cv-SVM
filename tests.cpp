@@ -15,13 +15,15 @@
 using namespace std;
 using namespace cv;
 
-void testMultiscale() {
+void testMultiscale()
+{
 	String file = "INRIAPerson/Train/pos/crop_000607.png";
 	Mat img = imread(file);
 	multiscale(img);
 }
 
-void test3DTemplate() {
+void test3DTemplate()
+{
 	vector<int> dims;
 	double*** hog = extractHOGFeatures("INRIAPerson\\Train\\pos", "crop_000603.png", dims);
 	Mat out = visualizeGradOrientations(hog, dims);
@@ -39,7 +41,8 @@ void test3DTemplate() {
 	destroy_3Darray(featureTemplate, dims2[0], dims2[1]);
 }
 
-void testHog() {
+void testHog()
+{
 	vector<int> dims;
 	double*** hog = extractHOGFeatures("INRIAPerson\\Train\\pos", "crop_000607.png", dims);
 	Mat out = visualizeGradOrientations(hog, dims);
@@ -47,14 +50,16 @@ void testHog() {
 	destroy_3Darray(hog, dims[0], dims[1]);
 }
 
-void testDrawBoundingBox() {
+void testDrawBoundingBox()
+{
 	Mat out = showBoundingBox("crop_000607");
 	imshow("BoundingBox", out);
 	waitKey();
+	destroyAllWindows();
 }
 
-void testOverlapBoundingBox() {
-
+void testOverlapBoundingBox()
+{
 	std::vector<int> truth = std::vector<int>(4, 0);
 	truth.at(0) = 0;
 	truth.at(1) = 0;
@@ -107,6 +112,7 @@ void testOverlapBoundingBox() {
 	cout << "Shoud be 0.1428 is: " << ComputeOverlap(detected, truth) << endl;
 	cout << "Shoud be 0.1428 is: " << ComputeOverlap(truth, detected) << endl;
 }
+
 double toRadiant(double degree)
 {
 	assert(degree >= 0 && degree <= 360.);
@@ -114,8 +120,8 @@ double toRadiant(double degree)
 	return rad;
 }
 
-Mat visualizeGradOrientations(double*** hog, vector<int> &dims) {
-
+Mat visualizeGradOrientations(double*** hog, vector<int>& dims)
+{
 	assert(dims.size() == 3);
 
 	int cellRows = dims.at(0);
@@ -148,8 +154,8 @@ Mat visualizeGradOrientations(double*** hog, vector<int> &dims) {
 			for (int b = 0; b < bins; b++)
 			{
 				double value = hog[i][j][b];
-				if (value != 0) {
-
+				if (value != 0)
+				{
 					int degree = ((b * 180) / bins) + int(0.5 * (180. / bins));
 					double gradDir = toRadiant(degree);
 

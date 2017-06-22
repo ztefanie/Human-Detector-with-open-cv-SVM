@@ -12,10 +12,22 @@
 using namespace std;
 using namespace cv;
 
+//Check if running on Windows - if not ->no colors in console window!
+#ifdef _WIN32
+HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
-void destroy_3Darray(double*** inputArray, int width, int height) {
-	for (int i = 0; i < width; i++) {
-		for (int j = 0; j < height; j++) {
+void colorConsole(int color)
+{
+	SetConsoleTextAttribute(hConsole, color);
+}
+#endif
+
+void destroy_3Darray(double*** inputArray, int width, int height)
+{
+	for (int i = 0; i < width; i++)
+	{
+		for (int j = 0; j < height; j++)
+		{
 			delete[] inputArray[i][j];
 		}
 		delete[] inputArray[i];
@@ -24,29 +36,36 @@ void destroy_3Darray(double*** inputArray, int width, int height) {
 }
 
 //Task 1.3
-double*** extractHOGFeatures(string folder, string filename, std::vector<int> &dims) {
+double*** extractHOGFeatures(string folder, string filename, std::vector<int>& dims)
+{
 	String get = folder + "\\" + filename;
 	Mat img = imread(get, 1);
 	return computeHoG(img, CELL_SIZE, dims);
 }
 
 //compute overlap
-double ComputeOverlap(std::vector<int> truth, std::vector<int> detected) {
+double ComputeOverlap(std::vector<int> truth, std::vector<int> detected)
+{
 	int intersect;
 	int union1;
 
 	//compute intersect
 	int width_intersect;
 	int height_intersect;
-	if (truth.at(0) < detected.at(0)) {
+	if (truth.at(0) < detected.at(0))
+	{
 		width_intersect = truth.at(2) - detected.at(0);
-	} else {
+	}
+	else
+	{
 		width_intersect = detected.at(2) - truth.at(0);
 	}
-	if (truth.at(1) < detected.at(1)) {
+	if (truth.at(1) < detected.at(1))
+	{
 		height_intersect = truth.at(3) - detected.at(1);
 	}
-	else {
+	else
+	{
 		height_intersect = detected.at(3) - truth.at(1);
 	}
 	width_intersect < 0 ? width_intersect = 0 : 0;
@@ -55,8 +74,8 @@ double ComputeOverlap(std::vector<int> truth, std::vector<int> detected) {
 	intersect = width_intersect * height_intersect;
 
 	//compute union
-	int size_truth = (truth.at(0) - truth.at(2))*(truth.at(1) - truth.at(3));
-	int size_detected = (detected.at(0) - detected.at(2))*(detected.at(1) - detected.at(3));
+	int size_truth = (truth.at(0) - truth.at(2)) * (truth.at(1) - truth.at(3));
+	int size_detected = (detected.at(0) - detected.at(2)) * (detected.at(1) - detected.at(3));
 	union1 = size_truth + size_detected - intersect;
 
 	//compute overlap
@@ -65,23 +84,28 @@ double ComputeOverlap(std::vector<int> truth, std::vector<int> detected) {
 }
 
 //compare
-bool isOverlapCorrect(double overlap) {
-	if (overlap > 0.5) {
+bool isOverlapCorrect(double overlap)
+{
+	if (overlap > 0.5)
+	{
 		return true;
 	}
-	else {
+	else
+	{
 		return false;
 	}
 }
 
 
 //Read Picture, draw boundingBox inside and show
-Mat showBoundingBox(string file) {
+Mat showBoundingBox(string file)
+{
 	string get = "INRIAPerson\\Train\\pos\\" + file + ".png";
 	Mat img = imread(get, 1);
 std:vector<int> boxes = getBoundingBoxes(file);
 	int pos = 0;
-	while (boxes.size() - pos > 3) {
+	while (boxes.size() - pos > 3)
+	{
 		Scalar color = Scalar(0, 255, 0);
 		Point p1 = Point(boxes.at(pos + 0), boxes.at(pos + 1));
 		Point p2 = Point(boxes.at(pos + 0), boxes.at(pos + 3));
@@ -97,7 +121,8 @@ std:vector<int> boxes = getBoundingBoxes(file);
 }
 
 //Read annotation file and get BoundingBoxes
-std::vector<int> getBoundingBoxes(string file) {
+std::vector<int> getBoundingBoxes(string file)
+{
 	string line;
 	string get = "INRIAPerson\\Train\\annotations\\" + file + ".txt";
 	ifstream myfile(get);
@@ -109,9 +134,11 @@ std::vector<int> getBoundingBoxes(string file) {
 
 	if (myfile.is_open())
 	{
-		while (getline(myfile, line)) {
+		while (getline(myfile, line))
+		{
 			//cout << line << endl;
-			if (line.find("\"PASperson\" (Xmin, Ymin) - (Xmax, Ymax) : ") != string::npos) {
+			if (line.find("\"PASperson\" (Xmin, Ymin) - (Xmax, Ymax) : ") != string::npos)
+			{
 				size++;
 				out.resize(4 * size);
 				//get first int

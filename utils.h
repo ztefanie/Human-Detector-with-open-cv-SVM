@@ -8,11 +8,16 @@
 #include <string.h>
 
 //declare functions here
+#ifdef _WIN32
+#include <windows.h>
+void colorConsole(int color);
+#endif
+
 cv::Mat showBoundingBox(std::string filename);
 std::vector<int> getBoundingBoxes(std::string file);
 double ComputeOverlap(std::vector<int> truth, std::vector<int> detected);
 bool isOverlapCorrect(double overlap);
-double*** extractHOGFeatures(std::string folder, std::string filename, std::vector<int> &dims);
+double*** extractHOGFeatures(std::string folder, std::string filename, std::vector<int>& dims);
 void destroy_3Darray(double*** inputArray, int width, int height);
 
 #endif
