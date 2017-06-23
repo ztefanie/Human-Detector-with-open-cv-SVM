@@ -2,7 +2,14 @@
 
 int main(int argc, char* argv[])
 {
-	string inputstring;
+	firstStepTrain();
+	
+	//test3DTemplate();
+
+	cout << endl << "finished" << endl;
+	waitKey();
+
+	/*string inputstring;
 
 	while (true)
 	{
@@ -16,18 +23,18 @@ int main(int argc, char* argv[])
 		cout << "5 - Task 1.5" << endl;
 		cout << "6 - Task 2.1" << endl;
 		cout << "q - Programm beenden" << endl;
-		/*cout << "--------------------------------------------" << endl;
-		cout << "(Alternativ koennen Sie durch Eingabe von ";
-		colorConsole(10);
-		cout << "d";
-		colorConsole(15);
-		cout << " oder durch einfaches Druecken der Enter-Taste auch eine Standardaufruf starten)" << endl;*/
+		//cout << "--------------------------------------------" << endl;
+		//cout << "(Alternativ koennen Sie durch Eingabe von ";
+		//colorConsole(10);
+		//cout << "d";
+		//colorConsole(15);
+		//cout << " oder durch einfaches Druecken der Enter-Taste auch eine Standardaufruf starten)" << endl;
 		getline(cin, inputstring);
 
-		/*if (convertStringToLower(inputstring) == "default" || inputstring == "")
-		{
-			inputstring = "eye.png";
-		}*/
+		//if (convertStringToLower(inputstring) == "default" || inputstring == "")
+		//{
+		//	inputstring = "eye.png";
+		//}
 
 		switch (inputstring[0])
 		{
@@ -63,8 +70,8 @@ int main(int argc, char* argv[])
 			cout << "Task 2.1 ausgewaehlt" << endl;
 			firstStepTrain();
 			break;
-			/*case 'd':
-				break;*/
+			//case 'd':
+				//break;
 		case 'q':
 			return 0;
 		default:
@@ -72,5 +79,5 @@ int main(int argc, char* argv[])
 			colorConsole(12);
 			cout << "Fehler, Sie haben eine falsche Auswahl getroffen!" << endl;
 		}
-	}
+	}*/
 }

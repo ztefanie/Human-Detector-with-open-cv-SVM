@@ -4,6 +4,12 @@
 #include <opencv2/ml/ml.hpp>
 #include <string>
 #include <iostream>
+#include <windows.h>
+#include <tchar.h>
+#include <stdio.h>
+#include <iostream>
+#include <fstream>
+#include <string>
 
 #include "trainSVM.h"
 #include "hog.h"
@@ -24,6 +30,14 @@ void firstStepTrain() {
 	Mat points = createFirstSet(N);
 	Mat labels = createFirstLabels(N);
 
+	//Output of points and labels
+	/*for (int i = 0; i < 2 * N; i++) {
+		cout << i << " - Label: " << labels.at<float>(i,0) << endl;
+		for (int j = 0; j < points.cols; j++) {
+			cout << points.at<float>(i, j);
+		}
+	}*/
+
 	// Train with SVM
 	CvSVMParams params;
 	params.svm_type = CvSVM::C_SVC;
@@ -37,55 +51,62 @@ void firstStepTrain() {
 }
 
 Mat createFirstSet(int N) {
-	Mat points(2*N, TEMPLATE_WIDTH_CELLS*TEMPLATE_HEIGHT_CELLS, CV_64FC1); //has size = 2*N (height) and Template-width_CELLS * template-height_cells (width)
+	Mat points(2*N, TEMPLATE_WIDTH_CELLS*TEMPLATE_HEIGHT_CELLS, CV_32FC1); //has size = 2*N (height) and Template-width_CELLS * template-height_cells (width)
 	//iterate over i = 2*N are the rows -> Each row represents one file=picture
-	for (int i = 0; i < points.rows; i++) { 
-		double* templateHoG;
-		if (i < N) { //positiv
-			templateHoG = getTemplate(i, true);
-		}
-		else {	//negativ
-			templateHoG = getTemplate(N-i, false);
-		}
+
+	//positiv
+	string line;
+	ifstream myfile_pos("INRIAPerson\\train\\pos.lst");
+	for (int i = 0; i < points.rows / 2; i++) {
+
+		getline(myfile_pos, line);
+		float* templateHoG;
+		templateHoG = getTemplate(line, true);
 		
 		//copy values of template to Matrix
 		for (int j = 0; j < points.cols; j++) {
-			points.at<double>(i, j) = templateHoG[j];
+			points.at<float>(i, j) = templateHoG[j];
 		}
 	}
+	myfile_pos.close();
+
+	//negativ
+	ifstream myfile_neg("INTRIAPerson\\train\\neg.lst");
+	for (int i = points.rows / 2; i < points.rows; i++) {
+		getline(myfile_neg, line);
+
+		float* templateHoG;
+		templateHoG = getTemplate(line, false);
+
+		//copy values of template to Matrix
+		for (int j = 0; j < points.cols; j++) {
+			points.at<float>(i, j) = templateHoG[j];
+		}
+	}
+	myfile_neg.close();
+
 	return points;
 }
 
 Mat createFirstLabels(int N) {
-	Mat labels(2 * N, 1, CV_64FC1);
+	Mat labels(2 * N, 1, CV_32FC1);
 	for (int i = 0; i < labels.rows; i++) {
-		double l = i < N ? 1.0 : -1.0;
-		labels.at<double>(i, 0) = l;
+		float l = i < N ? 1.0 : -1.0;
+		labels.at<float>(i, 0) = l;
 	}
 	return labels;
 }
 
-double* getTemplate(int i, bool positiv) {
+float* getTemplate(string filename, bool positiv) {
 	vector<int> dims;
 	//folder depends on positiv / negativ
-	string folder;
-	if (positiv) {
-		folder = "INRIAPerson\\train_64x128_H96\\pos";
-	}
-	else {
-		folder = "INRIAPERSON\\Train\\neg";
-	}
-
-	//filename depends on i
-	string filename;
-	//TO-DO something link this is needed:
-	//filename = getFilename(i, folder);
-	
-	
+	string folder = "INRIAPerson";		
+	string in = folder + "/" + filename;
 
 	double*** HoG = extractHOGFeatures(folder, filename, dims);
-	double* Template1D = compute1DTemplate(HoG, dims, 0, 0, 0);
+	float* Template1D = compute1DTemplate(HoG, dims, 0, 0, 0);
 	destroy_3Darray(HoG, dims[0], dims[1]);
 
 	return Template1D;
+	//return nullptr;
 }

@@ -1,18 +1,20 @@
 #include "featureExtraction.h"
 #include "main.h"
 #include "hog.h"
+#include <assert.h>
 
 
 using namespace std;
 using namespace cv;
 
+
 //Task 1.4
 double*** compute3DTemplate(double*** hog, const std::vector<int> &dims, int grid_pos_x, int grid_pos_y) {
 	//Test if input is valid
-	assert(grid_pos_x >= 0);
-	assert(grid_pos_y >= 0);
-	assert(grid_pos_y + TEMPLATE_HEIGHT_CELLS <= dims.at(0));
-	assert(grid_pos_x + TEMPLATE_WIDTH_CELLS <= dims.at(1));
+	assert(grid_pos_x > 0);
+	assert(grid_pos_y > 0);
+	assert(grid_pos_y + TEMPLATE_HEIGHT_CELLS < dims.at(0)); //18
+	assert(grid_pos_x + TEMPLATE_WIDTH_CELLS < dims.at(1)); //10
 
 	//init array
 	double*** featureRepresentation = 0;
@@ -30,15 +32,18 @@ double*** compute3DTemplate(double*** hog, const std::vector<int> &dims, int gri
 		for (int x = 0; x < TEMPLATE_WIDTH_CELLS; x++) {
 			for (int b = 0; b < HOG_DEPTH; b++) {
 				//copy template-part of hog to output array
-				double value = hog[y + grid_pos_y][x + grid_pos_x][b];
-				featureRepresentation[y][x][b] = value;
+				//cout << y << " " << x << " " << b << endl;
+
+					double value = hog[y + grid_pos_y][x + grid_pos_x][b];
+					featureRepresentation[y][x][b] = value;
+
 			}
 		}
 	}
 	return featureRepresentation;
 }
 
-double* compute1DTemplate(double*** hog, const std::vector<int> &dims, int grid_pos_x, int grid_pos_y, int scale) {
+float* compute1DTemplate(double*** hog, const std::vector<int> &dims, int grid_pos_x, int grid_pos_y, int scale) {
 	//Test if input is valid
 	assert(grid_pos_x >= 0);
 	assert(grid_pos_y >= 0);
@@ -46,12 +51,12 @@ double* compute1DTemplate(double*** hog, const std::vector<int> &dims, int grid_
 	assert(grid_pos_x + TEMPLATE_WIDTH_CELLS <= dims.at(1));
 
 	//allocate 1D array
-	double* featureRepresentation = (double*)malloc(sizeof(double)*TEMPLATE_HEIGHT_CELLS*TEMPLATE_WIDTH_CELLS*HOG_DEPTH);
+	float* featureRepresentation = (float*)malloc(sizeof(float)*TEMPLATE_HEIGHT_CELLS*TEMPLATE_WIDTH_CELLS*HOG_DEPTH);
 	for (int y = 0; y < TEMPLATE_HEIGHT_CELLS; y++) {
 		for (int x = 0; x < TEMPLATE_WIDTH_CELLS; x++) {
 			for (int b = 0; b < HOG_DEPTH; b++) {
 				//copy values from 3D to 1D array
-				double value = hog[y + grid_pos_y][x + grid_pos_x][b];
+				float value = hog[y + grid_pos_y][x + grid_pos_x][b];
 				featureRepresentation[y*TEMPLATE_WIDTH_CELLS*HOG_DEPTH + x*HOG_DEPTH + b] = value;
 			}
 		}

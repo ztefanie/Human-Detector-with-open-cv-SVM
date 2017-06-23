@@ -25,15 +25,16 @@ void testMultiscale()
 void test3DTemplate()
 {
 	vector<int> dims;
-	double*** hog = extractHOGFeatures("INRIAPerson\\Train\\pos", "crop_000603.png", dims);
+	double*** hog = extractHOGFeatures("INRIAPerson\\train\\pos", "crop_000010a.png", dims);
 	Mat out = visualizeGradOrientations(hog, dims);
 	imshow("Grad", out);
-
+	cout << "dims of hog: " << dims[0] << " " << dims[1] << endl;
 	vector<int> dims2 = vector<int>(3);
 	dims2[0] = TEMPLATE_HEIGHT_CELLS;
 	dims2[1] = TEMPLATE_WIDTH_CELLS;
 	dims2[2] = HOG_DEPTH;
-	double*** featureTemplate = compute3DTemplate(hog, dims, 16, 0);
+	cout << "dims of template: " << dims2[0] << " " << dims2[1] << endl;
+	double*** featureTemplate = compute3DTemplate(hog, dims, 1, 1);
 	Mat out2 = visualizeGradOrientations(featureTemplate, dims2);
 	imshow("Grad template", out2);
 
