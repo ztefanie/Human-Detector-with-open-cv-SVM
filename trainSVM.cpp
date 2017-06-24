@@ -23,52 +23,54 @@ using namespace cv;
 
 
 void firstStepTrain() {
-	char* filename = "SVM.xml";
 
-	int N = 1000;
+	//Get Sizes of Datasets
+	int N_pos = 0;
+	std::string line;
+	std::ifstream myfile(LIST_POS);
+	while (std::getline(myfile, line))
+		++N_pos;
 
-	Mat points = createFirstSet(N);
-	Mat labels = createFirstLabels(N);
+	int N_neg = 0;
+	std::ifstream myfile2(LIST_NEG);
+	while (std::getline(myfile2, line))
+		++N_neg;
 
-	//Output of points and labels
-	
-	for (int i = 0; i < 2 * N; i++) {
-		//cout << i << " - Label: " << labels.at<float>(i,0) << endl;
-		for (int j = 0; j < points.cols; j++) {
-			//cout << points.at<float>(i, j);
-		}
-	}
+
+	Mat points = createFirstSet(N_pos, N_neg);
+	Mat labels = createFirstLabels(N_pos, N_neg);
 
 	// Train with SVM
 	CvSVMParams params;
 	params.svm_type = CvSVM::C_SVC;
 	params.kernel_type = CvSVM::LINEAR;
 	//params.C = 0.01; //best option according to Dalal and Triggs
-	params.term_crit = cvTermCriteria(CV_TERMCRIT_ITER, 100000, 1e-6);
+	params.term_crit = cvTermCriteria(CV_TERMCRIT_ITER, 100, 1e-6);
 
 	cout << "Training..." << endl;
 	CvSVM SVM;
 	SVM.train_auto(points, labels, Mat(), Mat(), params);
-	SVM.save(filename);
+	SVM.save(SVM_LOCATION);
 	cout << "finished training" << endl << endl;
 }
 
-Mat createFirstSet(int N) {
-	Mat points(2*N, TEMPLATE_WIDTH_CELLS*TEMPLATE_HEIGHT_CELLS, CV_32FC1); //has size = 2*N (height) and Template-width_CELLS * template-height_cells (width)
+Mat createFirstSet(int N_pos, int N_neg) {
+	int template_size = TEMPLATE_WIDTH_CELLS*TEMPLATE_HEIGHT_CELLS*HOG_DEPTH;
+	Mat points(N_pos+N_neg, template_size, CV_32FC1); //has size = 2*N (height) and Template-width_CELLS * template-height_cells (width)
 	//iterate over i = 2*N are the rows -> Each row represents one file=picture
 
 	cout << "Read in Data for SVM ... " << endl;
 	//positiv
 	string line_pos;
-	ifstream myfile_pos("INRIAPerson\\train\\pos.lst");
-	for (int i = 0; i < points.rows / 2; i++) {
+	ifstream myfile_pos(LIST_POS);
+	for (int i = 0; i < N_pos; i++) {
 
 		getline(myfile_pos, line_pos);
 		float* templateHoG;
 		templateHoG = getTemplate(line_pos, true);
 		
 		//copy values of template to Matrix
-		for (int j = 0; j < points.cols; j++) {
+		for (int j = 0; j < template_size; j++) {
 			points.at<float>(i, j) = templateHoG[j];
 		}
 
@@ -81,8 +83,8 @@ Mat createFirstSet(int N) {
 
 	//negativ
 	string line_neg;
-	ifstream myfile_neg("INRIAPerson\\train\\neg.lst");
-	for (int i = points.rows / 2; i < points.rows; i++) {
+	ifstream myfile_neg(LIST_NEG);
+	for (int i = N_pos; i < points.rows; i++) {
 		getline(myfile_neg, line_neg);
 
 		float* templateHoG;
@@ -103,17 +105,17 @@ Mat createFirstSet(int N) {
 	return points;
 }
 
-Mat createFirstLabels(int N) {
+Mat createFirstLabels(int N_pos, int N_neg) {
 
-	Mat labels(2 * N, 1, CV_32FC1);
+	Mat labels(N_pos + N_neg, 1, CV_32FC1);
 
 	//positiv
-	for (int i = 0; i < labels.rows / 2; i++) {
+	for (int i = 0; i < N_pos; i++) {
 		labels.at<float>(i, 0) = -1;
 	}
 
 	//negativ
-	for (int i = labels.rows / 2; i < labels.rows; i++) {
+	for (int i = N_pos / 2; i < labels.rows; i++) {
 		labels.at<float>(i, 0) = 1;
 	}
 

@@ -32,6 +32,10 @@ using namespace cv;
 #define TEMPLATE_WIDTH_CELLS	8		// the width of a window (in cells)
 #define HOG_DEPTH				32		// dims_z from the hog-implementation
 
+#define SVM_LOCATION			"SVM.xml"
+#define SVM_2_LOCATION			"SVM_2.xml"
+#define LIST_POS				"INRIAPerson\\train\\pos.lst"
+#define LIST_NEG				"INRIAPerson\\train\\neg.lst"
 
 #endif
 

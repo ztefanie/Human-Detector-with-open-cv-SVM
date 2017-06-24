@@ -17,13 +17,11 @@ using namespace cv;
 
 
 void testFirstSVM() {
-	firstStepTrain();
-	char* filename = "SVM.xml";
+	//firstStepTrain();
 	CvSVM SVM;
-	SVM.load(filename);
+	SVM.load(SVM_LOCATION);
 
-	Mat sampleTest(1, TEMPLATE_WIDTH_CELLS*TEMPLATE_HEIGHT_CELLS, CV_32FC1);
-	int trainSize = 500;
+	Mat sampleTest(1, TEMPLATE_WIDTH_CELLS*TEMPLATE_HEIGHT_CELLS*HOG_DEPTH, CV_32FC1);
 	int testSize = 20;
 
 	string line;
@@ -32,10 +30,7 @@ void testFirstSVM() {
 	//Test positiv images
 
 	float sum_pos = 0;
-	//skip first pics which were used for training
-	for (int i = 0; i < trainSize; i++) {
-		getline(myfile_pos, line);
-	}
+
 	cout << "Positiv images are tested ... " << endl;
 	for (int i = 0; i < testSize; i++) {
 		getline(myfile_pos, line);
@@ -49,7 +44,7 @@ void testFirstSVM() {
 
 		//check
 		float response = SVM.predict(sampleTest, true);
-		//cout << "Result for " << line << " is -> " << response << endl;
+		cout << "Result for " << line << " is -> " << response << endl;
 		sum_pos += response;
 	}
 	myfile_pos.close();
@@ -59,10 +54,6 @@ void testFirstSVM() {
 	float sum_neg = 0;
 	ifstream myfile_neg("INRIAPerson\\train\\neg.lst");
 
-	//skip first 20 pics which were used for training
-	for (int i = 0; i < trainSize; i++) {
-		getline(myfile_neg, line);
-	}
 
 	cout << "Negativ images are tested ... " << endl;
 	for (int i = 0; i < testSize; i++) {
@@ -77,12 +68,12 @@ void testFirstSVM() {
 
 		//check
 		float response = SVM.predict(sampleTest, true);
-		//cout << "Result for " << line << " is -> " << response << endl;
+		cout << "Result for " << line << " is -> " << response << endl;
 		sum_neg += response;
 	}
 	myfile_neg.close();
 
-	cout << "Result: sum_pos=" << sum_pos << " sum_neg=" << sum_neg << endl << endl;
+	cout << endl << "Result: sum_pos=" << sum_pos << " sum_neg=" << sum_neg << endl << endl;
 	//cv::Mat sampleTest = (cv::Mat_<float>(1, 2) << j, i);
 	//float response = SVM.predict(sampleMat);
 }

@@ -1,5 +1,6 @@
 #include "main.h"
 #include "tests.h"
+#include "optimizeSVM.h"
 
 int main(int argc, char* argv[])
 {
@@ -23,17 +24,16 @@ int main(int argc, char* argv[])
 	//Task 2.1
 	testFirstSVM();
 
+	//Task 2.2
+	//find_hardNegatives();
+	//testFinalSVM();
+
 	getchar();
 	//waitKey();
 
 
 	cout << endl << "finished" << endl;
-	waitKey();
-
-
-
-
-
+	//waitKey();
 
 
 	/*string inputstring;

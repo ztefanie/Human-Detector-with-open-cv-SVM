@@ -109,7 +109,6 @@ void multiscale(Mat img) {
 		String pic = "Gradients at scale: " + to_string(count);
 		//imshow(pic, out);
 
-
 		if (dims.at(0) > TEMPLATE_HEIGHT_CELLS && dims.at(1) > TEMPLATE_HEIGHT_CELLS) {
 			double*** featureTemplate = compute3DTemplate(hog, dims, 0, 0);
 			vector<int> dims_template{ TEMPLATE_HEIGHT_CELLS,TEMPLATE_WIDTH_CELLS, HOG_DEPTH };
