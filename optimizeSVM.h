@@ -6,5 +6,6 @@
 #include <opencv2/imgproc/imgproc.hpp>
 
 cv::Mat find_hardNegatives();
+void trainOptimizedSVM(cv::Mat hardNegatives);
 
 #endif
