@@ -51,7 +51,7 @@ float* compute1DTemplate(double*** hog, const std::vector<int> &dims, int grid_p
 	assert(grid_pos_x + TEMPLATE_WIDTH_CELLS <= dims.at(1));
 
 	//allocate 1D array
-	float* featureRepresentation = (float*)malloc(sizeof(float)*TEMPLATE_HEIGHT_CELLS*TEMPLATE_WIDTH_CELLS*HOG_DEPTH);
+	float* featureRepresentation = new float[TEMPLATE_HEIGHT_CELLS*TEMPLATE_WIDTH_CELLS*HOG_DEPTH];
 	for (int y = 0; y < TEMPLATE_HEIGHT_CELLS; y++) {
 		for (int x = 0; x < TEMPLATE_WIDTH_CELLS; x++) {
 			for (int b = 0; b < HOG_DEPTH; b++) {
