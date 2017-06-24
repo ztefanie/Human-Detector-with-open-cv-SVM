@@ -11,15 +11,23 @@
 #include "utils.h"
 #include "hog.h"
 #include "main.h"
+#include "optimizeSVM.h"
 
 using namespace std;
 using namespace cv;
 
 
-void testFirstSVM() {
-	//firstStepTrain();
+void testSVM(bool first) {
+	
 	CvSVM SVM;
-	SVM.load(SVM_LOCATION);
+	if (first) {
+		//firstStepTrain();
+		SVM.load(SVM_LOCATION);
+	}
+	else {
+		trainOptimizedSVM(find_hardNegatives());
+		SVM.load(SVM_2_LOCATION);
+	}
 
 	Mat sampleTest(1, TEMPLATE_WIDTH_CELLS*TEMPLATE_HEIGHT_CELLS*HOG_DEPTH, CV_32FC1);
 	int testSize = 20;
@@ -28,7 +36,6 @@ void testFirstSVM() {
 	ifstream myfile_pos("INRIAPerson\\train\\pos.lst");
 
 	//Test positiv images
-
 	float sum_pos = 0;
 
 	cout << "Positiv images are tested ... " << endl;
@@ -50,7 +57,6 @@ void testFirstSVM() {
 	myfile_pos.close();
 
 	//test negativ images
-
 	float sum_neg = 0;
 	ifstream myfile_neg("INRIAPerson\\train\\neg.lst");
 

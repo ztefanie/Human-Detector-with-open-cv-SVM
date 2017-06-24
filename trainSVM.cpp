@@ -45,7 +45,7 @@ void firstStepTrain() {
 	params.svm_type = CvSVM::C_SVC;
 	params.kernel_type = CvSVM::LINEAR;
 	//params.C = 0.01; //best option according to Dalal and Triggs
-	params.term_crit = cvTermCriteria(CV_TERMCRIT_ITER, 100, 1e-6);
+	params.term_crit = cvTermCriteria(CV_TERMCRIT_ITER, 10000, 1e-6);
 
 	cout << "Training..." << endl;
 	CvSVM SVM;

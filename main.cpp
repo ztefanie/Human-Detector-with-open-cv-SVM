@@ -22,11 +22,11 @@ int main(int argc, char* argv[])
 	//testMultiscale();	//computes HoG for every size (working) and creates templates on relevant positions - (overlap 0.5)
 
 	//Task 2.1
-	testFirstSVM();
+	//testSVM(true);
 
 	//Task 2.2
 	//find_hardNegatives();
-	//testFinalSVM();
+	testSVM(false);
 
 	getchar();
 	//waitKey();

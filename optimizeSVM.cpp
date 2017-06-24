@@ -17,8 +17,48 @@
 using namespace std;
 using namespace cv;
 
-Mat find_hardNegatives() {
+void trainOptimizedSVM(Mat hardNegatives) {
+	//Get Sizes of Datasets
+	int N_pos = 0;
+	std::string line;
+	std::ifstream myfile(LIST_POS);
+	while (std::getline(myfile, line))
+		++N_pos;
 
+	int N_neg = 0;
+	std::ifstream myfile2(LIST_NEG);
+	while (std::getline(myfile2, line))
+		++N_neg;
+
+	Mat points = createFirstSet(N_pos, N_neg);
+	Mat labels = createFirstLabels(N_pos, N_neg);
+	Mat label_neg(1, 1, CV_32FC1);
+	label_neg.at<float>(0, 0) = 1;
+
+	Mat V;
+	vconcat(points, hardNegatives, V);
+
+	for (int i = 0; i < hardNegatives.rows; i++) {
+		//points.push_back(hardNegatives.at<float>(i));
+		labels.push_back(label_neg);
+	}
+	
+	// Train with SVM
+	CvSVMParams params;
+	params.svm_type = CvSVM::C_SVC;
+	params.kernel_type = CvSVM::LINEAR;
+	//params.C = 0.01; //best option according to Dalal and Triggs
+	params.term_crit = cvTermCriteria(CV_TERMCRIT_ITER, 10000, 1e-6);
+
+	cout << "Retraining SVM ... " << endl;
+	CvSVM SVM;
+	SVM.train_auto(V, labels, Mat(), Mat(), params);
+	SVM.save(SVM_2_LOCATION);
+	cout << "finished retraining SVM" << endl << endl;
+}
+
+
+Mat find_hardNegatives() {
 
 	if (!std::ifstream(SVM_LOCATION)){
 		firstStepTrain();
@@ -28,7 +68,7 @@ Mat find_hardNegatives() {
 	SVM.load(SVM_LOCATION);
 
 	//Init Mat for output
-	Mat out(0, TEMPLATE_WIDTH_CELLS*TEMPLATE_HEIGHT_CELLS, CV_32FC1);
+	Mat out(0, TEMPLATE_WIDTH_CELLS*TEMPLATE_HEIGHT_CELLS*HOG_DEPTH, CV_32FC1);
 	cout << endl << "Searching for hard negatives ... " << endl;
 
 	string line;
@@ -37,7 +77,7 @@ Mat find_hardNegatives() {
 
 	//Iterate over all files
 	while (getline(file_neg, line)) {
-		cout << line << endl;
+		//cout << line << endl;
 		int count = 0;
 		String full_path = "INRIAPerson\\" + line;
 		Mat img = imread(full_path);
@@ -76,8 +116,6 @@ Mat find_hardNegatives() {
 			//compute HOG for every size
 			vector<int> dims;
 			double*** hog = computeHoG(m, CELL_SIZE, dims);
-			Mat out = visualizeGradOrientations(hog, dims);
-			String pic = "Gradients at scale: " + to_string(count);
 
 			//iterate over width and height
 			if (dims.at(0) > TEMPLATE_HEIGHT_CELLS && dims.at(1) > TEMPLATE_HEIGHT_CELLS) {
@@ -86,7 +124,7 @@ Mat find_hardNegatives() {
 							
 						//DO TESTING IF FALSE NEGATIVE
 						float* featureTemplate = compute1DTemplate(hog, dims, j, i, 0);
-						Mat sampleTest(1, TEMPLATE_WIDTH_CELLS*TEMPLATE_HEIGHT_CELLS, CV_32FC1);
+						Mat sampleTest(1, TEMPLATE_WIDTH_CELLS*TEMPLATE_HEIGHT_CELLS*HOG_DEPTH, CV_32FC1);
 						//copy values of template to Matrix
 						for (int j = 0; j < sampleTest.cols; j++) {
 							sampleTest.at<float>(0, j) = featureTemplate[j];
@@ -95,8 +133,8 @@ Mat find_hardNegatives() {
 						float predict = SVM.predict(sampleTest, true);
 						//cout << predict <<  endl;
 						if (predict > 0) {
-							cout << "found false-negative in " << line << " " << predict << endl;
-							//out.push_back(sampleTest);
+							//cout << "found false-negative in " << line << " " << predict << endl;
+							out.push_back(sampleTest);
 						}
 					}
 				}
@@ -110,14 +148,14 @@ Mat find_hardNegatives() {
 		}
 		//////////
 		if (i % 50 == 0) {
-			//cout << "|";
+			cout << "|";
 		}
 		
 		i++;
 	}
 
-	cout << endl << "finished searching for hard negatives" << endl << endl;
 	file_neg.close();
+	cout << endl << "finished searching for hard negatives found: " << out.rows << endl << endl;
 
 	return out;
 }
