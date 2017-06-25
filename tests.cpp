@@ -85,10 +85,10 @@ void testSVM(bool first) {
 	//float response = SVM.predict(sampleMat);
 }
 
-
+//1.5 + 3.1
 void testMultiscale()
 {
-	String file = "INRIAPerson/Train/pos/crop_000607.png";
+	String file = "INRIAPerson/Train_Orginal/pos/crop_000607.png";
 	Mat img = imread(file);
 	multiscale(img);
 }

@@ -79,7 +79,6 @@ void multiscale(Mat img) {
 	int int_akt_height = floor(akt_height);
 	int int_akt_width = floor(akt_width);
 	double hig_scale = 1;
-
 	//scale down every loop
 	while (floor(akt_width) >= TEMPLATE_WIDTH && floor(akt_height) >= TEMPLATE_HEIGHT) {
 		//octave full
@@ -120,6 +119,7 @@ void multiscale(Mat img) {
 		if (dims.at(0) > TEMPLATE_HEIGHT_CELLS && dims.at(1) > TEMPLATE_HEIGHT_CELLS) {
 			//for (int i = 0; i + TEMPLATE_HEIGHT <= int_akt_height; i += floor(TEMPLATE_HEIGHT / 2)) {
 				//for (int j = 0; j + TEMPLATE_WIDTH <= int_akt_width; j += floor(TEMPLATE_WIDTH / 2)) {
+			int template_count = 1;
 			for (int i = 0; i + TEMPLATE_HEIGHT_CELLS < dims.at(0); i += floor(TEMPLATE_HEIGHT_CELLS / 2)) {
 				for (int j = 0; j + TEMPLATE_WIDTH_CELLS < dims.at(1); j += floor(TEMPLATE_WIDTH_CELLS / 2)) {
 					//Show only for a specific count (just for testing)
@@ -131,6 +131,16 @@ void multiscale(Mat img) {
 							Mat out = visualizeGradOrientations(featureTemplate, dims_template);
 							String pic = "template at " + to_string(i) + to_string(j);
 							imshow(pic, out);
+							//3.1 //enumerate...
+							cout << "Number: " << template_count << " xPos: " << j * hig_scale << " yPos: " << i * hig_scale << endl;
+							//3.2
+							//feature
+
+							//detection score: distace form the hyperplane
+							//float response = SVM.predict(sampleTest, true);
+							waitKey();
+							destroyAllWindows();
+							template_count++;
 						//}
 					}
 				}

@@ -20,18 +20,17 @@ int main(int argc, char* argv[])
 	//Task 1.5
 	//testDownScale();
 	//testMultiscale();	//computes HoG for every size (working) and creates templates on relevant positions - (overlap 0.5)
-	
-	//freopen("log.txt", "w", stdout);
 
 	//Task 2.1
-	cout << "SVM 1: " << endl << endl;
-	testSVM(true);
+	//testSVM(true);
 
 	//Task 2.2
 	//find_hardNegatives();
-	cout << "SVM 2: " << endl << endl;
+	freopen("log.txt", "w", stdout);
 	testSVM(false);
 
+	//Task 3.1
+	testMultiscale();
 
 /*
 	Mat samplePredict(5, 1, CV_32FC1);
