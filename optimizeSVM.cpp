@@ -68,7 +68,8 @@ Mat find_hardNegatives() {
 	SVM.load(SVM_LOCATION);
 
 	//Init Mat for output
-	Mat out(0, TEMPLATE_WIDTH_CELLS*TEMPLATE_HEIGHT_CELLS*HOG_DEPTH, CV_32FC1);
+	Mat allHardNeg(0, TEMPLATE_WIDTH_CELLS*TEMPLATE_HEIGHT_CELLS*HOG_DEPTH, CV_32FC1);
+	Mat predictMat(0, 1, CV_32FC1);
 	cout << endl << "Searching for hard negatives ... " << endl;
 
 	string line;
@@ -125,16 +126,19 @@ Mat find_hardNegatives() {
 						//DO TESTING IF FALSE NEGATIVE
 						float* featureTemplate = compute1DTemplate(hog, dims, j, i, 0);
 						Mat sampleTest(1, TEMPLATE_WIDTH_CELLS*TEMPLATE_HEIGHT_CELLS*HOG_DEPTH, CV_32FC1);
+						Mat samplePredict(1, 1, CV_32FC1);
 						//copy values of template to Matrix
 						for (int j = 0; j < sampleTest.cols; j++) {
 							sampleTest.at<float>(0, j) = featureTemplate[j];
 						}
 
-						float predict = SVM.predict(sampleTest, true);
+						samplePredict.at<float>(0, 0) = SVM.predict(sampleTest, true);
+						
 						//cout << predict <<  endl;
-						if (predict > 0) {
+						if (samplePredict.at<float>(0, 0) > 0) {
 							//cout << "found false-negative in " << line << " " << predict << endl;
-							out.push_back(sampleTest);
+							allHardNeg.push_back(sampleTest);
+							predictMat.push_back(samplePredict);
 						}
 					}
 				}
@@ -155,7 +159,25 @@ Mat find_hardNegatives() {
 	}
 
 	file_neg.close();
-	cout << endl << "finished searching for hard negatives found: " << out.rows << endl << endl;
+	cout << endl << "finished searching for hard negatives found: " << allHardNeg.rows << endl << endl;
+
+	//Get only the hard negatives with the most positiv predict
+	cout << "Reducing hard negatives to " << MAX_HARD_NEG << "..." << endl;
+	Mat out(0, TEMPLATE_WIDTH_CELLS*TEMPLATE_HEIGHT_CELLS*HOG_DEPTH, CV_32FC1);
+
+	double minVal;
+	double maxVal;
+	Point minLoc;
+	Point maxLoc;
+
+	for (int i = 0; i < 3 && i < allHardNeg.rows; i++) {
+		minMaxLoc(predictMat, &minVal, &maxVal, &minLoc, &maxLoc);
+		cout << "max val : " << maxVal << " at " << maxLoc.y << endl;
+		predictMat.at<float>(maxLoc.y, 0) = -1;
+		out.push_back(allHardNeg.row(maxLoc.y));
+	}
+
+	cout << "finished reducing hard negatives to " << MAX_HARD_NEG << endl << endl;
 
 	return out;
 }

@@ -24,8 +24,7 @@ using namespace cv;
 #define CELL_SIZE				8		// size of a cell (in pixels) - best option according to Dalal and Triggs Paper
 #define LAMBDA					5		// steps in one octave
 #define TEMPLATE_HEIGHT			128		// the height of a template (in pixels)
-#define TEMPLATE_WIDTH			64
-
+#define TEMPLATE_WIDTH			64		// the width of a template (in pixels)
 
 // the width of a window (in pixels)
 #define TEMPLATE_HEIGHT_CELLS	16		// the height of a template (in cells)
@@ -36,6 +35,7 @@ using namespace cv;
 #define SVM_2_LOCATION			"SVM_2.xml"
 #define LIST_POS				"INRIAPerson\\train\\pos.lst"
 #define LIST_NEG				"INRIAPerson\\train\\neg.lst"
+#define MAX_HARD_NEG			1198	// Number-of-positives minus Number-of-negatives		
 
 #endif
 

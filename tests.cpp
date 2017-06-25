@@ -25,7 +25,8 @@ void testSVM(bool first) {
 		SVM.load(SVM_LOCATION);
 	}
 	else {
-		trainOptimizedSVM(find_hardNegatives());
+		Mat hardNeg = find_hardNegatives();
+		//trainOptimizedSVM(hardNeg);
 		SVM.load(SVM_2_LOCATION);
 	}
 

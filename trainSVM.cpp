@@ -10,6 +10,8 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <time.h> 
+#include <stdlib.h>
 
 #include "trainSVM.h"
 #include "hog.h"
@@ -119,11 +121,6 @@ Mat createFirstLabels(int N_pos, int N_neg) {
 		labels.at<float>(i, 0) = 1;
 	}
 
-	/*for (int i = 0; i < labels.rows; i++) {
-		float l = i < N ? 1.0 : -1.0;
-		labels.at<float>(i, 0) = l;
-	}*/
-
 	return labels;
 }
 
@@ -134,9 +131,18 @@ float* getTemplate(string filename, bool positiv) {
 	string in = folder + "/" + filename;
 
 	double*** HoG = extractHOGFeatures(folder, filename, dims);
-	float* Template1D = compute1DTemplate(HoG, dims, 0, 0, 0);
+	float* Template1D;
+	if (positiv) {
+		Template1D = compute1DTemplate(HoG, dims, 0, 0, 0);
+	}
+	else {
+		srand(time(NULL));
+		int offsetY = rand() % (dims[0] - TEMPLATE_HEIGHT_CELLS);
+		int offsetX = rand() % (dims[1] - TEMPLATE_WIDTH_CELLS);
+		Template1D = compute1DTemplate(HoG, dims, offsetX, offsetY, 0);
+	}
+	
 	destroy_3Darray(HoG, dims[0], dims[1]);
 
 	return Template1D;
-	//return nullptr;
 }

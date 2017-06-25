@@ -26,8 +26,30 @@ int main(int argc, char* argv[])
 
 	//Task 2.2
 	//find_hardNegatives();
+	freopen("log.txt", "w", stdout);
 	testSVM(false);
 
+
+/*
+	Mat samplePredict(5, 1, CV_32FC1);
+	samplePredict.at<float>(0, 0) = 7.1;
+	samplePredict.at<float>(1, 0) = 2.1;
+	samplePredict.at<float>(2, 0) = -1.1;
+	samplePredict.at<float>(3, 0) = 0.1;
+	samplePredict.at<float>(4, 0) = 5.5;
+
+	double minVal;
+	double maxVal;
+	Point minLoc;
+	Point maxLoc;
+
+	for (int i = 0; i < 3; i++) {
+		minMaxLoc(samplePredict, &minVal, &maxVal, &minLoc, &maxLoc);
+		cout << "min val : " << maxVal << " at " << maxLoc.y << endl;
+		samplePredict.at<float>(maxLoc.y, 0) = -1;
+	}
+
+	*/
 	getchar();
 	//waitKey();
 
