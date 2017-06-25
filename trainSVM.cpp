@@ -49,7 +49,7 @@ void firstStepTrain() {
 	//params.C = 0.01; //best option according to Dalal and Triggs
 	params.term_crit = cvTermCriteria(CV_TERMCRIT_ITER, 10000, 1e-6);
 
-	cout << "Training..." << endl;
+	cout << "Training SVM with " << points.rows << " Datapoints... " << endl;
 	CvSVM SVM;
 	SVM.train_auto(points, labels, Mat(), Mat(), params);
 	SVM.save(SVM_LOCATION);

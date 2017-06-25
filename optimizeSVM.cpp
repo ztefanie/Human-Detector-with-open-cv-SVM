@@ -50,7 +50,7 @@ void trainOptimizedSVM(Mat hardNegatives) {
 	//params.C = 0.01; //best option according to Dalal and Triggs
 	params.term_crit = cvTermCriteria(CV_TERMCRIT_ITER, 10000, 1e-6);
 
-	cout << "Retraining SVM ... " << endl;
+	cout << "Retraining SVM with " << V.rows << " Datapoints... " << endl;
 	CvSVM SVM;
 	SVM.train_auto(V, labels, Mat(), Mat(), params);
 	SVM.save(SVM_2_LOCATION);
@@ -170,9 +170,9 @@ Mat find_hardNegatives() {
 	Point minLoc;
 	Point maxLoc;
 
-	for (int i = 0; i < 3 && i < allHardNeg.rows; i++) {
+	for (int i = 0; i< MAX_HARD_NEG && i < allHardNeg.rows; i++) {
 		minMaxLoc(predictMat, &minVal, &maxVal, &minLoc, &maxLoc);
-		cout << "max val : " << maxVal << " at " << maxLoc.y << endl;
+		//cout << "max val : " << maxVal << " at " << maxLoc.y << endl;
 		predictMat.at<float>(maxLoc.y, 0) = -1;
 		out.push_back(allHardNeg.row(maxLoc.y));
 	}

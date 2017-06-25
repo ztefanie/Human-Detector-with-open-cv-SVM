@@ -21,12 +21,12 @@ void testSVM(bool first) {
 	
 	CvSVM SVM;
 	if (first) {
-		//firstStepTrain();
+		firstStepTrain();
 		SVM.load(SVM_LOCATION);
 	}
 	else {
 		Mat hardNeg = find_hardNegatives();
-		//trainOptimizedSVM(hardNeg);
+		trainOptimizedSVM(hardNeg);
 		SVM.load(SVM_2_LOCATION);
 	}
 
