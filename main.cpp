@@ -1,6 +1,21 @@
 #include "main.h"
 #include "tests.h"
 #include "optimizeSVM.h"
+#include <ctime>
+
+void logOutput() {
+	time_t t = time(0);   // get time now
+	struct tm * now = localtime(&t);
+	stringstream ss;
+	ss << "log_" << (now->tm_year + 1900) << '-'
+		<< (now->tm_mon + 1) << '-'
+		<< now->tm_mday << "-"
+		<< now->tm_hour << "-" << now->tm_min
+		<< ".txt";
+	string out_file = ss.str();
+
+	freopen(out_file.c_str(), "w", stdout);
+}
 
 int main(int argc, char* argv[])
 {
@@ -26,38 +41,16 @@ int main(int argc, char* argv[])
 
 	//Task 2.2
 	//find_hardNegatives();
-	freopen("log.txt", "w", stdout);
-	testSVM(false);
+	//logOutput();
+	//testSVM(false);
 
 	//Task 3.1
 	testMultiscale();
 
-/*
-	Mat samplePredict(5, 1, CV_32FC1);
-	samplePredict.at<float>(0, 0) = 7.1;
-	samplePredict.at<float>(1, 0) = 2.1;
-	samplePredict.at<float>(2, 0) = -1.1;
-	samplePredict.at<float>(3, 0) = 0.1;
-	samplePredict.at<float>(4, 0) = 5.5;
-
-	double minVal;
-	double maxVal;
-	Point minLoc;
-	Point maxLoc;
-
-	for (int i = 0; i < 3; i++) {
-		minMaxLoc(samplePredict, &minVal, &maxVal, &minLoc, &maxLoc);
-		cout << "min val : " << maxVal << " at " << maxLoc.y << endl;
-		samplePredict.at<float>(maxLoc.y, 0) = -1;
-	}
-
-	*/
-	getchar();
-	//waitKey();
-
 
 	cout << endl << "finished" << endl;
-	//waitKey();
+	//getchar();
+	waitKey();
 
 
 	/*string inputstring;
@@ -132,3 +125,4 @@ int main(int argc, char* argv[])
 		}
 	}*/
 }
+

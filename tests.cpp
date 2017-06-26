@@ -89,8 +89,7 @@ void testSVM(bool first) {
 void testMultiscale()
 {
 	String file = "INRIAPerson/Train_Orginal/pos/crop_000607.png";
-	Mat img = imread(file);
-	multiscale(img);
+	multiscaleImg(file);
 }
 
 void test3DTemplate()
@@ -116,7 +115,7 @@ void test3DTemplate()
 void testHog()
 {
 	vector<int> dims;
-	double*** hog = extractHOGFeatures("INRIAPerson\\Train\\pos", "crop_000607.png", dims);
+	double*** hog = extractHOGFeatures("INRIAPerson\\Train_Orginal\\pos", "crop_000607.png", dims);
 	Mat out = visualizeGradOrientations(hog, dims);
 	imshow("Grad", out);
 	destroy_3Darray(hog, dims[0], dims[1]);

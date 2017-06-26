@@ -100,8 +100,9 @@ bool isOverlapCorrect(double overlap)
 //Read Picture, draw boundingBox inside and show
 Mat showBoundingBox(string file)
 {
-	string get = "INRIAPerson\\Train\\pos\\" + file + ".png";
-	Mat img = imread(get, 1);
+	string get = "INRIAPerson\\Train_Orginal\\pos\\" + file + ".png";
+	Mat img = imread(get);
+
 std:vector<int> boxes = getBoundingBoxes(file);
 	int pos = 0;
 	while (boxes.size() - pos > 3)
@@ -124,7 +125,7 @@ std:vector<int> boxes = getBoundingBoxes(file);
 std::vector<int> getBoundingBoxes(string file)
 {
 	string line;
-	string get = "INRIAPerson\\Train\\annotations\\" + file + ".txt";
+	string get = "INRIAPerson\\Train_Orginal\\annotations\\" + file + ".txt";
 	ifstream myfile(get);
 	//int Xmin, Ymin, Xmax, Ymax;
 
