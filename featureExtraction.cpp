@@ -198,7 +198,11 @@ vector<templatePos> multiscaleImg(string file) {
 						real_temp_pos[counter] = Point(j * hig_scale, i * hig_scale);
 						real_temp_size[counter] = Point(TEMPLATE_WIDTH * hig_scale + j * hig_scale, TEMPLATE_HEIGHT * hig_scale + i * hig_scale);
 						//just for viso:
-						//rectangle(img, real_temp_pos[counter], real_temp_size[counter], CV_RGB(255, 255, 0), 1, 8);
+						/*Mat neuimg = img.clone();
+						rectangle(neuimg, real_temp_pos[counter], real_temp_size[counter], CV_RGB(255, 255, 0), 1, 8);
+						imshow("file", neuimg);
+						waitKey();
+						destroyAllWindows();*/
 					}
 					
 					//waitKey();
