@@ -164,8 +164,8 @@ vector<templatePos> multiscaleImg(string file) {
 
 					//3.1 //enumerate...
 					templatePos pos;
-					pos.x = j*hig_scale;
-					pos.y = i*hig_scale;
+					pos.x = j*hig_scale* factorx;
+					pos.y = i*hig_scale*  factory;
 					pos.scale = hig_scale;
 
 
@@ -174,8 +174,8 @@ vector<templatePos> multiscaleImg(string file) {
 
 					Mat sampleTest(1, TEMPLATE_WIDTH_CELLS*TEMPLATE_HEIGHT_CELLS*HOG_DEPTH, CV_32FC1);
 					//copy values of template to Matrix
-					for (int j = 0; j < sampleTest.cols; j++) {
-						sampleTest.at<float>(0, j) = featureTemplate1D[j];
+					for (int k = 0; k < sampleTest.cols; k++) {
+						sampleTest.at<float>(0, k) = featureTemplate1D[k];
 					}
 
 					float score = SVM.predict(sampleTest, true);
@@ -197,19 +197,17 @@ vector<templatePos> multiscaleImg(string file) {
 						line(img, p1, p3, color, 1);
 						line(img, p2, p4, color, 1);
 						line(img, p3, p4, color, 1);*/
-						int x = j * hig_scale * factorx;
-						int y = i * hig_scale *  factory;
-						real_temp_pos[counter] = Point(x, y);
-						real_temp_size[counter] = Point(TEMPLATE_WIDTH * hig_scale + x, TEMPLATE_HEIGHT * hig_scale + y);
+						real_temp_pos[counter] = Point(pos.x, pos.y);
+						real_temp_size[counter] = Point(TEMPLATE_WIDTH * hig_scale + pos.x, TEMPLATE_HEIGHT * hig_scale + pos.y);
 						//just for viso:
 						Mat neuimg = img.clone();
 						rectangle(neuimg, real_temp_pos[counter], real_temp_size[counter], CV_RGB(255, 255, 0), 1, 8);
 						int baseline = 0;
-						int size = getTextSize("blubb", CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * hig_scale / 300, 1, &baseline).height;
-						String selection_score = "Selection Score: ";
-						putText(neuimg, selection_score, Point(x + 2, y + size + 2), CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * hig_scale / 300, cvScalar(0, 255, 0), 1, CV_AA);
+						int size = getTextSize("blubb", CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * hig_scale / 500, 1, &baseline).height;
+						String selection_score = "Selection Score: " + to_string(score);
+						putText(neuimg, selection_score, Point(pos.x + 2, pos.y + size + 2), CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * hig_scale / 500, cvScalar(0, 255, 0), 1, CV_AA);
 						String overlap = "Overlap: ";
-						putText(neuimg, overlap, Point(x + 2, y + size * 2 + 4), CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * hig_scale / 300, cvScalar(0, 255, 0), 1, CV_AA);
+						putText(neuimg, overlap, Point(pos.x + 2, pos.y + size * 2 + 4), CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * hig_scale / 500, cvScalar(0, 255, 0), 1, CV_AA);
 						imshow("file", neuimg);
 						waitKey();
 						destroyAllWindows();
