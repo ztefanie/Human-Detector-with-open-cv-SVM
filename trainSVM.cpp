@@ -69,7 +69,7 @@ Mat createFirstSet(int N_pos, int N_neg) {
 
 		getline(myfile_pos, line_pos);
 		float* templateHoG;
-		templateHoG = getTemplate(line_pos, true);
+		templateHoG = getTemplate(line_pos, true,2,2);
 		
 		//copy values of template to Matrix
 		for (int j = 0; j < template_size; j++) {
@@ -90,7 +90,7 @@ Mat createFirstSet(int N_pos, int N_neg) {
 		getline(myfile_neg, line_neg);
 
 		float* templateHoG;
-		templateHoG = getTemplate(line_neg, false);
+		templateHoG = getTemplate(line_neg, false, 2,2);
 
 		//copy values of template to Matrix
 		for (int j = 0; j < points.cols; j++) {
@@ -124,7 +124,7 @@ Mat createFirstLabels(int N_pos, int N_neg) {
 	return labels;
 }
 
-float* getTemplate(string filename, bool positiv) {
+float* getTemplate(string filename, bool positiv, int offsetX, int offsetY) {
 	vector<int> dims;
 	//folder depends on positiv / negativ
 	string folder = "INRIAPerson";		

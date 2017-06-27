@@ -12,21 +12,26 @@
 #include "hog.h"
 #include "main.h"
 #include "optimizeSVM.h"
+#include "featureExtraction.h"
 
 using namespace std;
 using namespace cv;
 
 
-void testSVM(bool first) {
+void testSVM(bool first, bool train) {
 	
 	CvSVM SVM;
 	if (first) {
-		firstStepTrain();
+		if (train) {
+			firstStepTrain();
+		}
 		SVM.load(SVM_LOCATION);
 	}
 	else {
-		Mat hardNeg = find_hardNegatives();
-		trainOptimizedSVM(hardNeg);
+		if (train) {
+			Mat hardNeg = find_hardNegatives();
+			trainOptimizedSVM(hardNeg);
+		}
 		SVM.load(SVM_2_LOCATION);
 	}
 
@@ -38,12 +43,12 @@ void testSVM(bool first) {
 
 	//Test positiv images
 	float sum_pos = 0;
-
+	int false_negatives = 0;
 	cout << "Positiv images are tested ... " << endl;
 	for (int i = 0; i < testSize; i++) {
 		getline(myfile_pos, line);
 		float* templateHoG;
-		templateHoG = getTemplate(line, true);
+		templateHoG = getTemplate(line, true,2,2);
 
 		//copy values of template to Matrix
 		for (int j = 0; j < sampleTest.cols; j++) {
@@ -53,6 +58,9 @@ void testSVM(bool first) {
 		//check
 		float response = SVM.predict(sampleTest, true);
 		cout << "Result for " << line << " is -> " << response << endl;
+		if (response < ASSUMED_POSITIV) {
+			false_negatives++;
+		}
 		sum_pos += response;
 	}
 	myfile_pos.close();
@@ -61,12 +69,12 @@ void testSVM(bool first) {
 	float sum_neg = 0;
 	ifstream myfile_neg("INRIAPerson\\train\\neg.lst");
 
-
+	int false_positives = 0;
 	cout << "Negativ images are tested ... " << endl;
 	for (int i = 0; i < testSize; i++) {
 		getline(myfile_neg, line);
 		float* templateHoG;
-		templateHoG = getTemplate(line, true);
+		templateHoG = getTemplate(line, true,2,2);
 
 		//copy values of template to Matrix
 		for (int j = 0; j < sampleTest.cols; j++) {
@@ -77,10 +85,15 @@ void testSVM(bool first) {
 		float response = SVM.predict(sampleTest, true);
 		cout << "Result for " << line << " is -> " << response << endl;
 		sum_neg += response;
+		if (response > ASSUMED_POSITIV) {
+			false_positives++;
+		}
 	}
 	myfile_neg.close();
 
-	cout << endl << "Result: sum_pos=" << sum_pos << " sum_neg=" << sum_neg << endl << endl;
+	cout << endl << "Result: sum_pos = " << sum_pos << " sum_neg = " << sum_neg << endl;
+	cout << "False positives = " << false_positives << " false negatives = " << false_negatives << endl;
+	cout << "Ratio False Positives = " << false_positives / (float)testSize << " Ratio False Positives = " << false_negatives / (float)testSize << endl << endl;
 	//cv::Mat sampleTest = (cv::Mat_<float>(1, 2) << j, i);
 	//float response = SVM.predict(sampleMat);
 }
@@ -88,17 +101,18 @@ void testSVM(bool first) {
 //1.5 + 3.1
 void testMultiscale()
 {
-	String file = "INRIAPerson/Train_Orginal/pos/crop_000607.png";
-	multiscaleImg(file);
+	String file = "INRIAPerson/Train_Orginal/pos/crop001030.png";
+	vector<templatePos> posTemplates = multiscaleImg(file);
+	reduceTemplatesFound(posTemplates, true);
 }
 
 void test3DTemplate()
 {
 	vector<int> dims;
 	double*** hog = extractHOGFeatures("INRIAPerson\\train\\pos", "crop_000010a.png", dims);
-	Mat out = visualizeGradOrientations(hog, dims);
-	imshow("Grad", out);
 	cout << "dims of hog: " << dims[0] << " " << dims[1] << endl;
+	Mat out = visualizeGradOrientations(hog, dims);
+	imshow("HoG of hole picture", out);	
 	vector<int> dims2 = vector<int>(3);
 	dims2[0] = TEMPLATE_HEIGHT_CELLS;
 	dims2[1] = TEMPLATE_WIDTH_CELLS;
@@ -106,7 +120,7 @@ void test3DTemplate()
 	cout << "dims of template: " << dims2[0] << " " << dims2[1] << endl;
 	double*** featureTemplate = compute3DTemplate(hog, dims, 1, 1);
 	Mat out2 = visualizeGradOrientations(featureTemplate, dims2);
-	imshow("Grad template", out2);
+	imshow("Hog of template in th middle", out2);
 
 	destroy_3Darray(hog, dims[0], dims[1]);
 	destroy_3Darray(featureTemplate, dims2[0], dims2[1]);

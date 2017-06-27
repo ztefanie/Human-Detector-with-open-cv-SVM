@@ -8,6 +8,6 @@
 void firstStepTrain();
 cv::Mat createFirstSet(int N_pos, int N_neg);
 cv::Mat createFirstLabels(int N_pos, int N_neg);
-float* getTemplate(std::string filename, bool positiv);
+float* getTemplate(std::string filename, bool positiv, int offsetX, int offsetY);
 
 #endif

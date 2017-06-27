@@ -7,6 +7,7 @@
 #include <iostream>
 #include <fstream>
 
+
 #include "tests.h"
 #include "utils.h"
 #include "hog.h"
@@ -23,8 +24,10 @@ double*** compute3DTemplate(double*** hog, const std::vector<int> &dims, int gri
 	//Test if input is valid
 	assert(grid_pos_x > 0);
 	assert(grid_pos_y > 0);
-	assert(grid_pos_y + TEMPLATE_HEIGHT_CELLS < dims.at(0)); //18
-	assert(grid_pos_x + TEMPLATE_WIDTH_CELLS < dims.at(1)); //10
+	assert(grid_pos_y + TEMPLATE_HEIGHT_CELLS < dims.at(0)); //18 = (160/8)-2
+	assert(grid_pos_x + TEMPLATE_WIDTH_CELLS < dims.at(1)); //10 = 96/8 -2
+
+	//cout << "Hog-Size = (" << dims.at(0) << "," << dims.at(1) << "," << dims.at(2) << ")" << endl;
 
 	//init array
 	double*** featureRepresentation = 0;
@@ -60,6 +63,8 @@ float* compute1DTemplate(double*** hog, const std::vector<int> &dims, int grid_p
 	assert(grid_pos_y + TEMPLATE_HEIGHT_CELLS <= dims.at(0));
 	assert(grid_pos_x + TEMPLATE_WIDTH_CELLS <= dims.at(1));
 
+	//cout << "Hog-Size = (" << dims.at(0) << "," << dims.at(1) << "," << dims.at(2) << ")" << endl;
+
 	//allocate 1D array
 	float* featureRepresentation = new float[TEMPLATE_HEIGHT_CELLS*TEMPLATE_WIDTH_CELLS*HOG_DEPTH];
 	for (int y = 0; y < TEMPLATE_HEIGHT_CELLS; y++) {
@@ -78,7 +83,8 @@ float* compute1DTemplate(double*** hog, const std::vector<int> &dims, int grid_p
 //Task 1.5 - mostly the code from fabio (see a1.5.cpp)
 vector<templatePos> multiscaleImg(string file) {
 
-	Mat img = showBoundingBox("crop_000607");
+	//Mat img_bb = showBoundingBox("crop_000607");
+	Mat img = imread(file);
 	
 	int factorx = TEMPLATE_WIDTH / TEMPLATE_WIDTH_CELLS;
 	int factory = TEMPLATE_HEIGHT / TEMPLATE_HEIGHT_CELLS;
@@ -97,7 +103,7 @@ vector<templatePos> multiscaleImg(string file) {
 	int int_akt_height = floor(akt_height);
 	int int_akt_width = floor(akt_width);
 	double hig_scale = 1;
-
+	Mat neuimg = img.clone();
 	//scale down every loop
 	while (floor(akt_width) >= TEMPLATE_WIDTH && floor(akt_height) >= TEMPLATE_HEIGHT) {
 		//octave full
@@ -149,8 +155,9 @@ vector<templatePos> multiscaleImg(string file) {
 			//for (int i = 0; i + TEMPLATE_HEIGHT <= int_akt_height; i += floor(TEMPLATE_HEIGHT / 2)) {
 				//for (int j = 0; j + TEMPLATE_WIDTH <= int_akt_width; j += floor(TEMPLATE_WIDTH / 2)) {
 			int template_count = 1;
-			for (int i = 0; i + TEMPLATE_HEIGHT_CELLS < dims.at(0); i += floor(TEMPLATE_HEIGHT_CELLS / 2)) {
-				for (int j = 0; j + TEMPLATE_WIDTH_CELLS < dims.at(1); j += floor(TEMPLATE_WIDTH_CELLS / 2)) {
+			
+			for (int i = 0; i + TEMPLATE_HEIGHT_CELLS < dims.at(0); i += 1 ){//floor(TEMPLATE_HEIGHT_CELLS / 4)) {
+				for (int j = 0; j + TEMPLATE_WIDTH_CELLS < dims.at(1); j+= floor(TEMPLATE_WIDTH_CELLS / 4)) {
 					//if (count == 5) { //Show only for a specific count (just for testing)
 						//if (i_cells + TEMPLATE_HEIGHT_CELLS < dims.at(0)) {
 					//cout << i << " " << j << endl;
@@ -164,11 +171,10 @@ vector<templatePos> multiscaleImg(string file) {
 
 					//3.1 //enumerate...
 					templatePos pos;
-					pos.x = j*hig_scale;
-					pos.y = i*hig_scale;
+					pos.x = j*hig_scale*factorx;
+					pos.y = i*hig_scale*factory;
 					pos.scale = hig_scale;
-
-
+					
 					//3.2 //feature + detection score: distace form the hyperplane
 					float* featureTemplate1D = compute1DTemplate(hog, dims, j, i, 0);
 
@@ -179,40 +185,29 @@ vector<templatePos> multiscaleImg(string file) {
 					}
 
 					float score = SVM.predict(sampleTest, true);
+					pos.score = score;
 
 					//cout << "Number: " << template_count << " xPos: " << j * hig_scale << " yPos: " << i * hig_scale << "Scale = " << hig_scale << " with score: " << score << endl;
 
 					//3.3
 					//copy templates with detections of peoples to output
-					if (hig_scale >= 3 ) {
+					if (score > ASSUMED_POSITIV) {
 						cout << "FOUND" << endl;
 						posTemplates.push_back(pos);
-						//for testing
-						/*Scalar color = Scalar(100, 200, 100);
-						Point p1 = Point(j*hig_scale*CELL_SIZE, i*hig_scale*CELL_SIZE);
-						Point p2 = Point(j*hig_scale*CELL_SIZE, i*hig_scale*CELL_SIZE+ TEMPLATE_WIDTH);
-						Point p3 = Point(j*hig_scale*CELL_SIZE+TEMPLATE_HEIGHT, i*hig_scale*CELL_SIZE);
-						Point p4 = Point(j*hig_scale*CELL_SIZE+TEMPLATE_HEIGHT, i*hig_scale*CELL_SIZE + TEMPLATE_WIDTH);
-						line(img, p1, p2, color, 1);
-						line(img, p1, p3, color, 1);
-						line(img, p2, p4, color, 1);
-						line(img, p3, p4, color, 1);*/
-						int x = j * hig_scale * factorx;
-						int y = i * hig_scale *  factory;
-						real_temp_pos[counter] = Point(x, y);
-						real_temp_size[counter] = Point(TEMPLATE_WIDTH * hig_scale + x, TEMPLATE_HEIGHT * hig_scale + y);
+						real_temp_pos[counter] = Point(pos.x, pos.y);
+						real_temp_size[counter] = Point(TEMPLATE_WIDTH * hig_scale + pos.x, TEMPLATE_HEIGHT * hig_scale + pos.y);
 						//just for viso:
-						Mat neuimg = img.clone();
+						
 						rectangle(neuimg, real_temp_pos[counter], real_temp_size[counter], CV_RGB(255, 255, 0), 1, 8);
 						int baseline = 0;
 						int size = getTextSize("blubb", CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * hig_scale / 300, 1, &baseline).height;
-						String selection_score = "Selection Score: ";
-						putText(neuimg, selection_score, Point(x + 2, y + size + 2), CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * hig_scale / 300, cvScalar(0, 255, 0), 1, CV_AA);
-						String overlap = "Overlap: ";
-						putText(neuimg, overlap, Point(x + 2, y + size * 2 + 4), CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * hig_scale / 300, cvScalar(0, 255, 0), 1, CV_AA);
-						imshow("file", neuimg);
-						waitKey();
-						destroyAllWindows();
+						String selection_score = "Selection Score: " + to_string(score);
+						putText(neuimg, selection_score, Point(pos.x + 2, pos.y + size + 2), CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * hig_scale / 300, cvScalar(0, 255, 0), 1, CV_AA);
+						//String overlap = "Overlap: ";
+						//putText(neuimg, overlap, Point(pos.x + 2, pos.y + size * 2 + 4), CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * hig_scale / 300, cvScalar(0, 255, 0), 1, CV_AA);
+						//::imshow("file", neuimg);
+						//waitKey();
+						//destroyAllWindows();
 					}
 					
 					//waitKey();
@@ -231,7 +226,84 @@ vector<templatePos> multiscaleImg(string file) {
 		//destroy at end of each scale
 		destroy_3Darray(hog, dims[0], dims[1]);
 	}
-	imshow("file", img);
+	cv::imshow("file2", neuimg);
+	cv::imwrite("found_bevor_reducing.jpg", neuimg);
 	return posTemplates;
+}
+
+
+void reduceTemplatesFound(vector<templatePos> posTemplates, bool showOutput) {
+
+	Mat img = imread("INRIAPerson/Train_Orginal/pos/crop001030.png");
+
+	vector<templatePos> nonOverlappingTemplates;
+	nonOverlappingTemplates.push_back(posTemplates[0]);
+
+	for (vector<int>::size_type i = 1; i != posTemplates.size(); i++) {
+
+		Point p1 = Point(posTemplates[i].x, posTemplates[i].y);
+		Point p2 = Point(posTemplates[i].x + posTemplates[i].scale*TEMPLATE_WIDTH, posTemplates[i].y + posTemplates[i].scale*TEMPLATE_HEIGHT);
+
+		//just for viso:
+		std::vector<int> points_new = std::vector<int>(4, 0);
+		points_new.at(0) = p1.x;
+		points_new.at(1) = p1.y;
+		points_new.at(2) = p2.x;
+		points_new.at(3) = p2.y;
+
+		//rectangle(img, p1, p2, CV_RGB(255, 255, 0), 1, 8);
+
+		bool add_new = false;
+
+		for (vector<int>::size_type j = 0; j != nonOverlappingTemplates.size(); j++) {
+			Point p1_old = Point(nonOverlappingTemplates[j].x, nonOverlappingTemplates[j].y);
+			Point p2_old = Point(nonOverlappingTemplates[j].x + nonOverlappingTemplates[j].scale*TEMPLATE_WIDTH, nonOverlappingTemplates[j].y + nonOverlappingTemplates[j].scale*TEMPLATE_HEIGHT);
+
+			vector<int> points_old = std::vector<int>(4, 0);
+			points_old.at(0) = p1_old.x;
+			points_old.at(1) = p1_old.y;
+			points_old.at(2) = p2_old.x;
+			points_old.at(3) = p2_old.y;
+
+			//rectangle(img, p1_old, p2_old, CV_RGB(255, 255, 0), 1, 8);
+
+			double overlap = ComputeOverlap(points_new, points_old);
+			if (overlap > 0.2) {
+				add_new = true;
+				if (posTemplates[i].score > nonOverlappingTemplates[j].score) {					
+					nonOverlappingTemplates.push_back(posTemplates[i]);
+					nonOverlappingTemplates.erase(nonOverlappingTemplates.begin() + j);
+				}
+				else {
+					continue;
+				}
+			}
+		}
+
+		if (add_new == false) {
+			nonOverlappingTemplates.push_back(posTemplates[i]);
+		}
+
+	}
+
+
+
+	//Visualization Output 3.5
+	for (vector<int>::size_type j = 0; j != nonOverlappingTemplates.size(); j++) {
+		templatePos pos = nonOverlappingTemplates[j];
+		Point p1_old = Point(pos.x, pos.y);
+		Point p2_old = Point(pos.x + pos.scale*TEMPLATE_WIDTH, pos.y + pos.scale*TEMPLATE_HEIGHT);
+		rectangle(img, p1_old, p2_old, CV_RGB(255, 255, 0), 1, 8);
+		String selection_score = "Selection Score: " + to_string(pos.score);
+		int baseline = 0;
+		int size = getTextSize("blubb", CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * pos.scale / 300, 1, &baseline).height;
+		putText(img, selection_score, Point(pos.x + 2, pos.y + size + 2), CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * pos.scale / 300, cvScalar(0, 255, 0), 1, CV_AA);
+		//String overlap = "Overlap: ";
+		//putText(img, overlap, Point(pos.x + 2, pos.y + size * 2 + 4), CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * pos.scale / 300, cvScalar(0, 255, 0), 1, CV_AA);
+
+	}
+	
+	imshow("Bild-", img);
+	imwrite("Bild-after-reduction.jpg", img);
 }
 

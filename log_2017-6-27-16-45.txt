@@ -1,0 +1,9 @@
+Positiv images are tested ... 
+Negativ images are tested ... 
+
+Result: sum_pos = 611.443 sum_neg = -3505.69
+False positives = 0 false negatives = 224
+Ratio False Positives = 0 Ratio False Positives = 0.224
+
+
+finished
