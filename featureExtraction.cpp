@@ -80,6 +80,8 @@ vector<templatePos> multiscaleImg(string file) {
 
 	Mat img = showBoundingBox("crop_000607");
 	
+	int factorx = TEMPLATE_WIDTH / TEMPLATE_WIDTH_CELLS;
+	int factory = TEMPLATE_HEIGHT / TEMPLATE_HEIGHT_CELLS;
 
 	int count = 0;
 	vector<templatePos> posTemplates;
@@ -195,25 +197,33 @@ vector<templatePos> multiscaleImg(string file) {
 						line(img, p1, p3, color, 1);
 						line(img, p2, p4, color, 1);
 						line(img, p3, p4, color, 1);*/
-						real_temp_pos[counter] = Point(j * hig_scale, i * hig_scale);
-						real_temp_size[counter] = Point(TEMPLATE_WIDTH * hig_scale + j * hig_scale, TEMPLATE_HEIGHT * hig_scale + i * hig_scale);
+						int x = j * hig_scale * factorx;
+						int y = i * hig_scale *  factory;
+						real_temp_pos[counter] = Point(x, y);
+						real_temp_size[counter] = Point(TEMPLATE_WIDTH * hig_scale + x, TEMPLATE_HEIGHT * hig_scale + y);
 						//just for viso:
-						/*Mat neuimg = img.clone();
+						Mat neuimg = img.clone();
 						rectangle(neuimg, real_temp_pos[counter], real_temp_size[counter], CV_RGB(255, 255, 0), 1, 8);
+						int baseline = 0;
+						int size = getTextSize("blubb", CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * hig_scale / 300, 1, &baseline).height;
+						String selection_score = "Selection Score: ";
+						putText(neuimg, selection_score, Point(x + 2, y + size + 2), CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * hig_scale / 300, cvScalar(0, 255, 0), 1, CV_AA);
+						String overlap = "Overlap: ";
+						putText(neuimg, overlap, Point(x + 2, y + size * 2 + 4), CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * hig_scale / 300, cvScalar(0, 255, 0), 1, CV_AA);
 						imshow("file", neuimg);
 						waitKey();
-						destroyAllWindows();*/
+						destroyAllWindows();
 					}
 					
 					//waitKey();
 					//destroyAllWindows();
 					template_count++;
-					//}
-				//}
 				}
+				//}
 			}
 		}
-		rectangle(img, Point(0, 0), Point(TEMPLATE_WIDTH * hig_scale, TEMPLATE_HEIGHT * hig_scale), CV_RGB(0, 0, 255), 1, 8);
+		//}
+		//rectangle(img, Point(0, 0), Point(TEMPLATE_WIDTH * hig_scale, TEMPLATE_HEIGHT * hig_scale), CV_RGB(0, 0, 255), 1, 8);
 		count++;
 		hig_scale *= scale;
 		cout << hig_scale << endl;
