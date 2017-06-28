@@ -36,20 +36,20 @@ int main(int argc, char* argv[])
 	//testDownScale();
 	//testMultiscale();	//computes HoG for every size (working) and creates templates on relevant positions - (overlap 0.5)
 
-	logOutput();
+	//logOutput();
 	//Task 2.1
-	testSVM(true, true);
+	//testSVM(true, true);
 
 	//Task 2.2
 	//find_hardNegatives();	
-	testSVM(false, true);
+	//testSVM(false, false);
 
 	//Task 3.1
-	//testMultiscale();
+	testMultiscale();
 
 
 	cout << endl << "finished" << endl;
-	getchar();
+	//getchar();
 	waitKey();
 
 

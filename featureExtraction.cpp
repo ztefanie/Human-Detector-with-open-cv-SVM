@@ -83,7 +83,7 @@ float* compute1DTemplate(double*** hog, const std::vector<int> &dims, int grid_p
 //Task 1.5 - mostly the code from fabio (see a1.5.cpp)
 vector<templatePos> multiscaleImg(string file) {
 
-	//Mat img_bb = showBoundingBox("crop_000607");
+	
 	Mat img = imread(file);
 	
 	int factorx = TEMPLATE_WIDTH / TEMPLATE_WIDTH_CELLS;
@@ -220,9 +220,9 @@ vector<templatePos> multiscaleImg(string file) {
 						putText(neuimg, selection_score, Point(pos.x + 2, pos.y + size + 2), CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * hig_scale / 500, cvScalar(0, 255, 0), 1, CV_AA);
 						String overlap = "Overlap: ";
 						putText(neuimg, overlap, Point(pos.x + 2, pos.y + size * 2 + 4), CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * hig_scale / 500, cvScalar(0, 255, 0), 1, CV_AA);
-						imshow("file", neuimg);
-						waitKey();
-						destroyAllWindows();
+						//imshow("file", neuimg);
+						//waitKey();
+						//destroyAllWindows();
 
 					}
 					
@@ -242,6 +242,7 @@ vector<templatePos> multiscaleImg(string file) {
 		//destroy at end of each scale
 		destroy_3Darray(hog, dims[0], dims[1]);
 	}
+
 	cv::imshow("file2", neuimg);
 	cv::imwrite("found_bevor_reducing.jpg", neuimg);
 	return posTemplates;
@@ -251,6 +252,7 @@ vector<templatePos> multiscaleImg(string file) {
 void reduceTemplatesFound(vector<templatePos> posTemplates, bool showOutput) {
 
 	Mat img = imread("INRIAPerson/Train_Orginal/pos/crop001030.png");
+	vector<int> boundingBoxes = getBoundingBoxes("crop001030");
 
 	vector<templatePos> nonOverlappingTemplates;
 	nonOverlappingTemplates.push_back(posTemplates[0]);
@@ -299,27 +301,63 @@ void reduceTemplatesFound(vector<templatePos> posTemplates, bool showOutput) {
 		if (add_new == false) {
 			nonOverlappingTemplates.push_back(posTemplates[i]);
 		}
-
 	}
 
-
+	//Reduce to maximum N templates
+	if (nonOverlappingTemplates.size() > max_templates) {
+		sort(nonOverlappingTemplates.begin(), nonOverlappingTemplates.end(), compareByScore);
+		for (int i = 0; i < nonOverlappingTemplates.size() - max_templates; i++) {
+			nonOverlappingTemplates.erase(nonOverlappingTemplates.begin());
+		}
+	}
 
 	//Visualization Output 3.5
-	for (vector<int>::size_type j = 0; j != nonOverlappingTemplates.size(); j++) {
-		templatePos pos = nonOverlappingTemplates[j];
-		Point p1_old = Point(pos.x, pos.y);
-		Point p2_old = Point(pos.x + pos.scale*TEMPLATE_WIDTH, pos.y + pos.scale*TEMPLATE_HEIGHT);
-		rectangle(img, p1_old, p2_old, CV_RGB(255, 255, 0), 1, 8);
-		String selection_score = "Selection Score: " + to_string(pos.score);
-		int baseline = 0;
-		int size = getTextSize("blubb", CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * pos.scale / 300, 1, &baseline).height;
-		putText(img, selection_score, Point(pos.x + 2, pos.y + size + 2), CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * pos.scale / 300, cvScalar(0, 255, 0), 1, CV_AA);
-		//String overlap = "Overlap: ";
-		//putText(img, overlap, Point(pos.x + 2, pos.y + size * 2 + 4), CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * pos.scale / 300, cvScalar(0, 255, 0), 1, CV_AA);
-
+	if (showOutput) {
+		for (vector<int>::size_type j = 0; j != nonOverlappingTemplates.size(); j++) {
+			templatePos pos = nonOverlappingTemplates[j];
+			Point p1_old = Point(pos.x, pos.y);
+			Point p2_old = Point(pos.x + pos.scale*TEMPLATE_WIDTH, pos.y + pos.scale*TEMPLATE_HEIGHT);
+			rectangle(img, p1_old, p2_old, CV_RGB(255, 255, 0), 1, 8);
+			String selection_score = "Selection Score: " + to_string(pos.score);
+			int baseline = 0;
+			int size = getTextSize("blubb", CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * pos.scale / 300, 1, &baseline).height;
+			putText(img, selection_score, Point(pos.x + 2, pos.y + size + 2), CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * pos.scale / 300, cvScalar(0, 255, 0), 1, CV_AA);
+			float overlap = getOverlap(boundingBoxes, p1_old, p2_old);
+			String overlap_out = "Overlap: " + to_string(overlap);
+			putText(img, overlap_out, Point(pos.x + 2, pos.y + size * 2 + 4), CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * pos.scale / 300, cvScalar(0, 255, 0), 1, CV_AA);
+			showBoundingBox(img, "crop001030");
+		}
 	}
-	
-	imshow("Bild-", img);
+	imshow("Bild-after-reduction", img);
 	imwrite("Bild-after-reduction.jpg", img);
 }
+
+float getOverlap(vector<int> truth, Point p1, Point p2) {
+	std::vector<int> detected = std::vector<int>(4, 0);
+	detected.at(0) = p1.x;
+	detected.at(1) = p1.y;
+	detected.at(2) = p2.x;
+	detected.at(3) = p2.y;
+	int i = 0;
+	float overlap = 0;
+	float overlap_temp = 0;
+	while (truth.size() - i > 3) {
+		
+		cout << "Boundingbox: " << i;
+		std::vector<int> truth_i = std::vector<int>(4, 0);
+		truth_i.at(0) = truth.at(0 + i);
+		truth_i.at(1) = truth.at(1 + i);
+		truth_i.at(2) = truth.at(2 + i);
+		truth_i.at(3) = truth.at(3 + i);
+		overlap_temp = ComputeOverlap(truth_i, detected);
+		cout << " Overlap = " << overlap_temp << endl;
+		//cout << "Truth = " << 
+		if (overlap_temp >= overlap) {
+			overlap = overlap_temp;
+		}
+		i += 4;
+	}
+	return overlap;
+}
+
 

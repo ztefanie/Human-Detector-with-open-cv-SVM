@@ -137,7 +137,8 @@ void testHog()
 
 void testDrawBoundingBox()
 {
-	Mat out = showBoundingBox("crop_000607");
+	Mat out = imread("INRIAPerson\\Train_Orginal\\pos\\crop_000607.png");
+	showBoundingBox(out, "crop_000607");
 	imshow("BoundingBox", out);
 	waitKey();
 	destroyAllWindows();

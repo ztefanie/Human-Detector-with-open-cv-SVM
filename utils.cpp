@@ -8,6 +8,7 @@
 #include "utils.h"
 #include "hog.h"
 #include "main.h"
+#include "featureExtraction.h"
 
 using namespace std;
 using namespace cv;
@@ -21,6 +22,10 @@ void colorConsole(int color)
 	SetConsoleTextAttribute(hConsole, color);
 }
 #endif
+
+bool compareByScore(templatePos p1, templatePos p2) {
+	return p1.score < p2.score;
+}
 
 void destroy_3Darray(double*** inputArray, int width, int height)
 {
@@ -98,10 +103,10 @@ bool isOverlapCorrect(double overlap)
 
 
 //Read Picture, draw boundingBox inside and show
-Mat showBoundingBox(string file)
+Mat showBoundingBox(Mat img, string file)
 {
 	string get = "INRIAPerson\\Train_Orginal\\pos\\" + file + ".png";
-	Mat img = imread(get);
+	//Mat img = imread(get);
 
 std:vector<int> boxes = getBoundingBoxes(file);
 	int pos = 0;
