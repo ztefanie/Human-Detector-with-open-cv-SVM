@@ -101,9 +101,9 @@ void testSVM(bool first, bool train) {
 //1.5 + 3.1
 void testMultiscale()
 {
-	String file = "INRIAPerson/Train_Orginal/pos/crop001030.png";
+	String file = "crop001030";
 	vector<templatePos> posTemplates = multiscaleImg(file);
-	reduceTemplatesFound(posTemplates, true);
+	reduceTemplatesFound(posTemplates, true, file);
 }
 
 void test3DTemplate()
@@ -134,6 +134,18 @@ void testHog()
 	imshow("Grad", out);
 	destroy_3Darray(hog, dims[0], dims[1]);
 }
+
+void testHogSmallTestImg()
+{
+	vector<int> dims;
+	double*** hog = extractHOGFeatures("INRIAPerson\\test\\pos", "crop_000001a.png", dims);
+	Mat out = visualizeGradOrientations(hog, dims);
+	imshow("Grad", out);
+	cout << "Dims of HoG: " << dims[0] << ", " << dims[1] << ", " << dims[2] << endl;
+	cout << "Dims of template: " << TEMPLATE_HEIGHT_CELLS << ", " << TEMPLATE_WIDTH_CELLS << ", " << HOG_DEPTH << endl << endl;
+	destroy_3Darray(hog, dims[0], dims[1]);
+}
+
 
 void testDrawBoundingBox()
 {

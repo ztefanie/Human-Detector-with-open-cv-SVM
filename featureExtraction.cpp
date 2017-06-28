@@ -81,10 +81,10 @@ float* compute1DTemplate(double*** hog, const std::vector<int> &dims, int grid_p
 
 
 //Task 1.5 - mostly the code from fabio (see a1.5.cpp)
-vector<templatePos> multiscaleImg(string file) {
+vector<templatePos> multiscaleImg(string file) {	
 
-	
-	Mat img = imread(file);
+	String pic = "INRIAPerson/Train_Orginal/pos/" + file + ".png";
+	Mat img = imread(pic);
 	
 	int factorx = TEMPLATE_WIDTH / TEMPLATE_WIDTH_CELLS;
 	int factory = TEMPLATE_HEIGHT / TEMPLATE_HEIGHT_CELLS;
@@ -197,17 +197,6 @@ vector<templatePos> multiscaleImg(string file) {
 						cout << "FOUND" << endl;
 						posTemplates.push_back(pos);
 
-						//for testing
-						/*Scalar color = Scalar(100, 200, 100);
-						Point p1 = Point(j*hig_scale*CELL_SIZE, i*hig_scale*CELL_SIZE);
-						Point p2 = Point(j*hig_scale*CELL_SIZE, i*hig_scale*CELL_SIZE+ TEMPLATE_WIDTH);
-						Point p3 = Point(j*hig_scale*CELL_SIZE+TEMPLATE_HEIGHT, i*hig_scale*CELL_SIZE);
-						Point p4 = Point(j*hig_scale*CELL_SIZE+TEMPLATE_HEIGHT, i*hig_scale*CELL_SIZE + TEMPLATE_WIDTH);
-						line(img, p1, p2, color, 1);
-						line(img, p1, p3, color, 1);
-						line(img, p2, p4, color, 1);
-						line(img, p3, p4, color, 1);*/
-
 						real_temp_pos[counter] = Point(pos.x, pos.y);
 						real_temp_size[counter] = Point(TEMPLATE_WIDTH * hig_scale + pos.x, TEMPLATE_HEIGHT * hig_scale + pos.y);
 						//just for viso:
@@ -249,9 +238,10 @@ vector<templatePos> multiscaleImg(string file) {
 }
 
 
-void reduceTemplatesFound(vector<templatePos> posTemplates, bool showOutput) {
+void reduceTemplatesFound(vector<templatePos> posTemplates, bool showOutput, string file) {
 
-	Mat img = imread("INRIAPerson/Train_Orginal/pos/crop001030.png");
+	String pic = "INRIAPerson/Train_Orginal/pos/" + file + ".png";
+	Mat img = imread(pic);
 	vector<int> boundingBoxes = getBoundingBoxes("crop001030");
 
 	vector<templatePos> nonOverlappingTemplates;

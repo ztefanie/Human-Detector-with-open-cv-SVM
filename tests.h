@@ -11,6 +11,7 @@
 void testDrawBoundingBox();
 void testOverlapBoundingBox();
 void testHog();
+void testHogSmallTestImg();
 cv::Mat visualizeGradOrientations(double*** hog, std::vector<int> &dims);
 void test3DTemplate();
 void testMultiscale();

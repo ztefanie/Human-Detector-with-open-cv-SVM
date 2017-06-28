@@ -47,6 +47,8 @@ int main(int argc, char* argv[])
 	//Task 3.1
 	testMultiscale();
 
+	//testHogSmallTestImg();
+
 
 	cout << endl << "finished" << endl;
 	//getchar();
