@@ -68,8 +68,9 @@ Mat createFirstSet(int N_pos, int N_neg) {
 	for (int i = 0; i < N_pos; i++) {
 
 		getline(myfile_pos, line_pos);
+		line_pos.insert(5, "_64x128_H96");
 		float* templateHoG;
-		templateHoG = getTemplate(line_pos, true,2,2);
+		templateHoG = getTemplate(line_pos, true);
 		
 		//copy values of template to Matrix
 		for (int j = 0; j < template_size; j++) {
@@ -88,9 +89,10 @@ Mat createFirstSet(int N_pos, int N_neg) {
 	ifstream myfile_neg(LIST_NEG);
 	for (int i = N_pos; i < points.rows; i++) {
 		getline(myfile_neg, line_neg);
+		line_neg.insert(5, "_64x128_H96");
 
 		float* templateHoG;
-		templateHoG = getTemplate(line_neg, false, 2,2);
+		templateHoG = getTemplate(line_neg, false);
 
 		//copy values of template to Matrix
 		for (int j = 0; j < points.cols; j++) {
@@ -124,7 +126,7 @@ Mat createFirstLabels(int N_pos, int N_neg) {
 	return labels;
 }
 
-float* getTemplate(string filename, bool positiv, int offsetX, int offsetY) {
+float* getTemplate(string filename, bool positiv) {
 	vector<int> dims;
 	//folder depends on positiv / negativ
 	string folder = "INRIAPerson";		
@@ -133,7 +135,7 @@ float* getTemplate(string filename, bool positiv, int offsetX, int offsetY) {
 	double*** HoG = extractHOGFeatures(folder, filename, dims);
 	float* Template1D;
 	if (positiv) {
-		Template1D = compute1DTemplate(HoG, dims, 0, 0, 0);
+		Template1D = compute1DTemplate(HoG, dims, 2, 2, 0);
 	}
 	else {
 		srand(time(NULL));

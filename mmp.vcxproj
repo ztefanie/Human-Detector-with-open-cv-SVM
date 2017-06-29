@@ -20,20 +20,24 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="a1.5.cpp" />
+    <ClCompile Include="DET.cpp" />
     <ClCompile Include="featureExtraction.cpp" />
     <ClCompile Include="hog.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="optimizeSVM.cpp" />
     <ClCompile Include="tests.cpp" />
+    <ClCompile Include="testSVM.cpp" />
     <ClCompile Include="trainSVM.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DET.h" />
     <ClInclude Include="featureExtraction.h" />
     <ClInclude Include="hog.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="optimizeSVM.h" />
     <ClInclude Include="tests.h" />
+    <ClInclude Include="testSVM.h" />
     <ClInclude Include="trainSVM.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>

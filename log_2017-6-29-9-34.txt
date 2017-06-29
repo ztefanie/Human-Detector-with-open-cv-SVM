@@ -1,0 +1,111 @@
+Read in Data for SVM ... 
+|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+finished read in Data for SVM
+
+Training SVM with 3634 Datapoints... 
+finished training
+
+Positiv images are tested ... 
+Result for train_64x128_H96/pos/crop_000010a.png is -> 0.584693
+Result for train_64x128_H96/pos/crop_000010b.png is -> 0.206687
+Result for train_64x128_H96/pos/crop_000011a.png is -> 0.998218
+Result for train_64x128_H96/pos/crop_000011b.png is -> 1.00274
+Result for train_64x128_H96/pos/crop_000603a.png is -> 1.24155
+Result for train_64x128_H96/pos/crop_000603b.png is -> 0.998004
+Result for train_64x128_H96/pos/crop_000606a.png is -> 0.999193
+Result for train_64x128_H96/pos/crop_000606b.png is -> 0.609221
+Result for train_64x128_H96/pos/crop_000606c.png is -> 0.70819
+Result for train_64x128_H96/pos/crop_000606d.png is -> 0.799062
+Result for train_64x128_H96/pos/crop_000607a.png is -> 1.93284
+Result for train_64x128_H96/pos/crop_000607b.png is -> 1.00464
+Result for train_64x128_H96/pos/crop_000607c.png is -> 0.730812
+Result for train_64x128_H96/pos/crop_000607d.png is -> 1.00417
+Result for train_64x128_H96/pos/crop_000608a.png is -> 0.999629
+Result for train_64x128_H96/pos/crop_000608b.png is -> 1.03442
+Result for train_64x128_H96/pos/crop001001a.png is -> 0.997151
+Result for train_64x128_H96/pos/crop001001b.png is -> 1.2093
+Result for train_64x128_H96/pos/crop001001c.png is -> 0.0713611
+Result for train_64x128_H96/pos/crop001001d.png is -> 0.403827
+Negativ images are tested ... 
+Result for train_64x128_H96/neg/00000002a.png is -> -5.39969
+Result for train_64x128_H96/neg/00000003a.png is -> -2.76361
+Result for train_64x128_H96/neg/00000004a.png is -> -5.54342
+Result for train_64x128_H96/neg/00000005a.png is -> -5.12269
+Result for train_64x128_H96/neg/00000006a.png is -> -3.35965
+Result for train_64x128_H96/neg/00000010a.png is -> -1.39361
+Result for train_64x128_H96/neg/00000011a.png is -> -1.40093
+Result for train_64x128_H96/neg/00000012a.png is -> -5.00766
+Result for train_64x128_H96/neg/00000014a.png is -> -0.620526
+Result for train_64x128_H96/neg/00000015a.png is -> -1.13344
+Result for train_64x128_H96/neg/00000030a.png is -> -2.86584
+Result for train_64x128_H96/neg/00000033a.png is -> -0.540694
+Result for train_64x128_H96/neg/00000051a.png is -> -2.85108
+Result for train_64x128_H96/neg/00000052a.png is -> 0.559769
+Result for train_64x128_H96/neg/00000053a.png is -> -5.1323
+Result for train_64x128_H96/neg/00000054a.png is -> -0.454451
+Result for train_64x128_H96/neg/00000055a.png is -> -0.613132
+Result for train_64x128_H96/neg/00000056a.png is -> -4.05591
+Result for train_64x128_H96/neg/00000057a.png is -> -3.36458
+Result for train_64x128_H96/neg/00000058a.png is -> -1.64754
+
+Result: sum_pos = 17.5357 sum_neg = -52.711
+False positives = 1 false negatives = 1
+Ratio False Positives = 0.05 Ratio False Positives = 0.05
+
+
+Searching for hard negatives ... 
+|||||||||||||||||||||||||
+finished searching for hard negatives found: 7346
+
+Reducing hard negatives to 1198...
+finished reducing hard negatives to 1198
+
+Positiv images are tested ... 
+Result for train_64x128_H96/pos/crop_000010a.png is -> -5.88506
+Result for train_64x128_H96/pos/crop_000010b.png is -> -3.35725
+Result for train_64x128_H96/pos/crop_000011a.png is -> -1.57636
+Result for train_64x128_H96/pos/crop_000011b.png is -> -4.71641
+Result for train_64x128_H96/pos/crop_000603a.png is -> -3.98165
+Result for train_64x128_H96/pos/crop_000603b.png is -> -4.77573
+Result for train_64x128_H96/pos/crop_000606a.png is -> -3.3504
+Result for train_64x128_H96/pos/crop_000606b.png is -> -1.83948
+Result for train_64x128_H96/pos/crop_000606c.png is -> -4.59254
+Result for train_64x128_H96/pos/crop_000606d.png is -> -4.12706
+Result for train_64x128_H96/pos/crop_000607a.png is -> -1.91502
+Result for train_64x128_H96/pos/crop_000607b.png is -> -2.92609
+Result for train_64x128_H96/pos/crop_000607c.png is -> -3.58356
+Result for train_64x128_H96/pos/crop_000607d.png is -> -4.07348
+Result for train_64x128_H96/pos/crop_000608a.png is -> -2.90059
+Result for train_64x128_H96/pos/crop_000608b.png is -> -3.37664
+Result for train_64x128_H96/pos/crop001001a.png is -> -1.51237
+Result for train_64x128_H96/pos/crop001001b.png is -> -2.50412
+Result for train_64x128_H96/pos/crop001001c.png is -> -4.05306
+Result for train_64x128_H96/pos/crop001001d.png is -> -3.10376
+Negativ images are tested ... 
+Result for train_64x128_H96/neg/00000002a.png is -> -3.92464
+Result for train_64x128_H96/neg/00000003a.png is -> -1.06695
+Result for train_64x128_H96/neg/00000004a.png is -> -7.68229
+Result for train_64x128_H96/neg/00000005a.png is -> -6.80889
+Result for train_64x128_H96/neg/00000006a.png is -> -3.80677
+Result for train_64x128_H96/neg/00000010a.png is -> -2.54007
+Result for train_64x128_H96/neg/00000011a.png is -> -3.69266
+Result for train_64x128_H96/neg/00000012a.png is -> -7.26096
+Result for train_64x128_H96/neg/00000014a.png is -> -2.10323
+Result for train_64x128_H96/neg/00000015a.png is -> -4.22642
+Result for train_64x128_H96/neg/00000030a.png is -> -1.99776
+Result for train_64x128_H96/neg/00000033a.png is -> -2.62025
+Result for train_64x128_H96/neg/00000051a.png is -> -2.6546
+Result for train_64x128_H96/neg/00000052a.png is -> -3.26119
+Result for train_64x128_H96/neg/00000053a.png is -> -2.90256
+Result for train_64x128_H96/neg/00000054a.png is -> -2.05507
+Result for train_64x128_H96/neg/00000055a.png is -> -4.43797
+Result for train_64x128_H96/neg/00000056a.png is -> -2.84242
+Result for train_64x128_H96/neg/00000057a.png is -> -5.23295
+Result for train_64x128_H96/neg/00000058a.png is -> -4.14058
+
+Result: sum_pos = -68.1506 sum_neg = -75.2582
+False positives = 0 false negatives = 20
+Ratio False Positives = 0 Ratio False Positives = 1
+
+
+finished

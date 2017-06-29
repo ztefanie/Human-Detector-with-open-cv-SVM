@@ -39,6 +39,12 @@
     <ClCompile Include="optimizeSVM.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="testSVM.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="DET.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="hog.h">
@@ -60,6 +66,12 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="optimizeSVM.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="testSVM.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="DET.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

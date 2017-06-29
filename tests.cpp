@@ -13,6 +13,7 @@
 #include "main.h"
 #include "optimizeSVM.h"
 #include "featureExtraction.h"
+#include "testSVM.h"
 
 using namespace std;
 using namespace cv;
@@ -39,7 +40,7 @@ void testSVM(bool first, bool train) {
 	int testSize = 20;
 
 	string line;
-	ifstream myfile_pos("INRIAPerson\\train\\pos.lst");
+	ifstream myfile_pos("INRIAPerson\\train_64x128_H96\\pos.lst");
 
 	//Test positiv images
 	float sum_pos = 0;
@@ -47,8 +48,10 @@ void testSVM(bool first, bool train) {
 	cout << "Positiv images are tested ... " << endl;
 	for (int i = 0; i < testSize; i++) {
 		getline(myfile_pos, line);
+		line.insert(5, "_64x128_H96");
+
 		float* templateHoG;
-		templateHoG = getTemplate(line, true,2,2);
+		templateHoG = getTemplate(line, true);
 
 		//copy values of template to Matrix
 		for (int j = 0; j < sampleTest.cols; j++) {
@@ -67,14 +70,15 @@ void testSVM(bool first, bool train) {
 
 	//test negativ images
 	float sum_neg = 0;
-	ifstream myfile_neg("INRIAPerson\\train\\neg.lst");
+	ifstream myfile_neg("INRIAPerson\\train_64x128_H96\\neg.lst");
 
 	int false_positives = 0;
 	cout << "Negativ images are tested ... " << endl;
 	for (int i = 0; i < testSize; i++) {
 		getline(myfile_neg, line);
+		line.insert(5, "_64x128_H96");
 		float* templateHoG;
-		templateHoG = getTemplate(line, true,2,2);
+		templateHoG = getTemplate(line, true);
 
 		//copy values of template to Matrix
 		for (int j = 0; j < sampleTest.cols; j++) {
@@ -101,7 +105,7 @@ void testSVM(bool first, bool train) {
 //1.5 + 3.1
 void testMultiscale()
 {
-	String file = "crop001030";
+	String file = "INRIAPerson\\Test\\pos\\crop_000001.png";
 	vector<templatePos> posTemplates = multiscaleImg(file);
 	reduceTemplatesFound(posTemplates, true, file);
 }
@@ -109,7 +113,7 @@ void testMultiscale()
 void test3DTemplate()
 {
 	vector<int> dims;
-	double*** hog = extractHOGFeatures("INRIAPerson\\train\\pos", "crop_000010a.png", dims);
+	double*** hog = extractHOGFeatures("INRIAPerson\\train_64x128_H96\\pos", "crop_000010a.png", dims);
 	cout << "dims of hog: " << dims[0] << " " << dims[1] << endl;
 	Mat out = visualizeGradOrientations(hog, dims);
 	imshow("HoG of hole picture", out);	
@@ -129,7 +133,7 @@ void test3DTemplate()
 void testHog()
 {
 	vector<int> dims;
-	double*** hog = extractHOGFeatures("INRIAPerson\\Train_Orginal\\pos", "crop_000607.png", dims);
+	double*** hog = extractHOGFeatures("INRIAPerson\\Train\\pos", "crop_000607.png", dims);
 	Mat out = visualizeGradOrientations(hog, dims);
 	imshow("Grad", out);
 	destroy_3Darray(hog, dims[0], dims[1]);
@@ -138,7 +142,7 @@ void testHog()
 void testHogSmallTestImg()
 {
 	vector<int> dims;
-	double*** hog = extractHOGFeatures("INRIAPerson\\test\\pos", "crop_000001a.png", dims);
+	double*** hog = extractHOGFeatures("INRIAPerson\\test_64x128_H96\\pos", "crop_000001a.png", dims);
 	Mat out = visualizeGradOrientations(hog, dims);
 	imshow("Grad", out);
 	cout << "Dims of HoG: " << dims[0] << ", " << dims[1] << ", " << dims[2] << endl;
@@ -149,8 +153,9 @@ void testHogSmallTestImg()
 
 void testDrawBoundingBox()
 {
-	Mat out = imread("INRIAPerson\\Train_Orginal\\pos\\crop_000607.png");
-	showBoundingBox(out, "crop_000607");
+	String file = "INRIAPerson\\Train\\pos\\crop_000607.png";
+	Mat out = imread(file);
+	showBoundingBox(out, file);
 	imshow("BoundingBox", out);
 	waitKey();
 	destroyAllWindows();

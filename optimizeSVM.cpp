@@ -73,7 +73,7 @@ Mat find_hardNegatives() {
 	cout << endl << "Searching for hard negatives ... " << endl;
 
 	string line;
-	ifstream file_neg("INRIAPerson\\train\\neg.lst");
+	ifstream file_neg("INRIAPerson\\train_64x128_H96\\neg.lst");
 	int i = 0;
 
 	//Iterate over all files
