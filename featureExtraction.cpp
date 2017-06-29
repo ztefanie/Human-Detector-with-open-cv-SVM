@@ -66,13 +66,13 @@ float* compute1DTemplate(double*** hog, const std::vector<int> &dims, int grid_p
 	//cout << "Hog-Size = (" << dims.at(0) << "," << dims.at(1) << "," << dims.at(2) << ")" << endl;
 
 	//allocate 1D array
-	float* featureRepresentation = new float[TEMPLATE_HEIGHT_CELLS*TEMPLATE_WIDTH_CELLS*HOG_DEPTH];
-	for (int y = 0; y < TEMPLATE_HEIGHT_CELLS; y++) {
-		for (int x = 0; x < TEMPLATE_WIDTH_CELLS; x++) {
+	float* featureRepresentation = new float[(TEMPLATE_HEIGHT_CELLS-2)*(TEMPLATE_WIDTH_CELLS-2)*HOG_DEPTH];
+	for (int y = 0; y < TEMPLATE_HEIGHT_CELLS-2; y++) {
+		for (int x = 0; x < TEMPLATE_WIDTH_CELLS-2; x++) {
 			for (int b = 0; b < HOG_DEPTH; b++) {
 				//copy values from 3D to 1D array
 				float value = hog[y + grid_pos_y][x + grid_pos_x][b];
-				featureRepresentation[y*TEMPLATE_WIDTH_CELLS*HOG_DEPTH + x*HOG_DEPTH + b] = value;
+				featureRepresentation[y*(TEMPLATE_WIDTH_CELLS-2)*HOG_DEPTH + x*HOG_DEPTH + b] = value;
 			}
 		}
 	}

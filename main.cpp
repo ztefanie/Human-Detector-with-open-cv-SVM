@@ -37,17 +37,17 @@ int main(int argc, char* argv[])
 	//testDownScale();
 	//testMultiscale();	//computes HoG for every size (working) and creates templates on relevant positions - (overlap 0.75)
 
-	//logOutput();
+	logOutput();
 	//Task 2.1
-	//testSVM(true, true);
+	testSVM(true, false);
 
 	//Task 2.2
 	//find_hardNegatives();	
-	//testSVM(false, true);
+	testSVM(false, true);
 
 	//Task 3.1
 	//testMultiscale();
-	testQualitativ();
+	//testQualitativ();
 
 	//testHogSmallTestImg();
 
@@ -61,8 +61,8 @@ PyRun_SimpleString("import myApp");  // Import the shadow class.*/
 
 	cout << endl << "finished" << endl;
 	
-	waitKey();
-	//getchar();
+	//waitKey();
+	getchar();
 
 
 	/*string inputstring;

@@ -38,7 +38,7 @@ using namespace cv;
 #define MAX_HARD_NEG			1198	// Number-of-positives minus Number-of-negatives		
 
 #define max_templates			5		// maximum number of templates that can be found in one picture
-#define ASSUMED_POSITIV			0.2		// min score a template needs for positiv detection
+#define ASSUMED_POSITIV			-1		// min score a template needs for positiv detection
 
 #endif
 

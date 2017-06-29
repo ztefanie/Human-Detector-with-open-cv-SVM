@@ -57,7 +57,7 @@ void firstStepTrain() {
 }
 
 Mat createFirstSet(int N_pos, int N_neg) {
-	int template_size = TEMPLATE_WIDTH_CELLS*TEMPLATE_HEIGHT_CELLS*HOG_DEPTH;
+	int template_size = (TEMPLATE_WIDTH_CELLS-2)*(TEMPLATE_HEIGHT_CELLS-2)*HOG_DEPTH;
 	Mat points(N_pos+N_neg, template_size, CV_32FC1); //has size = 2*N (height) and Template-width_CELLS * template-height_cells (width)
 	//iterate over i = 2*N are the rows -> Each row represents one file=picture
 
@@ -70,7 +70,7 @@ Mat createFirstSet(int N_pos, int N_neg) {
 		getline(myfile_pos, line_pos);
 		line_pos.insert(5, "_64x128_H96");
 		float* templateHoG;
-		templateHoG = getTemplate(line_pos, true);
+		templateHoG = getTemplate(line_pos, true, true);
 		
 		//copy values of template to Matrix
 		for (int j = 0; j < template_size; j++) {
@@ -92,7 +92,7 @@ Mat createFirstSet(int N_pos, int N_neg) {
 		line_neg.insert(5, "_64x128_H96");
 
 		float* templateHoG;
-		templateHoG = getTemplate(line_neg, false);
+		templateHoG = getTemplate(line_neg, false, true);
 
 		//copy values of template to Matrix
 		for (int j = 0; j < points.cols; j++) {
@@ -126,24 +126,34 @@ Mat createFirstLabels(int N_pos, int N_neg) {
 	return labels;
 }
 
-float* getTemplate(string filename, bool positiv) {
+float* getTemplate(string filename, bool positiv, bool training) {
 	vector<int> dims;
-	//folder depends on positiv / negativ
 	string folder = "INRIAPerson";		
-	string in = folder + "/" + filename;
 
-	double*** HoG = extractHOGFeatures(folder, filename, dims);
-	float* Template1D;
-	if (positiv) {
-		Template1D = compute1DTemplate(HoG, dims, 2, 2, 0);
+	String get = folder + "\\" + filename;
+
+	Mat img = imread(get);
+	Mat templateMat;
+
+	if (positiv && training) {
+		Rect rect(16, 16, 64, 128);		
+		templateMat = img(rect);
 	}
-	else {
+	else if (!positiv && training) {
 		srand(time(NULL));
-		int offsetY = rand() % (dims[0] - TEMPLATE_HEIGHT_CELLS);
-		int offsetX = rand() % (dims[1] - TEMPLATE_WIDTH_CELLS);
-		Template1D = compute1DTemplate(HoG, dims, offsetX, offsetY, 0);
+		int offsetY = rand() % (img.size().width / 8 - 2 - TEMPLATE_HEIGHT_CELLS);
+		int offsetX = rand() % (img.size().height / 8 - 2 - TEMPLATE_WIDTH_CELLS);
+		Rect rect(offsetX, offsetY, 64, 128);
+		templateMat = img(rect);
 	}
-	
+	else if (!training) {
+		Rect rect(3, 3, 64, 128);
+		templateMat = img(rect);
+	}
+		
+	double*** HoG = computeHoG(templateMat, CELL_SIZE, dims);
+	float* Template1D = compute1DTemplate(HoG, dims, 0, 0, 0);
+
 	destroy_3Darray(HoG, dims[0], dims[1]);
 
 	return Template1D;

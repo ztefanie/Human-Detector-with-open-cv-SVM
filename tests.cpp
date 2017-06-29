@@ -36,11 +36,11 @@ void testSVM(bool first, bool train) {
 		SVM.load(SVM_2_LOCATION);
 	}
 
-	Mat sampleTest(1, TEMPLATE_WIDTH_CELLS*TEMPLATE_HEIGHT_CELLS*HOG_DEPTH, CV_32FC1);
-	int testSize = 20;
+	Mat sampleTest(1, (TEMPLATE_WIDTH_CELLS-2)*(TEMPLATE_HEIGHT_CELLS-2)*HOG_DEPTH, CV_32FC1);
+	int testSize = 400;
 
 	string line;
-	ifstream myfile_pos("INRIAPerson\\train_64x128_H96\\pos.lst");
+	ifstream myfile_pos("INRIAPerson\\test_64x128_H96\\pos.lst");
 
 	//Test positiv images
 	float sum_pos = 0;
@@ -48,10 +48,10 @@ void testSVM(bool first, bool train) {
 	cout << "Positiv images are tested ... " << endl;
 	for (int i = 0; i < testSize; i++) {
 		getline(myfile_pos, line);
-		line.insert(5, "_64x128_H96");
+		line.insert(4, "_64x128_H96");
 
 		float* templateHoG;
-		templateHoG = getTemplate(line, true);
+		templateHoG = getTemplate(line, true, false);
 
 		//copy values of template to Matrix
 		for (int j = 0; j < sampleTest.cols; j++) {
@@ -60,7 +60,7 @@ void testSVM(bool first, bool train) {
 
 		//check
 		float response = SVM.predict(sampleTest, true);
-		cout << "Result for " << line << " is -> " << response << endl;
+		//cout << "Result for " << line << " is -> " << response << endl;
 		if (response < ASSUMED_POSITIV) {
 			false_negatives++;
 		}
@@ -70,15 +70,15 @@ void testSVM(bool first, bool train) {
 
 	//test negativ images
 	float sum_neg = 0;
-	ifstream myfile_neg("INRIAPerson\\train_64x128_H96\\neg.lst");
+	ifstream myfile_neg("INRIAPerson\\Test\\neg.lst");
 
 	int false_positives = 0;
 	cout << "Negativ images are tested ... " << endl;
 	for (int i = 0; i < testSize; i++) {
 		getline(myfile_neg, line);
-		line.insert(5, "_64x128_H96");
+		//line.insert(5, "_64x128_H96");
 		float* templateHoG;
-		templateHoG = getTemplate(line, true);
+		templateHoG = getTemplate(line, true, true);
 
 		//copy values of template to Matrix
 		for (int j = 0; j < sampleTest.cols; j++) {
@@ -87,7 +87,7 @@ void testSVM(bool first, bool train) {
 
 		//check
 		float response = SVM.predict(sampleTest, true);
-		cout << "Result for " << line << " is -> " << response << endl;
+		//cout << "Result for " << line << " is -> " << response << endl;
 		sum_neg += response;
 		if (response > ASSUMED_POSITIV) {
 			false_positives++;
@@ -97,7 +97,7 @@ void testSVM(bool first, bool train) {
 
 	cout << endl << "Result: sum_pos = " << sum_pos << " sum_neg = " << sum_neg << endl;
 	cout << "False positives = " << false_positives << " false negatives = " << false_negatives << endl;
-	cout << "Ratio False Positives = " << false_positives / (float)testSize << " Ratio False Positives = " << false_negatives / (float)testSize << endl << endl;
+	cout << "Ratio False Positives = " << false_positives / (float)testSize << " Ratio False Negatives = " << false_negatives / (float)testSize << endl << endl;
 	//cv::Mat sampleTest = (cv::Mat_<float>(1, 2) << j, i);
 	//float response = SVM.predict(sampleMat);
 }
@@ -141,13 +141,29 @@ void testHog()
 
 void testHogSmallTestImg()
 {
-	vector<int> dims;
+	getchar();
+	vector<int> dims, dims2, dims3;
+	
 	double*** hog = extractHOGFeatures("INRIAPerson\\test_64x128_H96\\pos", "crop_000001a.png", dims);
+	double*** hog2 = extractHOGFeatures("INRIAPerson\\train_64x128_H96\\pos", "crop_000010a.png", dims2);
+	double*** hog3 = extractHOGFeatures("INRIAPerson\\Test\\pos", "crop_000001.png", dims3);
+	
 	Mat out = visualizeGradOrientations(hog, dims);
-	imshow("Grad", out);
-	cout << "Dims of HoG: " << dims[0] << ", " << dims[1] << ", " << dims[2] << endl;
+	Mat out2 = visualizeGradOrientations(hog2, dims2);
+	Mat out3 = visualizeGradOrientations(hog3, dims3);
+
+	imshow("Gradients Test-Image", out);
+	imshow("Gradients Train-Image", out2);
+	imshow("Gradients Full-size", out3);
+
+	cout << "Dims of HoG (Test): " << dims[0] << ", " << dims[1] << ", " << dims[2] << endl;
+	cout << "Dims of HoG (Train): " << dims2[0] << ", " << dims2[1] << ", " << dims2[2] << endl;
+	cout << "Dims of HoG (720x491): " << dims3[0] << ", " << dims3[1] << ", " << dims3[2] << endl;
 	cout << "Dims of template: " << TEMPLATE_HEIGHT_CELLS << ", " << TEMPLATE_WIDTH_CELLS << ", " << HOG_DEPTH << endl << endl;
+
 	destroy_3Darray(hog, dims[0], dims[1]);
+	destroy_3Darray(hog2, dims2[0], dims2[1]);
+	destroy_3Darray(hog3, dims3[0], dims3[1]);
 }
 
 

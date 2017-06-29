@@ -49,7 +49,7 @@ vector<templatePos> multiscaleImg(string file) {
 	int count = 0;
 	vector<templatePos> posTemplates;
 	CvSVM SVM;
-	SVM.load(SVM_2_LOCATION);
+	SVM.load(SVM_LOCATION);
 
 	assert(!img.empty());
 
@@ -125,7 +125,7 @@ vector<templatePos> multiscaleImg(string file) {
 					//3.2 //feature + detection score: distace form the hyperplane
 					float* featureTemplate1D = compute1DTemplate(hog, dims, j, i, 0);
 
-					Mat sampleTest(1, TEMPLATE_WIDTH_CELLS*TEMPLATE_HEIGHT_CELLS*HOG_DEPTH, CV_32FC1);
+					Mat sampleTest(1, (TEMPLATE_WIDTH_CELLS-2)*(TEMPLATE_HEIGHT_CELLS-2)*HOG_DEPTH, CV_32FC1);
 					//copy values of template to Matrix
 					for (int k = 0; k < sampleTest.cols; k++) {
 						sampleTest.at<float>(0, k) = featureTemplate1D[k];
@@ -248,8 +248,12 @@ void reduceTemplatesFound(vector<templatePos> posTemplates, bool showOutput, str
 	
 	//Reduce to maximum N templates
 	if (nonOverlappingTemplates.size() > max_templates) {
+		cout << nonOverlappingTemplates.size() << endl;
 		sort(nonOverlappingTemplates.begin(), nonOverlappingTemplates.end(), compareByScore);
-		for (int i = 0; i < nonOverlappingTemplates.size() - max_templates; i++) {
+		cout << nonOverlappingTemplates.size() << endl;
+		for (int i = 0; nonOverlappingTemplates.size() > max_templates; i++) {
+			cout << "i= "<< to_string(i)<< "value: "<< nonOverlappingTemplates[0].score << endl;
+			cout << nonOverlappingTemplates.size() << endl;
 			nonOverlappingTemplates.erase(nonOverlappingTemplates.begin());
 		}
 	}

@@ -125,7 +125,7 @@ Mat find_hardNegatives() {
 							
 						//DO TESTING IF FALSE NEGATIVE
 						float* featureTemplate = compute1DTemplate(hog, dims, j, i, 0);
-						Mat sampleTest(1, TEMPLATE_WIDTH_CELLS*TEMPLATE_HEIGHT_CELLS*HOG_DEPTH, CV_32FC1);
+						Mat sampleTest(1, (TEMPLATE_WIDTH_CELLS-2)*(TEMPLATE_HEIGHT_CELLS-2)*HOG_DEPTH, CV_32FC1);
 						Mat samplePredict(1, 1, CV_32FC1);
 						//copy values of template to Matrix
 						for (int j = 0; j < sampleTest.cols; j++) {
