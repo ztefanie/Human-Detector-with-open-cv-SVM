@@ -7,7 +7,29 @@ This is a temporary script file.
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.ticker import FormatStrFormatter
+import matplotlib.backends.backend_tkagg
+import sys
 
+
+fig, ax = plt.subplots()
+
+ytickvalues = [0.01, 0.02, 0.04, 0.08, 0.16, 0.32, 0.5]
+	
+plt.xlabel('FPPW')
+plt.title('DET')
+plt.ylabel('miss rate')
+#plt.axis([0.000001, 0.1, 0.01, 0.5])
+plt.axis([0.000001, 1, 0.01, 0.75])
+
+ax.set_yscale('log')
+ax.set_xscale('log')
+ax.set_yticks(ytickvalues)
+ax.get_yaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+
+#plt.axis([0, 0.1, 0, 0.5])
+#plt.show()
+plt.savefig('myfig.png')
 
 
 #Draw DET of First-SVM
@@ -36,13 +58,7 @@ while x < len(content):
     plt.plot(content[x+1], content[x+2], 'bs')
     x += 3
 
-plt.yscale('log')
-plt.ylim(0, 0.5)
-plt.xscale('linear')
 
-#plt.axis([0, 0.1, 0, 0.5])
-#plt.show()
-plt.savefig('myfig.png')
 
 f.close
 
