@@ -2,6 +2,7 @@
 #include "tests.h"
 #include "optimizeSVM.h"
 #include "testSVM.h"
+#include "DET.h"
 #include <ctime>
 
 void logOutput() {
@@ -37,26 +38,24 @@ int main(int argc, char* argv[])
 	//testDownScale();
 	//testMultiscale();	//computes HoG for every size (working) and creates templates on relevant positions - (overlap 0.75)
 
-	logOutput();
+	//logOutput();
 	//Task 2.1
-	testSVM(true, false);
+	//testSVM(true, false);
 
 	//Task 2.2
 	//find_hardNegatives();	
-	testSVM(false, true);
+	//testSVM(false, true);
 
 	//Task 3.1
 	//testMultiscale();
 	//testQualitativ();
 
+	//Task 3.5
+	createDET();
+
 	//testHogSmallTestImg();
 
-	/*
-	#include "python.h"
-...
-Py_Initialize();  // Initialize Python.
-initmyAppc();  // Initialize (import) the helper class.
-PyRun_SimpleString("import myApp");  // Import the shadow class.*/
+
 
 
 	cout << endl << "finished" << endl;

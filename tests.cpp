@@ -14,6 +14,7 @@
 #include "optimizeSVM.h"
 #include "featureExtraction.h"
 #include "testSVM.h"
+#include "DET.h"
 
 using namespace std;
 using namespace cv;
@@ -36,70 +37,8 @@ void testSVM(bool first, bool train) {
 		SVM.load(SVM_2_LOCATION);
 	}
 
-	Mat sampleTest(1, (TEMPLATE_WIDTH_CELLS-2)*(TEMPLATE_HEIGHT_CELLS-2)*HOG_DEPTH, CV_32FC1);
-	int testSize = 400;
+	//testQuantitativ(first, ASSUMED_POSITIV);
 
-	string line;
-	ifstream myfile_pos("INRIAPerson\\test_64x128_H96\\pos.lst");
-
-	//Test positiv images
-	float sum_pos = 0;
-	int false_negatives = 0;
-	cout << "Positiv images are tested ... " << endl;
-	for (int i = 0; i < testSize; i++) {
-		getline(myfile_pos, line);
-		line.insert(4, "_64x128_H96");
-
-		float* templateHoG;
-		templateHoG = getTemplate(line, true, false);
-
-		//copy values of template to Matrix
-		for (int j = 0; j < sampleTest.cols; j++) {
-			sampleTest.at<float>(0, j) = templateHoG[j];
-		}
-
-		//check
-		float response = SVM.predict(sampleTest, true);
-		//cout << "Result for " << line << " is -> " << response << endl;
-		if (response < ASSUMED_POSITIV) {
-			false_negatives++;
-		}
-		sum_pos += response;
-	}
-	myfile_pos.close();
-
-	//test negativ images
-	float sum_neg = 0;
-	ifstream myfile_neg("INRIAPerson\\Test\\neg.lst");
-
-	int false_positives = 0;
-	cout << "Negativ images are tested ... " << endl;
-	for (int i = 0; i < testSize; i++) {
-		getline(myfile_neg, line);
-		//line.insert(5, "_64x128_H96");
-		float* templateHoG;
-		templateHoG = getTemplate(line, true, true);
-
-		//copy values of template to Matrix
-		for (int j = 0; j < sampleTest.cols; j++) {
-			sampleTest.at<float>(0, j) = templateHoG[j];
-		}
-
-		//check
-		float response = SVM.predict(sampleTest, true);
-		//cout << "Result for " << line << " is -> " << response << endl;
-		sum_neg += response;
-		if (response > ASSUMED_POSITIV) {
-			false_positives++;
-		}
-	}
-	myfile_neg.close();
-
-	cout << endl << "Result: sum_pos = " << sum_pos << " sum_neg = " << sum_neg << endl;
-	cout << "False positives = " << false_positives << " false negatives = " << false_negatives << endl;
-	cout << "Ratio False Positives = " << false_positives / (float)testSize << " Ratio False Negatives = " << false_negatives / (float)testSize << endl << endl;
-	//cv::Mat sampleTest = (cv::Mat_<float>(1, 2) << j, i);
-	//float response = SVM.predict(sampleMat);
 }
 
 //1.5 + 3.1

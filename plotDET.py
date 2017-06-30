@@ -9,38 +9,39 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-#file = open("firstDETdata.txt", "r")
-#for line in file:     
- #   x = float(line)
 
-
+#Draw DET of First-SVM
 with open("DETdata_first.txt", "r") as f:
     content = f.readlines()
-# you may also want to remove whitespace characters like `\n` at the end of each line
+
 content = [x.strip() for x in content] 
 
 x = 0
 while x < len(content):
-    print(content[x+1] + " " + content[x+2])
-    plt.plot(content[x+2], content[x+1], 'ro')
-    x += 3
+   print(content[x+1] + " " + content[x+2])
+   plt.plot(content[x+2], content[x+1], 'ro')
+   x += 3
 
 f.close
 
+#Draw DET of retrained-SVM
 with open("DETdata_retrained.txt", "r") as f:
     content = f.readlines()
-# you may also want to remove whitespace characters like `\n` at the end of each line
+
 content = [x.strip() for x in content] 
 
 x = 0
 while x < len(content):
     print(content[x+1] + " " + content[x+2])
-    plt.plot(content[x+2], content[x+1], 'bs')
+    plt.plot(content[x+1], content[x+2], 'bs')
     x += 3
 
+plt.yscale('log')
+plt.ylim(0, 0.5)
+plt.xscale('linear')
 
-plt.axis([0, 0.1, 0, 0.5])
-plt.show()
+#plt.axis([0, 0.1, 0, 0.5])
+#plt.show()
 plt.savefig('myfig.png')
 
 f.close

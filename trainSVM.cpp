@@ -139,15 +139,15 @@ float* getTemplate(string filename, bool positiv, bool training) {
 		Rect rect(16, 16, 64, 128);		
 		templateMat = img(rect);
 	}
-	else if (!positiv && training) {
+	else if (positiv && !training) {
+		Rect rect(3, 3, 64, 128);
+		templateMat = img(rect);
+	}
+	else {
 		srand(time(NULL));
 		int offsetY = rand() % (img.size().width / 8 - 2 - TEMPLATE_HEIGHT_CELLS);
 		int offsetX = rand() % (img.size().height / 8 - 2 - TEMPLATE_WIDTH_CELLS);
 		Rect rect(offsetX, offsetY, 64, 128);
-		templateMat = img(rect);
-	}
-	else if (!training) {
-		Rect rect(3, 3, 64, 128);
 		templateMat = img(rect);
 	}
 		
