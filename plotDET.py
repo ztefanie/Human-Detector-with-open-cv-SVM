@@ -54,7 +54,7 @@ content = [x.strip() for x in content]
 
 x = 0
 while x < len(content):
-    print(content[x+1] + " " + content[x+2])
+    #print(content[x+1] + " " + content[x+2])
     plt.plot(content[x+1], content[x+2], 'bs')
     x += 3
 

@@ -32,12 +32,13 @@ void firstStepTrain() {
 	std::ifstream myfile(LIST_POS);
 	while (std::getline(myfile, line))
 		++N_pos;
+	N_pos *= 5;
 
 	int N_neg = 0;
 	std::ifstream myfile2(LIST_NEG);
 	while (std::getline(myfile2, line))
 		++N_neg;
-
+	N_neg *= 10;
 
 	Mat points = createFirstSet(N_pos, N_neg);
 	Mat labels = createFirstLabels(N_pos, N_neg);
@@ -47,7 +48,7 @@ void firstStepTrain() {
 	params.svm_type = CvSVM::C_SVC;
 	params.kernel_type = CvSVM::LINEAR;
 	//params.C = 0.01; //best option according to Dalal and Triggs
-	params.term_crit = cvTermCriteria(CV_TERMCRIT_ITER, 10000, 1e-6);
+	params.term_crit = cvTermCriteria(CV_TERMCRIT_ITER, 100000, 1e-6);
 
 	cout << "Training SVM with " << points.rows << " Datapoints... " << endl;
 	CvSVM SVM;
@@ -67,10 +68,12 @@ Mat createFirstSet(int N_pos, int N_neg) {
 	ifstream myfile_pos(LIST_POS);
 	for (int i = 0; i < N_pos; i++) {
 
-		getline(myfile_pos, line_pos);
-		line_pos.insert(5, "_64x128_H96");
 		float* templateHoG;
-		templateHoG = getTemplate(line_pos, true, true);
+		if (i % 5 == 0) {
+			getline(myfile_pos, line_pos);
+			line_pos.insert(5, "_64x128_H96");
+			templateHoG = getTemplate(line_pos, true, true);
+		}
 		
 		//copy values of template to Matrix
 		for (int j = 0; j < template_size; j++) {
@@ -78,7 +81,7 @@ Mat createFirstSet(int N_pos, int N_neg) {
 		}
 
 		//cout << "point at i=" << i << " from " << line_pos << endl;
-		if (i % 50 == 0) {
+		if (i % 250 == 0) {
 			cout << "|";
 		}
 	}
@@ -87,16 +90,18 @@ Mat createFirstSet(int N_pos, int N_neg) {
 	//negativ
 	string line_neg;
 	ifstream myfile_neg(LIST_NEG);
-	for (int i = N_pos; i < points.rows; i++) {
+	for (int i = N_pos; i < points.rows/10; i++) {
 		getline(myfile_neg, line_neg);
 		line_neg.insert(5, "_64x128_H96");
+		//for each negativ 10 templates
+		for (int k = 0; k < 10; k++) {
+			float* templateHoG;
+			templateHoG = getTemplate(line_neg, false, true);
 
-		float* templateHoG;
-		templateHoG = getTemplate(line_neg, false, true);
-
-		//copy values of template to Matrix
-		for (int j = 0; j < points.cols; j++) {
-			points.at<float>(i, j) = templateHoG[j];
+			//copy values of template to Matrix
+			for (int j = 0; j < points.cols; j++) {
+				points.at<float>(i*10 + k, j) = templateHoG[j];
+			}
 		}
 		//cout << "point at i=" << i << " from " << line_neg << endl;
 		if (i % 50 == 0) {
@@ -145,6 +150,9 @@ float* getTemplate(string filename, bool positiv, bool training) {
 	}
 	else {
 		srand(time(NULL));
+		int height_new = rand() % (img.size().height - 128) + 128;
+		double new_size = height_new / (double)img.size().height;
+		resize(img, img, Size(), new_size, new_size, 1);
 		int offsetY = rand() % (img.size().width / 8 - 2 - TEMPLATE_HEIGHT_CELLS);
 		int offsetX = rand() % (img.size().height / 8 - 2 - TEMPLATE_WIDTH_CELLS);
 		Rect rect(offsetX, offsetY, 64, 128);

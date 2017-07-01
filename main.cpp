@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
 
 	//logOutput();
 	//Task 2.1
-	//testSVM(true, false);
+	testSVM(true, false);
 
 	//Task 2.2
 	//find_hardNegatives();	
@@ -54,9 +54,6 @@ int main(int argc, char* argv[])
 	createDET();
 
 	//testHogSmallTestImg();
-
-
-
 
 	cout << endl << "finished" << endl;
 	

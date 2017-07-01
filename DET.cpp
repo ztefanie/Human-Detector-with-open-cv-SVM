@@ -58,7 +58,7 @@ vector<float> createResponse(bool first, bool positiv) {
 		SVM.load(SVM_2_LOCATION);
 	}
 
-	Mat sampleTest(1, (TEMPLATE_WIDTH_CELLS - 2)*(TEMPLATE_HEIGHT_CELLS - 2)*HOG_DEPTH, CV_32FC1);
+	Mat sampleTest(1, (TEMPLATE_WIDTH_CELLS-2)*(TEMPLATE_HEIGHT_CELLS-2)*HOG_DEPTH, CV_32FC1);
 	int testSize = 0;
 	string line;
 	ifstream test_lst;
