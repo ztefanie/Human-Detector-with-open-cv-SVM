@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
 
 	//logOutput();
 	//Task 2.1
-	//testSVM(true, false);
+	testSVM(true, true);
 
 	//Task 2.2
 	//find_hardNegatives();	
