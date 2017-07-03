@@ -58,34 +58,32 @@ vector<float> createResponse(bool first, bool positiv) {
 		SVM.load(SVM_2_LOCATION);
 	}
 
-	Mat sampleTest(1, (TEMPLATE_WIDTH_CELLS - 2)*(TEMPLATE_HEIGHT_CELLS - 2)*HOG_DEPTH, CV_32FC1);
+	Mat sampleTest(1, (TEMPLATE_WIDTH_CELLS)*(TEMPLATE_HEIGHT_CELLS)*HOG_DEPTH, CV_32FC1);
 	int testSize = 0;
 	string line;
 	ifstream test_lst;
 	if (positiv) {
-		test_lst.open("INRIAPerson\\test_64x128_H96\\pos.lst");
+		test_lst.open("INRIAPerson\\Test\\pos.lst");
 		cout << "positiv Images are tested ... " << endl;
 	}
 	else {
 		test_lst.open("INRIAPerson\\Test\\neg.lst");
 		cout << "negativ Images are tested ... " << endl;
 	}
+
 	while (getline(test_lst, line))
 		++testSize;
 
 	test_lst.clear();
 	test_lst.seekg(0, ios::beg);
 
-	//Test positiv images
+	//Test images
 	vector<float> responses;
 	float sum_pos = 0;
 	int false_negatives = 0;
 	
 	for (int i = 0; i < testSize; i++) {
 		getline(test_lst, line);
-		if (positiv) {
-			line.insert(4, "_64x128_H96");
-		}
 		float* templateHoG;
 		templateHoG = getTemplate(line, true, false);
 
@@ -98,6 +96,7 @@ vector<float> createResponse(bool first, bool positiv) {
 		float response = SVM.predict(sampleTest, true);
 		responses.push_back(response);
 	}
+
 	test_lst.close();
 
 	cout << "tested " << responses.size() << " images" << endl;

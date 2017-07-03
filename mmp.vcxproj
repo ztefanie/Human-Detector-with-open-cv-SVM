@@ -25,6 +25,7 @@
     <ClCompile Include="hog.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="optimizeSVM.cpp" />
+    <ClCompile Include="prepareDET.cpp" />
     <ClCompile Include="tests.cpp" />
     <ClCompile Include="testSVM.cpp" />
     <ClCompile Include="trainSVM.cpp" />
@@ -36,6 +37,7 @@
     <ClInclude Include="hog.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="optimizeSVM.h" />
+    <ClInclude Include="prepareDET.h" />
     <ClInclude Include="tests.h" />
     <ClInclude Include="testSVM.h" />
     <ClInclude Include="trainSVM.h" />

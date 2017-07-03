@@ -29,18 +29,25 @@ void testQualitativ() {
 	string line;
 	ifstream list_pos("INRIAPerson\\Test\\pos.lst");
 	//getline(list_pos, line);
-	while(getline(list_pos, line)) {
+	while (getline(list_pos, line)) {
 		string folder = "INRIAPerson";
 		string in = folder + "/" + line;
 		cout << in << endl;
-		vector<templatePos> posTemplates = multiscaleImg(in);
-		reduceTemplatesFound(posTemplates, true, in);
+		int nr_of_templates = 0;
+		int* nr_of_templates_ptr = &nr_of_templates;
+		int false_pos = 0;
+		int* false_pos_ptr = &false_pos;
+		float miss_rate = 0;
+		float* miss_rate_ptr = &miss_rate;
+		vector<templatePos> posTemplates = multiscaleImg(in, nr_of_templates_ptr, ASSUMED_POSITIV);
+		reduceTemplatesFound(posTemplates, true, in, false_pos_ptr, miss_rate_ptr);
+		cout << "FPPW = " << false_pos / (double)nr_of_templates << "miss-rate: " << miss_rate << endl;
 	}
 	list_pos.close();
 }
 
 //Task 1.5 - mostly the code from fabio (see a1.5.cpp)
-vector<templatePos> multiscaleImg(string file) {
+vector<templatePos> multiscaleImg(string file, int* nr_of_templates_ptr, float assumed_positiv) {
 	Mat img = imread(file);
 
 	int factorx = TEMPLATE_WIDTH / TEMPLATE_WIDTH_CELLS;
@@ -80,7 +87,7 @@ vector<templatePos> multiscaleImg(string file) {
 
 		//resize
 		Mat m(int_akt_height, int_akt_width, CV_8UC3, Scalar(0, 0, 0));
-		resize(img, m, m.size(), 0, 0, INTER_CUBIC);
+		resize(img, m, m.size(), 0, 0, INTER_LINEAR);
 		//cout << int_akt_height << " " << int_akt_width << endl;
 
 		//compute HOG for every size
@@ -125,7 +132,7 @@ vector<templatePos> multiscaleImg(string file) {
 					//3.2 //feature + detection score: distace form the hyperplane
 					float* featureTemplate1D = compute1DTemplate(hog, dims, j, i, 0);
 
-					Mat sampleTest(1, (TEMPLATE_WIDTH_CELLS-2)*(TEMPLATE_HEIGHT_CELLS-2)*HOG_DEPTH, CV_32FC1);
+					Mat sampleTest(1, (TEMPLATE_WIDTH_CELLS)*(TEMPLATE_HEIGHT_CELLS)*HOG_DEPTH, CV_32FC1);
 					//copy values of template to Matrix
 					for (int k = 0; k < sampleTest.cols; k++) {
 						sampleTest.at<float>(0, k) = featureTemplate1D[k];
@@ -138,14 +145,14 @@ vector<templatePos> multiscaleImg(string file) {
 
 					//3.3
 					//copy templates with detections of peoples to output
-					if (score > ASSUMED_POSITIV) {
+					if (score > assumed_positiv) {
 						//cout << "FOUND" << endl;
 						posTemplates.push_back(pos);
 
 						real_temp_pos[counter] = Point(pos.x, pos.y);
 						real_temp_size[counter] = Point(TEMPLATE_WIDTH * hig_scale + pos.x, TEMPLATE_HEIGHT * hig_scale + pos.y);
-						//just for viso:
 
+						//just for viso:
 						rectangle(neuimg, real_temp_pos[counter], real_temp_size[counter], CV_RGB(255, 255, 0), 1, 8);
 						int baseline = 0;
 
@@ -163,6 +170,7 @@ vector<templatePos> multiscaleImg(string file) {
 					//waitKey();
 					//destroyAllWindows();
 					template_count++;
+					(*nr_of_templates_ptr)++;
 				}
 				//}
 			}
@@ -183,12 +191,12 @@ vector<templatePos> multiscaleImg(string file) {
 }
 
 
-void reduceTemplatesFound(vector<templatePos> posTemplates, bool showOutput, string file) {
+void reduceTemplatesFound(vector<templatePos> posTemplates, bool showOutput, string file, int* false_positives, float* miss_rate) {
 
 	Mat img = imread(file);
 	vector<int> boundingBoxes = getBoundingBoxes(file);
 
-	if (posTemplates.empty()) {
+	if (posTemplates.empty() && showOutput) {
 		showBoundingBox(img, file);
 		imshow("Picture-after-reduction", img);
 		String out = "QualitativOutput\\" + file + ".png";
@@ -245,37 +253,59 @@ void reduceTemplatesFound(vector<templatePos> posTemplates, bool showOutput, str
 			nonOverlappingTemplates.push_back(posTemplates[i]);
 		}
 	}
-	
+
 	//Reduce to maximum N templates
 	if (nonOverlappingTemplates.size() > max_templates) {
-		cout << nonOverlappingTemplates.size() << endl;
 		sort(nonOverlappingTemplates.begin(), nonOverlappingTemplates.end(), compareByScore);
-		cout << nonOverlappingTemplates.size() << endl;
 		for (int i = 0; nonOverlappingTemplates.size() > max_templates; i++) {
-			cout << "i= "<< to_string(i)<< "value: "<< nonOverlappingTemplates[0].score << endl;
-			cout << nonOverlappingTemplates.size() << endl;
+			//cout << "i= "<< to_string(i)<< "value: "<< nonOverlappingTemplates[0].score << endl;
+			//cout << nonOverlappingTemplates.size() << endl;
 			nonOverlappingTemplates.erase(nonOverlappingTemplates.begin());
 		}
 	}
 
-	//Visualization Output 3.5
-	if (showOutput) {
-		for (vector<int>::size_type j = 0; j != nonOverlappingTemplates.size(); j++) {
-			templatePos pos = nonOverlappingTemplates[j];
-			Point p1_old = Point(pos.x, pos.y);
-			Point p2_old = Point(pos.x + pos.scale*TEMPLATE_WIDTH, pos.y + pos.scale*TEMPLATE_HEIGHT);
-			rectangle(img, p1_old, p2_old, CV_RGB(255, 255, 0), 1, 8);
+	//Calc Overlap, cound false_positives and Visualization Output 3.5
+	for (vector<int>::size_type j = 0; j != nonOverlappingTemplates.size(); j++) {
+		templatePos pos = nonOverlappingTemplates[j];
+		Point p1_old = Point(pos.x, pos.y);
+		Point p2_old = Point(pos.x + pos.scale*TEMPLATE_WIDTH, pos.y + pos.scale*TEMPLATE_HEIGHT);
+
+		float overlap = getOverlap(boundingBoxes, p1_old, p2_old);
+		Scalar color;
+		if (overlap <= 0.8) {
+			color = cvScalar(0, 0, 255);
+			(*false_positives)++;
+		}
+		else {
+			color = cvScalar(50, 200, 50);
+		}
+		if (showOutput) {
+			rectangle(img, p1_old, p2_old, color, 1, 8);
 			String selection_score = "Selection Score: " + to_string(pos.score);
 			int baseline = 0;
 			int size = getTextSize("blubb", CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * pos.scale / 300, 1, &baseline).height;
-			putText(img, selection_score, Point(pos.x + 2, pos.y + size + 2), CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * pos.scale / 300, cvScalar(0, 255, 0), 1, CV_AA);
-			float overlap = getOverlap(boundingBoxes, p1_old, p2_old);
+			putText(img, selection_score, Point(pos.x + 2, pos.y + size + 2), CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * pos.scale / 300, color, 1, CV_AA);
+
 			String overlap_out = "Overlap: " + to_string(overlap);
-			putText(img, overlap_out, Point(pos.x + 2, pos.y + size * 2 + 4), CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * pos.scale / 300, cvScalar(0, 255, 0), 1, CV_AA);
+			putText(img, overlap_out, Point(pos.x + 2, pos.y + size * 2 + 4), CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * pos.scale / 300, color, 1, CV_AA);
 			showBoundingBox(img, file);
 		}
 	}
-	imshow("Picture-after-reduction", img);
+
+	int missed_bb = 0;
+	for (int k = 0; k < boundingBoxes.size()/4; k++) {	
+		float out = isFound(nonOverlappingTemplates, boundingBoxes, k);
+		//cout << "Boundingbox " << k << " has max-overlap " << out << endl;
+		if (out <= 0.8) {
+			missed_bb++;
+		}
+	}
+
+	(*miss_rate) = missed_bb / (boundingBoxes.size() / 4.0);
+
+	if (showOutput) {
+		imshow("Picture-after-reduction", img);
+	}
 	String out = "QualitativOutput\\" + file + ".png";
 	imwrite(out, img);
 	waitKey();
@@ -305,6 +335,39 @@ float getOverlap(vector<int> truth, Point p1, Point p2) {
 			overlap = overlap_temp;
 		}
 		i += 4;
+	}
+	return overlap;
+}
+
+float isFound(vector<templatePos> allTemplates, vector<int> truth, int which_bounding_box) {
+
+	int i = 0;
+	float overlap = 0;
+	float overlap_temp = 0;
+	vector<int> truth_bb = vector<int>(4, 0);
+	truth_bb.at(0) = truth.at(4*which_bounding_box);
+	truth_bb.at(1) = truth.at(4*which_bounding_box + 1);
+	truth_bb.at(2) = truth.at(4*which_bounding_box + 2);
+	truth_bb.at(3) = truth.at(4*which_bounding_box + 3);
+	//cout << "testing truth box " << which_bounding_box << endl;
+	for(int i = 0; i < allTemplates.size(); i++) {
+		//cout << "template: " << i;
+		templatePos pos = allTemplates[i];
+		Point p1 = Point(pos.x, pos.y);
+		Point p2 = Point(pos.x + pos.scale*TEMPLATE_WIDTH, pos.y + pos.scale*TEMPLATE_HEIGHT);
+		//cout << " at " << pos.x << " " << pos.y;
+
+		std::vector<int> allTemplates_i = std::vector<int>(4, 0);
+		allTemplates_i.at(0) = p1.x;
+		allTemplates_i.at(1) = p1.y;
+		allTemplates_i.at(2) = p2.x;
+		allTemplates_i.at(3) = p2.y;
+		overlap_temp = ComputeOverlap(truth_bb, allTemplates_i);
+		//cout << " Overlap = " << overlap_temp << endl;
+		//cout << "Truth = " << 
+		if (overlap_temp >= overlap) {
+			overlap = overlap_temp;
+		}
 	}
 	return overlap;
 }

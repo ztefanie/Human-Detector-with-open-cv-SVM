@@ -3,6 +3,7 @@
 #include "optimizeSVM.h"
 #include "testSVM.h"
 #include "DET.h"
+#include "prepareDET.h"
 #include <ctime>
 
 void logOutput() {
@@ -40,7 +41,7 @@ int main(int argc, char* argv[])
 
 	//logOutput();
 	//Task 2.1
-	//testSVM(true, false);
+	testSVM(true, true);
 
 	//Task 2.2
 	//find_hardNegatives();	
@@ -51,7 +52,8 @@ int main(int argc, char* argv[])
 	//testQualitativ();
 
 	//Task 3.5
-	createDET();
+	//createDET();
+	createDETfile();
 
 	//testHogSmallTestImg();
 

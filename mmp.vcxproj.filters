@@ -45,6 +45,9 @@
     <ClCompile Include="DET.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="prepareDET.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="hog.h">
@@ -72,6 +75,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="DET.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="prepareDET.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

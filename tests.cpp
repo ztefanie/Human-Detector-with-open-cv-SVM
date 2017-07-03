@@ -45,8 +45,8 @@ void testSVM(bool first, bool train) {
 void testMultiscale()
 {
 	String file = "INRIAPerson\\Test\\pos\\crop_000001.png";
-	vector<templatePos> posTemplates = multiscaleImg(file);
-	reduceTemplatesFound(posTemplates, true, file);
+	//vector<templatePos> posTemplates = multiscaleImg(file);
+	//reduceTemplatesFound(posTemplates, true, file);
 }
 
 void test3DTemplate()
