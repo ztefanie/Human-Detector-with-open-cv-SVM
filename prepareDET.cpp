@@ -19,63 +19,136 @@
 using namespace std;
 using namespace cv;
 
+float steps = 0.5;
+float start = 0;
+float stop = 4;
+
 void createDETfile() {
+
+	vector<float> pos = testQuantitativDET_pos();
+	vector<float> neg = testQuantitativDET_neg();	
 
 	ofstream DETdata;
 	DETdata.open("DETdata_first.txt");
-	for (float i = -1; i <= 1; i += 0.5) {
-		vector<float> out = testQuantitativDET(i);
+	for (float i = start; i <= stop; i += steps) {
 		DETdata << i << endl;
-		DETdata << out[0] << endl;
-		DETdata << out[1] << endl;
+		DETdata << pos[floor((i - start) / steps) + 1] << endl;
+		DETdata << neg[floor((i - start) / steps) + 1] << endl;
 	}
-	DETdata.close();
+	DETdata.close(); 
 
-
-	/*DETdata.open("DETdata_retrained.txt");
-	for (float i = -2; i <= 0; i += 0.1) {
-		vector<float> out = testQuantitativ(i);
-		DETdata << i << endl;
-		DETdata << out[0] << endl;
-		DETdata << out[1] << endl;
-	}
-	DETdata.close();*/
+		/*DETdata.open("DETdata_retrained.txt");
+		for (float i = min_score; i <= 0; i += 0.1) {
+			vector<float> out = testQuantitativDET(i);
+			DETdata << i << endl;
+			DETdata << out[0] << endl;
+			DETdata << out[1] << endl;
+		}
+		DETdata.close();*/
 }
 
-vector<float> testQuantitativDET(float assumed_positiv) {
-
+vector<float> testQuantitativDET_neg() {
 	string line;
-	ifstream list_pos("INRIAPerson\\Test\\pos.lst");
-	int test_size = 0;
-	double miss_rate_total = 0;
-	double fppw_total = 0;
+	ifstream list("INRIAPerson\\Test\\neg.lst");
+	int array_size = floor((stop - start) / steps) + 1;
+	vector<float> fp(array_size);
+	vector<float> fppw(array_size);
+	int window_count = 0;
 
-	cout << "Reading in Test Data" << endl;
-	while (getline(list_pos, line) && test_size < 25) {
-		test_size++;
+	int counter = 0;
+
+	cout << "Reading in negativ Test Data" << endl;
+	while (getline(list, line) && counter < 25) {
+
+		counter++;
+
 		string folder = "INRIAPerson";
 		string in = folder + "/" + line;
-		//cout << in;
 		int nr_of_templates = 0;
 		int* nr_of_templates_ptr = &nr_of_templates;
-		int false_pos = 0;
-		int* false_pos_ptr = &false_pos;
-		float miss_rate = 0;
-		float* miss_rate_ptr = &miss_rate;
-		vector<templatePos> posTemplates = multiscaleImg(in, nr_of_templates_ptr, assumed_positiv);
-		reduceTemplatesFound(posTemplates, false, in, false_pos_ptr, miss_rate_ptr);
-		miss_rate_total += miss_rate;
-		fppw_total += false_pos / (double)nr_of_templates;
-		//cout << " " << miss_rate << " " << false_pos << endl;
-		cout << "|" ;
+		vector<templatePos> posTemplates = multiscaleImg(in, nr_of_templates_ptr, start);
+		window_count += nr_of_templates;
+
+		vector<templatePos> allTemplates = reduceTemplatesFound(posTemplates, false, in);
+
+		//count false-positives
+		for (float i = start; i <= stop; i += steps) {
+			for (vector<templatePos>::const_iterator j = allTemplates.begin(); j != allTemplates.end(); ++j) {
+				if ((*j).score > i) {
+					fp[floor((i - start) / steps) + 1]++;
+				}
+			}
+		}
+
+		if (counter % 5 == 0) {
+			cout << "|";
+		}
 	}
-	list_pos.close();
+	cout << endl;
+	for (float i = start; i <= stop; i += steps) {
+		fppw[floor((i - start) / steps) + 1] = fp[floor((i - start) / steps) + 1] / (double)window_count;
+		cout << "at i=" << i << " fppw=" << fppw[floor((i - start) / steps) + 1] << endl;
+	}
 
-	vector<float> out = { 0.,0. };
-	out.at(0) = fppw_total / test_size;
-	out.at(1) = miss_rate_total / test_size;
+	list.close();
+	return fppw;
+}
 
-	cout << endl << "At " << assumed_positiv << "\t\tmiss rate total = " << out.at(1) << " FPPW total = " << out.at(0) << endl << endl;
+vector<float> testQuantitativDET_pos() {
 
-	return out;
+	string line;
+	ifstream list("INRIAPerson\\Test\\pos.lst");
+	int array_size = floor((stop - start) / steps) + 1;
+	vector<float> misses(array_size);
+	vector<float> missrate_total(array_size);
+	int bb_count = 0;
+	int counter = 0;
+
+	cout << "Reading in positiv Test Data" << endl;
+	while (getline(list, line) && counter < 5) {
+		counter++;
+
+		string folder = "INRIAPerson";
+		string in = folder + "/" + line;
+		int nr_of_templates = 0;
+		int* nr_of_templates_ptr = &nr_of_templates;
+		vector<templatePos> posTemplates = multiscaleImg(in, nr_of_templates_ptr, start);
+		vector<templatePos> allTemplates = reduceTemplatesFound(posTemplates, false, in);	
+		vector<int> boundingBoxes = getBoundingBoxes(in);
+
+		cout << "posTemplates.size()=" << posTemplates.size() << "\tallTemplates.size()="<< allTemplates.size() << endl;
+		for (vector<int>::size_type j = 0; j != allTemplates.size(); j++) {
+			cout << "\t\tx=" << allTemplates.at(j).x << " y=" << allTemplates.at(j).y << endl;
+		}
+
+		for (int k = 0; k < boundingBoxes.size() / 4; k++) {
+			for (float i = start; i <= stop; i += steps) {
+				cout << i;
+				float out = isFound(allTemplates, boundingBoxes, k, i);
+				if (out <= OVERLAP_CORRECT) {
+					misses[floor((i - start) / steps) + 1]++;
+				}
+			}
+
+		}
+		bb_count += boundingBoxes.size() / 4;
+		if (counter % 5) {
+			cout << "|";
+		}
+
+		for (float i = start; i <= stop; i += steps) {
+			cout << "at i=" << i << " misses=" << misses[floor((i - start) / steps) + 1] << " with " << bb_count << " boundingboxes" << endl;
+		}
+		cout << endl;
+		getchar();
+	}
+	cout << endl;
+	for (float i = start; i <= stop; i += steps) {
+		missrate_total[floor((i - start) / steps) + 1] = misses[floor((i - start) / steps) + 1] / (double)bb_count;
+		cout << "at i=" << i << " missrate=" << missrate_total[floor((i - start) / steps) + 1] << endl;
+	}
+
+	list.close();
+
+	return missrate_total;
 }

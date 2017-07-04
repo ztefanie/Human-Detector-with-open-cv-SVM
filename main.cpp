@@ -41,6 +41,7 @@ int main(int argc, char* argv[])
 
 	//logOutput();
 	//Task 2.1
+	//testextract();
 	testSVM(true, true);
 
 	//Task 2.2
@@ -53,12 +54,9 @@ int main(int argc, char* argv[])
 
 	//Task 3.5
 	//createDET();
-	createDETfile();
+	//createDETfile();
 
 	//testHogSmallTestImg();
-
-
-
 
 	cout << endl << "finished" << endl;
 	

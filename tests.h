@@ -20,4 +20,6 @@ void testSVM(bool first, bool train);
 //1.5
 void testDownScale();
 
+void testextract();
+
 #endif

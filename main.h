@@ -33,12 +33,14 @@ using namespace cv;
 
 #define SVM_LOCATION			"SVM.xml"
 #define SVM_2_LOCATION			"SVM_2.xml"
-#define LIST_POS				"INRIAPerson\\train_64x128_H96\\pos.lst"
-#define LIST_NEG				"INRIAPerson\\train_64x128_H96\\neg.lst"
+#define LIST_POS				"INRIAPerson\\Train\\pos.lst"
+#define LIST_POS_NORM			"INRIAPerson\\train_64x128_H96\\pos.lst"
+#define LIST_NEG				"INRIAPerson\\Train\\neg.lst"
 #define MAX_HARD_NEG			1198	// Number-of-positives minus Number-of-negatives		
 
 #define max_templates			5		// maximum number of templates that can be found in one picture
 #define ASSUMED_POSITIV			-1		// min score a template needs for positiv detection
+#define OVERLAP_CORRECT			0.5
 
 #endif
 

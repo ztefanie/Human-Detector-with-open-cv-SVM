@@ -42,7 +42,7 @@ content1 = [x.strip() for x in content1]
 
 while x < len(content1):
    print(content1[x+1] + " " + content1[x+2])
-   plt.plot(content1[x+1], content1[x+2], 'ro')
+   plt.plot(content1[x+2], content1[x+1], 'ro')
    x += 3
 
 f1.close

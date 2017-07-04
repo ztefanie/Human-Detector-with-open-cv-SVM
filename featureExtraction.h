@@ -14,5 +14,6 @@ typedef struct {
 
 double*** compute3DTemplate(double*** hog, const std::vector<int> &dims, int grid_pos_x, int grid_pos_y);
 float* compute1DTemplate(double*** hog, const std::vector<int> &dims, int grid_pos_x, int grid_pos_y, int scale);
+std::vector<float*> get1DTemplateFromPos(std::string filename, cv::Mat points, int* pos);
 
 #endif

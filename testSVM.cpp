@@ -35,13 +35,9 @@ void testQualitativ() {
 		cout << in << endl;
 		int nr_of_templates = 0;
 		int* nr_of_templates_ptr = &nr_of_templates;
-		int false_pos = 0;
-		int* false_pos_ptr = &false_pos;
-		float miss_rate = 0;
-		float* miss_rate_ptr = &miss_rate;
-		vector<templatePos> posTemplates = multiscaleImg(in, nr_of_templates_ptr, ASSUMED_POSITIV);
-		reduceTemplatesFound(posTemplates, true, in, false_pos_ptr, miss_rate_ptr);
-		cout << "FPPW = " << false_pos / (double)nr_of_templates << "miss-rate: " << miss_rate << endl;
+
+		vector<templatePos> posTemplates = multiscaleImg(in, nr_of_templates_ptr, -1);
+		reduceTemplatesFound(posTemplates, true, in);
 	}
 	list_pos.close();
 }
@@ -191,10 +187,10 @@ vector<templatePos> multiscaleImg(string file, int* nr_of_templates_ptr, float a
 }
 
 
-void reduceTemplatesFound(vector<templatePos> posTemplates, bool showOutput, string file, int* false_positives, float* miss_rate) {
+vector<templatePos> reduceTemplatesFound(vector<templatePos> posTemplates, bool showOutput, string file) { //, int* false_positives, float* miss_rate) {
 
 	Mat img = imread(file);
-	vector<int> boundingBoxes = getBoundingBoxes(file);
+
 
 	if (posTemplates.empty() && showOutput) {
 		showBoundingBox(img, file);
@@ -202,113 +198,116 @@ void reduceTemplatesFound(vector<templatePos> posTemplates, bool showOutput, str
 		String out = "QualitativOutput\\" + file + ".png";
 		imwrite(out, img);
 		waitKey();
-		return;
 	}
 
-	vector<templatePos> nonOverlappingTemplates;
-	nonOverlappingTemplates.push_back(posTemplates[0]);
+	if (!posTemplates.empty()) {
+		vector<templatePos> nonOverlappingTemplates;
+		nonOverlappingTemplates.push_back(posTemplates[0]);
 
-	for (vector<int>::size_type i = 1; i != posTemplates.size(); i++) {
+		for (vector<int>::size_type i = 1; i != posTemplates.size(); i++) {
 
-		Point p1 = Point(posTemplates[i].x, posTemplates[i].y);
-		Point p2 = Point(posTemplates[i].x + posTemplates[i].scale*TEMPLATE_WIDTH, posTemplates[i].y + posTemplates[i].scale*TEMPLATE_HEIGHT);
+			Point p1 = Point(posTemplates[i].x, posTemplates[i].y);
+			Point p2 = Point(posTemplates[i].x + posTemplates[i].scale*TEMPLATE_WIDTH, posTemplates[i].y + posTemplates[i].scale*TEMPLATE_HEIGHT);
 
-		//just for viso:
-		std::vector<int> points_new = std::vector<int>(4, 0);
-		points_new.at(0) = p1.x;
-		points_new.at(1) = p1.y;
-		points_new.at(2) = p2.x;
-		points_new.at(3) = p2.y;
+			//just for viso:
+			std::vector<int> points_new = std::vector<int>(4, 0);
+			points_new.at(0) = p1.x;
+			points_new.at(1) = p1.y;
+			points_new.at(2) = p2.x;
+			points_new.at(3) = p2.y;
 
-		//rectangle(img, p1, p2, CV_RGB(255, 255, 0), 1, 8);
+			//rectangle(img, p1, p2, CV_RGB(255, 255, 0), 1, 8);
 
-		bool add_new = false;
+			bool add_new = false;
 
-		for (vector<int>::size_type j = 0; j != nonOverlappingTemplates.size(); j++) {
-			Point p1_old = Point(nonOverlappingTemplates[j].x, nonOverlappingTemplates[j].y);
-			Point p2_old = Point(nonOverlappingTemplates[j].x + nonOverlappingTemplates[j].scale*TEMPLATE_WIDTH, nonOverlappingTemplates[j].y + nonOverlappingTemplates[j].scale*TEMPLATE_HEIGHT);
+			for (vector<int>::size_type j = 0; j != nonOverlappingTemplates.size(); j++) {
+				Point p1_old = Point(nonOverlappingTemplates[j].x, nonOverlappingTemplates[j].y);
+				Point p2_old = Point(nonOverlappingTemplates[j].x + nonOverlappingTemplates[j].scale*TEMPLATE_WIDTH, nonOverlappingTemplates[j].y + nonOverlappingTemplates[j].scale*TEMPLATE_HEIGHT);
 
-			vector<int> points_old = std::vector<int>(4, 0);
-			points_old.at(0) = p1_old.x;
-			points_old.at(1) = p1_old.y;
-			points_old.at(2) = p2_old.x;
-			points_old.at(3) = p2_old.y;
+				vector<int> points_old = std::vector<int>(4, 0);
+				points_old.at(0) = p1_old.x;
+				points_old.at(1) = p1_old.y;
+				points_old.at(2) = p2_old.x;
+				points_old.at(3) = p2_old.y;
 
-			//rectangle(img, p1_old, p2_old, CV_RGB(255, 255, 0), 1, 8);
+				//rectangle(img, p1_old, p2_old, CV_RGB(255, 255, 0), 1, 8);
 
-			double overlap = ComputeOverlap(points_new, points_old);
-			if (overlap > 0.2) {
-				add_new = true;
-				if (posTemplates[i].score > nonOverlappingTemplates[j].score) {
-					nonOverlappingTemplates.push_back(posTemplates[i]);
-					nonOverlappingTemplates.erase(nonOverlappingTemplates.begin() + j);
+				double overlap = ComputeOverlap(points_new, points_old);
+				if (overlap > 0.2) {
+					add_new = true;
+					if (posTemplates[i].score > nonOverlappingTemplates[j].score) {
+						nonOverlappingTemplates.push_back(posTemplates[i]);
+						nonOverlappingTemplates.erase(nonOverlappingTemplates.begin() + j);
+					}
+					else {
+						continue;
+					}
 				}
-				else {
-					continue;
-				}
+			}
+
+			if (add_new == false) {
+				nonOverlappingTemplates.push_back(posTemplates[i]);
 			}
 		}
 
-		if (add_new == false) {
-			nonOverlappingTemplates.push_back(posTemplates[i]);
-		}
-	}
 
-	//Reduce to maximum N templates
-	if (nonOverlappingTemplates.size() > max_templates) {
-		sort(nonOverlappingTemplates.begin(), nonOverlappingTemplates.end(), compareByScore);
-		for (int i = 0; nonOverlappingTemplates.size() > max_templates; i++) {
-			//cout << "i= "<< to_string(i)<< "value: "<< nonOverlappingTemplates[0].score << endl;
-			//cout << nonOverlappingTemplates.size() << endl;
-			nonOverlappingTemplates.erase(nonOverlappingTemplates.begin());
-		}
-	}
 
-	//Calc Overlap, cound false_positives and Visualization Output 3.5
-	for (vector<int>::size_type j = 0; j != nonOverlappingTemplates.size(); j++) {
-		templatePos pos = nonOverlappingTemplates[j];
-		Point p1_old = Point(pos.x, pos.y);
-		Point p2_old = Point(pos.x + pos.scale*TEMPLATE_WIDTH, pos.y + pos.scale*TEMPLATE_HEIGHT);
+		//Reduce to maximum N templates
+		if (nonOverlappingTemplates.size() > max_templates) {
+			sort(nonOverlappingTemplates.begin(), nonOverlappingTemplates.end(), compareByScore);
+			for (int i = 0; nonOverlappingTemplates.size() > max_templates; i++) {
+				//cout << "i= "<< to_string(i)<< "value: "<< nonOverlappingTemplates[0].score << endl;
+				//cout << nonOverlappingTemplates.size() << endl;
+				nonOverlappingTemplates.erase(nonOverlappingTemplates.begin());
+			}
+		}
 
-		float overlap = getOverlap(boundingBoxes, p1_old, p2_old);
-		Scalar color;
-		if (overlap <= 0.8) {
-			color = cvScalar(0, 0, 255);
-			(*false_positives)++;
+		//Delete dublicates
+		sort(nonOverlappingTemplates.begin(), nonOverlappingTemplates.end(), sortXYScale);
+		nonOverlappingTemplates.erase(unique(nonOverlappingTemplates.begin(), nonOverlappingTemplates.end(), compareTemplatePos), nonOverlappingTemplates.end());
+
+
+		//Calc Overlap, cound false_positives and Visualization Output 3.5
+		for (vector<int>::size_type j = 0; j != nonOverlappingTemplates.size(); j++) {
+			if (showOutput) {
+				vector<int> boundingBoxes = getBoundingBoxes(file);
+				templatePos pos = nonOverlappingTemplates[j];
+				Point p1_old = Point(pos.x, pos.y);
+				Point p2_old = Point(pos.x + pos.scale*TEMPLATE_WIDTH, pos.y + pos.scale*TEMPLATE_HEIGHT);
+
+				float overlap = getOverlap(boundingBoxes, p1_old, p2_old);
+				Scalar color;
+				if (overlap <= OVERLAP_CORRECT) {
+					color = cvScalar(0, 0, 255);
+					//(*false_positives)++;
+				}
+				else {
+					color = cvScalar(50, 200, 50);
+				}
+
+				rectangle(img, p1_old, p2_old, color, 1, 8);
+				String selection_score = "Selection Score: " + to_string(pos.score);
+				int baseline = 0;
+				int size = getTextSize("blubb", CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * pos.scale / 300, 1, &baseline).height;
+				putText(img, selection_score, Point(pos.x + 2, pos.y + size + 2), CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * pos.scale / 300, color, 1, CV_AA);
+
+				String overlap_out = "Overlap: " + to_string(overlap);
+				putText(img, overlap_out, Point(pos.x + 2, pos.y + size * 2 + 4), CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * pos.scale / 300, color, 1, CV_AA);
+				showBoundingBox(img, file);
+			}
 		}
-		else {
-			color = cvScalar(50, 200, 50);
-		}
+
 		if (showOutput) {
-			rectangle(img, p1_old, p2_old, color, 1, 8);
-			String selection_score = "Selection Score: " + to_string(pos.score);
-			int baseline = 0;
-			int size = getTextSize("blubb", CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * pos.scale / 300, 1, &baseline).height;
-			putText(img, selection_score, Point(pos.x + 2, pos.y + size + 2), CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * pos.scale / 300, color, 1, CV_AA);
-
-			String overlap_out = "Overlap: " + to_string(overlap);
-			putText(img, overlap_out, Point(pos.x + 2, pos.y + size * 2 + 4), CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * pos.scale / 300, color, 1, CV_AA);
-			showBoundingBox(img, file);
+			imshow("Picture-after-reduction", img);
+			//String out = "QualitativOutput\\" + file + ".png";
+			//imwrite(out, img);
 		}
+
+		waitKey();
+
+		return nonOverlappingTemplates;
 	}
 
-	int missed_bb = 0;
-	for (int k = 0; k < boundingBoxes.size()/4; k++) {	
-		float out = isFound(nonOverlappingTemplates, boundingBoxes, k);
-		//cout << "Boundingbox " << k << " has max-overlap " << out << endl;
-		if (out <= 0.8) {
-			missed_bb++;
-		}
-	}
-
-	(*miss_rate) = missed_bb / (boundingBoxes.size() / 4.0);
-
-	if (showOutput) {
-		imshow("Picture-after-reduction", img);
-	}
-	String out = "QualitativOutput\\" + file + ".png";
-	imwrite(out, img);
-	waitKey();
 }
 
 float getOverlap(vector<int> truth, Point p1, Point p2) {
@@ -339,37 +338,63 @@ float getOverlap(vector<int> truth, Point p1, Point p2) {
 	return overlap;
 }
 
-float isFound(vector<templatePos> allTemplates, vector<int> truth, int which_bounding_box) {
+float isFound(vector<templatePos> allTemplates, vector<int> truth, int which_bounding_box, float min_score) {
 
 	int i = 0;
 	float overlap = 0;
 	float overlap_temp = 0;
 	vector<int> truth_bb = vector<int>(4, 0);
-	truth_bb.at(0) = truth.at(4*which_bounding_box);
-	truth_bb.at(1) = truth.at(4*which_bounding_box + 1);
-	truth_bb.at(2) = truth.at(4*which_bounding_box + 2);
-	truth_bb.at(3) = truth.at(4*which_bounding_box + 3);
+	truth_bb.at(0) = truth.at(4 * which_bounding_box);
+	truth_bb.at(1) = truth.at(4 * which_bounding_box + 1);
+	truth_bb.at(2) = truth.at(4 * which_bounding_box + 2);
+	truth_bb.at(3) = truth.at(4 * which_bounding_box + 3);
 	//cout << "testing truth box " << which_bounding_box << endl;
-	for(int i = 0; i < allTemplates.size(); i++) {
-		//cout << "template: " << i;
-		templatePos pos = allTemplates[i];
-		Point p1 = Point(pos.x, pos.y);
-		Point p2 = Point(pos.x + pos.scale*TEMPLATE_WIDTH, pos.y + pos.scale*TEMPLATE_HEIGHT);
-		//cout << " at " << pos.x << " " << pos.y;
+	for (vector<templatePos>::const_iterator j = allTemplates.begin(); j != allTemplates.end(); ++j) {
+		cout << "\t score = " << allTemplates[i].score << endl;
+		if ((*j).score > min_score) {
+			//cout << "template: " << i;
+			templatePos pos = (*j);
+			Point p1 = Point(pos.x, pos.y);
+			Point p2 = Point(pos.x + pos.scale*TEMPLATE_WIDTH, pos.y + pos.scale*TEMPLATE_HEIGHT);
+			//cout << " at " << pos.x << " " << pos.y;
 
-		std::vector<int> allTemplates_i = std::vector<int>(4, 0);
-		allTemplates_i.at(0) = p1.x;
-		allTemplates_i.at(1) = p1.y;
-		allTemplates_i.at(2) = p2.x;
-		allTemplates_i.at(3) = p2.y;
-		overlap_temp = ComputeOverlap(truth_bb, allTemplates_i);
-		//cout << " Overlap = " << overlap_temp << endl;
-		//cout << "Truth = " << 
-		if (overlap_temp >= overlap) {
-			overlap = overlap_temp;
+			std::vector<int> allTemplates_i = std::vector<int>(4, 0);
+			allTemplates_i.at(0) = p1.x;
+			allTemplates_i.at(1) = p1.y;
+			allTemplates_i.at(2) = p2.x;
+			allTemplates_i.at(3) = p2.y;
+			overlap_temp = ComputeOverlap(truth_bb, allTemplates_i);
+			//cout << " Overlap = " << overlap_temp << endl;
+			//cout << "Truth = " << 
+			if (overlap_temp >= overlap) {
+				overlap = overlap_temp;
+			}
 		}
 	}
 	return overlap;
 }
 
+bool compareTemplatePos(templatePos pos1, templatePos pos2) {
+	if (pos1.x == pos2.x && pos1.y && pos2.y && pos1.scale == pos2.scale) {
+		return true;
+	}
+	else return false;
+}
+
+bool sortXYScale(templatePos pos1, templatePos pos2) {
+	if (pos1.x <= pos2.x) {
+		return true;
+	}
+	else if (pos1.x == pos2.x) {
+		if (pos1.y <= pos2.y) {
+			return true;
+		}
+		else if (pos1.y == pos2.y) {
+			if (pos1.scale <= pos2.scale) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
 

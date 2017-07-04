@@ -19,6 +19,10 @@
 using namespace std;
 using namespace cv;
 
+void testextract() {
+	//get1DTemplateFromPos("INRIAPerson\\Train\\pos\\crop_000607.png");
+}
+
 
 void testSVM(bool first, bool train) {
 	

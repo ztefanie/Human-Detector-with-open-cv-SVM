@@ -10,8 +10,10 @@
 
 void testQualitativ();
 std::vector<templatePos> multiscaleImg(std::string file, int* nr_of_templates_ptr, float assumed_positiv);
-void reduceTemplatesFound(std::vector<templatePos> posTemplates, bool showOutput, std::string file, int* false_positives, float* miss_rate);
+std::vector<templatePos> reduceTemplatesFound(std::vector<templatePos> posTemplates, bool showOutput, std::string file);
 float getOverlap(std::vector<int> truth, cv::Point p1, cv::Point p2);
-float isFound(std::vector<templatePos> allTemplates, std::vector<int> truth, int which_bounding_box);
+float isFound(std::vector<templatePos> allTemplates, std::vector<int> truth, int which_bounding_box, float min_score);
+bool compareTemplatePos(templatePos pos1, templatePos pos2); 
+bool sortXYScale(templatePos pos1, templatePos pos2);
 
 #endif
