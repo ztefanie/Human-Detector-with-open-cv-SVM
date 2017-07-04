@@ -141,14 +141,8 @@ vector<float*> get1DTemplateFromPos(string filename, Mat points, int* last) {
 		//cout << dims[0] << " " << dims[1] << endl;
 		Mat grad = visualizeGradOrientations(HoG, dims);
 		//imshow("Grad", grad);
-
 		//waitKey();
 
-		//Hog berechnen
-		//1d template draus machen
-		//in out.pushback()
-
-		//dann SVM mit der funktion hier positive befuellen
 
 		float* templateHoG = compute1DTemplate(HoG, dims, 0, 0, 0);
 

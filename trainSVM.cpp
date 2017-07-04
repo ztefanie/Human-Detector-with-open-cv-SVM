@@ -29,13 +29,10 @@ int faktor_neg = 10;
 
 void firstStepTrain() {
 	//Get Sizes of Datasets
-	int N_pos = 0;
 	std::string line;
 	std::ifstream myfile(LIST_POS_NORM);
-	while (std::getline(myfile, line))
-		++N_pos;
 
-	N_pos = 1237;
+	int N_pos = 1237;
 	N_pos *= faktor_pos; 
 	
 
@@ -176,12 +173,12 @@ Mat createFirstLabels(int N_pos, int N_neg) {
 
 	//positiv
 	for (int i = 0; i < N_pos; i++) {
-		labels.at<float>(i, 0) = -1;
+		labels.at<float>(i, 0) = -1.0;
 	}
 
 	//negativ
-	for (int i = N_pos / 2; i < labels.rows; i++) {
-		labels.at<float>(i, 0) = 1;
+	for (int i = N_pos; i < labels.rows; i++) {
+		labels.at<float>(i, 0) = 1.0;
 	}
 
 	return labels;
