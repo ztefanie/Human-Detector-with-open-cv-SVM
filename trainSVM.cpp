@@ -23,7 +23,7 @@
 using namespace std;
 using namespace cv;
 
-int iterations = 100000;
+int iterations = 1000000;
 int faktor_pos = 10;
 int faktor_neg = 10;
 

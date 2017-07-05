@@ -36,8 +36,14 @@ void testQualitativ() {
 		int nr_of_templates = 0;
 		int* nr_of_templates_ptr = &nr_of_templates;
 
-		vector<templatePos> posTemplates = multiscaleImg(in, nr_of_templates_ptr, -1);
-		reduceTemplatesFound(posTemplates, true, in);
+		vector<templatePos> posTemplates = multiscaleImg(in, nr_of_templates_ptr, 0);
+		if (posTemplates.empty()) {
+			cout << "Empty" << endl;
+		}
+		else {
+			reduceTemplatesFound(posTemplates, true, in);
+		}
+		waitKey();
 	}
 	list_pos.close();
 }
@@ -181,7 +187,7 @@ vector<templatePos> multiscaleImg(string file, int* nr_of_templates_ptr, float a
 		destroy_3Darray(hog, dims[0], dims[1]);
 	}
 
-	//cv::imshow("found_bevor_reducing", neuimg);
+	imshow("found_bevor_reducing", neuimg);
 	//cv::imwrite("found_bevor_reducing.jpg", neuimg);
 	return posTemplates;
 }
@@ -303,8 +309,6 @@ vector<templatePos> reduceTemplatesFound(vector<templatePos> posTemplates, bool 
 			//imwrite(out, img);
 		}
 
-		waitKey();
-
 		return nonOverlappingTemplates;
 	}
 
@@ -340,7 +344,6 @@ float getOverlap(vector<int> truth, Point p1, Point p2) {
 
 float isFound(vector<templatePos> allTemplates, vector<int> truth, int which_bounding_box, float min_score) {
 
-	int i = 0;
 	float overlap = 0;
 	float overlap_temp = 0;
 	vector<int> truth_bb = vector<int>(4, 0);
@@ -350,7 +353,7 @@ float isFound(vector<templatePos> allTemplates, vector<int> truth, int which_bou
 	truth_bb.at(3) = truth.at(4 * which_bounding_box + 3);
 	//cout << "testing truth box " << which_bounding_box << endl;
 	for (vector<templatePos>::const_iterator j = allTemplates.begin(); j != allTemplates.end(); ++j) {
-		cout << "\t score = " << allTemplates[i].score << endl;
+		//cout << "\t score = " << (*j).score << endl;
 		if ((*j).score > min_score) {
 			//cout << "template: " << i;
 			templatePos pos = (*j);
@@ -371,6 +374,8 @@ float isFound(vector<templatePos> allTemplates, vector<int> truth, int which_bou
 			}
 		}
 	}
+	//cout << "End overlap = " << overlap << endl;
+	//getchar();
 	return overlap;
 }
 

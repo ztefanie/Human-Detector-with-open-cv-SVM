@@ -14,13 +14,13 @@ import sys
 
 fig, ax = plt.subplots()
 
-ytickvalues = [0.01, 0.02, 0.04, 0.08, 0.16, 0.32, 0.5, 1]
+ytickvalues = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5]
 	
 plt.xlabel('FPPW')
 plt.title('DET')
 plt.ylabel('miss rate')
 #plt.axis([0.000001, 0.1, 0.01, 0.5])
-plt.axis([0.000001, 1, 0.01, 1.5])
+plt.axis([0.000001, 0.5, 0.01, 0.5])
 
 ax.set_yscale('log')
 ax.set_xscale('log')
@@ -55,8 +55,8 @@ y = 0
 content2 = [y.strip() for y in content2] 
 
 while y < len(content2):
-    print(content2[y+1] + " " + content2[y+2])
-    plt.plot(content2[y+1], content2[y+2], 'bs')
+    #print(content2[y+1] + " " + content2[y+2])
+    #plt.plot(content2[y+1], content2[y+2], 'bs')
     y += 3
 
 
