@@ -10,7 +10,7 @@
 
 
 void createDETfile();
-std::vector<float> testQuantitativDET_pos();
-std::vector<float> testQuantitativDET_neg();
+std::vector<float> testQuantitativDET_pos(bool first);
+std::vector<long double> testQuantitativDET_neg(bool first);
 
 #endif

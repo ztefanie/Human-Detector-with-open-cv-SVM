@@ -19,14 +19,14 @@
 using namespace std;
 using namespace cv;
 
-float steps = 0.05;
-float start = 1.;
-float stop = 3.;
+float steps = 0.01;
+float start = -2.;
+float stop = 2.;
 
 void createDETfile() {
-
-	vector<float> pos = testQuantitativDET_pos();
-	vector<float> neg = testQuantitativDET_neg();
+	cout << "Creating DET-File for first SVM... " << endl;
+	vector<float> pos = testQuantitativDET_pos(true);
+	vector<long double> neg = testQuantitativDET_neg(true);
 		
 	ofstream DETdata;
 	DETdata.open("DETdata_first.txt");
@@ -36,6 +36,7 @@ void createDETfile() {
 		DETdata << neg[floor((i - start) / steps) + 1] << endl;
 	}
 	DETdata.close(); 
+	cout << "finished creating DET-File for first SVM... " << endl;
 
 		/*DETdata.open("DETdata_retrained.txt");
 		for (float i = min_score; i <= 0; i += 0.1) {
@@ -47,115 +48,129 @@ void createDETfile() {
 		DETdata.close();*/
 }
 
-vector<float> testQuantitativDET_neg() {
-	cout << "Start testDET_neg" << endl;
+vector<long double> testQuantitativDET_neg(bool first) {
+
+	CvSVM SVM;
+	if (first) {
+		SVM.load(SVM_LOCATION);
+	}
+	else {
+		SVM.load(SVM_2_LOCATION);
+	}
+
 	string line;
 	ifstream list("INRIAPerson\\Test\\neg.lst");
+
+
+	int test_size = 453 * 50;
+
+	const int template_size = (TEMPLATE_WIDTH_CELLS)*(TEMPLATE_HEIGHT_CELLS)*HOG_DEPTH;
+	Mat temp_neg(test_size, template_size, CV_32FC1);
 	int array_size = floor((stop - start) / steps) + 1;
-	vector<float> fp(array_size);
-	vector<float> fppw(array_size);
-	int window_count = 0;
+	vector<int> fp(array_size);
+	vector<long double> fppw(array_size);
 
-	int counter = 0;
+	cout << "Reading in negativ test data ..." << endl;
+	for (int i = 0; i < test_size; i += 50) {
+		getline(list, line);
+		//for each negativ 10 templates
+		for (int k = 0; k < 10; k++) {
+			float* templateHoG;
+			templateHoG = getTemplate(line);
 
-	cout << "Reading in negativ Test Data" << endl;
-	while (getline(list, line)) {
-
-		counter++;
-
-		string folder = "INRIAPerson";
-		string in = folder + "/" + line;
-		int nr_of_templates = 0;
-		int* nr_of_templates_ptr = &nr_of_templates;
-		vector<templatePos> posTemplates = multiscaleImg(in, nr_of_templates_ptr, start);
-		window_count += nr_of_templates;
-
-		vector<templatePos> allTemplates = reduceTemplatesFound(posTemplates, false, in);
-
-		//count false-positives
-		for (float i = start; i <= stop; i += steps) {
-			for (vector<templatePos>::const_iterator j = allTemplates.begin(); j != allTemplates.end(); ++j) {
-				if ((*j).score > (float)i) {
-					fp[floor((i - start) / steps) + 1]++;
-				}
+			//copy values of template to Matrix
+			for (int j = 0; j < temp_neg.cols; j++) {
+				temp_neg.at<float>(i + k, j) = templateHoG[j];
 			}
 		}
-
-		if (counter % 5 == 0) {
+		//cout << "point at i=" << i << " from " << line_neg << endl;
+		if (i % 200 == 0) {
 			cout << "|";
 		}
 	}
-	cout << endl;
+	cout << "Finished reading in negativ test data ..." << endl;
+	list.close();
+	
+	Mat template_temp(1, template_size, CV_32FC1);
+	//iterate over rows ot points_temp_pos
+	for (int row = 0; row < temp_neg.rows; row++) {
+		//fill float-array
+		for (int i = 0; i < template_size; i++) {
+			template_temp.at<float>(0, i) = temp_neg.at<float>(row, i);
+		}
+		float score = SVM.predict(template_temp, true);
+
+		//iterate over miss array
+
+		for (float i = start; i <= stop; i += steps) {
+			if (score > i) {
+				fp[floor((i - start) / steps) + 1]++;
+			}
+		}
+	}
+
 	for (float i = start; i <= stop; i += steps) {
-		fppw[floor((i - start) / steps) + 1] = fp[floor((i - start) / steps) + 1] / (double)window_count;
+		fppw[floor((i - start) / steps) + 1] = fp[floor((i - start) / steps) + 1] / (double)test_size;
 		cout << "at i=" << i << " fppw=" << fppw[floor((i - start) / steps) + 1] << endl;
 	}
 
-	list.close();
 	return fppw;
 }
 
-vector<float> testQuantitativDET_pos() {
+vector<float> testQuantitativDET_pos(bool first) {
+	CvSVM SVM;
+	if (first) {
+		SVM.load(SVM_LOCATION);
+	}
+	else {
+		SVM.load(SVM_2_LOCATION);
+	}
+
+	const int template_size = (TEMPLATE_WIDTH_CELLS)*(TEMPLATE_HEIGHT_CELLS)*HOG_DEPTH;
+	Mat people_pos(1178, template_size, CV_32FC1);
 
 	string line;
 	ifstream list("INRIAPerson\\Test\\pos.lst");
+	int last = 0;
+	int i = 0;
+	cout << "Reading in positiv test data ..." << endl;
+	while (getline(list, line)) {
+		float* templateHoG;
+		get1DTemplateFromPos(line, people_pos, &last, false);
+		if (i % 10 == 0) {
+			cout << "|";
+		}
+		i++;
+	}
+	list.close();
+
+	cout << "Finished reading in positiv test data ..." << endl;
+
+	Mat template_temp(1, template_size, CV_32FC1);
 	int array_size = floor((stop - start) / steps) + 1;
 	vector<float> misses(array_size);
 	vector<float> missrate_total(array_size);
-	int bb_count = 0;
-	int counter = 0;
 
-	cout << "Reading in positiv Test Data" << endl;
-	while (getline(list, line)&& counter < 1000) {
-		counter++;
-
-		string folder = "INRIAPerson";
-		string in = folder + "/" + line;
-		cout << in << endl;
-		int nr_of_templates = 0;
-		int* nr_of_templates_ptr = &nr_of_templates;
-		vector<templatePos> posTemplates = multiscaleImg(in, nr_of_templates_ptr, start);
-		cout << posTemplates.size() << endl;
-		////vector<templatePos> allTemplates = reduceTemplatesFound(posTemplates, false, in);	
-		vector<int> boundingBoxes = getBoundingBoxes(in);
-
-		//cout << "posTemplates.size()=" << posTemplates.size() << "\tallTemplates.size()="<< allTemplates.size() << endl;
-		/*for (vector<int>::size_type j = 0; j != allTemplates.size(); j++) {
-			cout << "\t\tx=" << allTemplates.at(j).x << " y=" << allTemplates.at(j).y << endl;
-		}*/
-
-		for (int k = 0; k < boundingBoxes.size() / 4; k++) {
-			for (float i = start; i <= stop; i += steps) {
-				cout << i << " ";
-				///float out = isFound(allTemplates, boundingBoxes, k, i);
-				///if (out < OVERLAP_CORRECT) {
-					misses[floor((i - start) / steps) + 1]++;				
-				///}
-				cout << "misses[" << i << "] = " << misses[floor((i - start) / steps) + 1] << endl;
-			}
+	//iterate over rows ot points_temp_pos
+	for (int row = 0; row < last; row++) {
+		//fill float-array
+		for (int i = 0; i < template_size; i++) {
+			template_temp.at<float>(0,i) = people_pos.at<float>(row, i);
 		}
-
-		bb_count += boundingBoxes.size() / 4;
-		cout << "bb_count = " << bb_count << endl;
-		if (counter % 5) {
-			cout << "|";
-		}
+		float score = SVM.predict(template_temp, true);
+		
+		//iterate over miss array
 
 		for (float i = start; i <= stop; i += steps) {
-			//cout << "at i=" << i << " misses=" << misses[floor((i - start) / steps) + 1] << " with " << bb_count << " boundingboxes" << endl;
+			if (score < i) {
+				misses[floor((i - start) / steps) + 1]++;
+			}
 		}
-		cout << endl;
-		//getchar();
 	}
 
-	cout << endl;
 	for (float i = start; i <= stop; i += steps) {
-		missrate_total[floor((i - start) / steps) + 1] = misses[floor((i - start) / steps) + 1] / (double)bb_count;
+		missrate_total[floor((i - start) / steps) + 1] = misses[floor((i - start) / steps) + 1] / (double)last;
 		cout << "at i=" << i << " missrate=" << missrate_total[floor((i - start) / steps) + 1] << endl;
-	}
-
-	list.close();
-	
+	}		
 	return missrate_total;
-		
 }

@@ -100,8 +100,8 @@ int main(int argc, char* argv[])
 
 	cout << endl << "finished" << endl;
 	
-	waitKey();
-	//getchar();
+	//waitKey();
+	getchar();
 
 }
 
