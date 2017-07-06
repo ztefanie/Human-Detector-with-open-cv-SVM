@@ -43,10 +43,12 @@ int main(int argc, char* argv[])
 	//Task 2.1
 	//testextract();
 	//testSVM(true, true);
+	SVMtrain(false);
 
 	//Task 2.2
 	//find_hardNegatives();	
 	//testSVM(false, true);
+	SVMtrain(true);
 
 	//Task 3.1
 	//testMultiscale();
@@ -54,7 +56,7 @@ int main(int argc, char* argv[])
 
 	//Task 3.5
 	//createDET();
-	createDETfile();
+	//createDETfile();
 
 	//testHogSmallTestImg();
 

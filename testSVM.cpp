@@ -117,10 +117,10 @@ vector<templatePos> multiscaleImg(string file, int* nr_of_templates_ptr, float a
 					//cout << i << " " << j << endl;
 
 					//visualization
-					double*** featureTemplate3D = compute3DTemplate(hog, dims, j, i);
-					vector<int> dims_template{ TEMPLATE_HEIGHT_CELLS,TEMPLATE_WIDTH_CELLS, HOG_DEPTH };
-					Mat out = visualizeGradOrientations(featureTemplate3D, dims_template);
-					String pic = "template at " + to_string(i) + to_string(j);
+					//double*** featureTemplate3D = compute3DTemplate(hog, dims, j, i); //wird nicht wieder freigegeben
+					//vector<int> dims_template{ TEMPLATE_HEIGHT_CELLS,TEMPLATE_WIDTH_CELLS, HOG_DEPTH };
+					//Mat out = visualizeGradOrientations(featureTemplate3D, dims_template);
+					//String pic = "template at " + to_string(i) + to_string(j);
 					//imshow(pic, out);
 
 					//3.1 //enumerate...
@@ -187,7 +187,7 @@ vector<templatePos> multiscaleImg(string file, int* nr_of_templates_ptr, float a
 		destroy_3Darray(hog, dims[0], dims[1]);
 	}
 
-	imshow("found_bevor_reducing", neuimg);
+	//imshow("found_bevor_reducing", neuimg);
 	//cv::imwrite("found_bevor_reducing.jpg", neuimg);
 	return posTemplates;
 }

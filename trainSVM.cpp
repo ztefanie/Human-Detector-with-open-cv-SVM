@@ -14,6 +14,7 @@
 #include <stdlib.h>
 
 #include "trainSVM.h"
+#include "optimizeSVM.h"
 #include "hog.h"
 #include "featureExtraction.h"
 #include "main.h"
@@ -23,14 +24,14 @@
 using namespace std;
 using namespace cv;
 
-int iterations = 1000000;
+int iterations = 10000;
 int faktor_pos = 10;
 int faktor_neg = 10;
 
-void firstStepTrain() {
+void SVMtrain(bool retraining) {
 	//Get Sizes of Datasets
 	std::string line;
-	std::ifstream myfile(LIST_POS_NORM);
+	//std::ifstream myfile(LIST_POS_NORM);
 
 	int N_pos = 1237;
 	N_pos *= faktor_pos; 
@@ -47,6 +48,20 @@ void firstStepTrain() {
 	Mat points = createFirstSet(N_pos, N_neg);
 	Mat labels = createFirstLabels(N_pos, N_neg);
 
+	Mat all_neg;
+	if (retraining) {
+		Mat label_neg(1, 1, CV_32FC1);
+		label_neg.at<float>(0, 0) = 1.0;
+		Mat hardNegatives = find_hardNegatives();
+
+		vconcat(points, hardNegatives, all_neg);
+
+		for (int i = 0; i < hardNegatives.rows; i++) {
+			labels.push_back(label_neg);
+		}
+
+	}
+
 	// Train with SVM
 	CvSVMParams params;
 	params.svm_type = CvSVM::C_SVC;
@@ -54,9 +69,15 @@ void firstStepTrain() {
 	params.C = 0.01; //best option according to Dalal and Triggs
 	params.term_crit = cvTermCriteria(CV_TERMCRIT_ITER, iterations, 1e-6);
 
-	cout << "Training SVM with " << points.rows << " Datapoints... (" << N_pos << ", " << N_neg << ")" << endl;
 	CvSVM SVM;
-	SVM.train_auto(points, labels, Mat(), Mat(), params);
+	if (retraining) {
+		cout << "Training SVM with " << all_neg.rows << " Datapoints... (" << N_pos << ", " << all_neg - N_pos << ")" << endl;
+		SVM.train_auto(all_neg, labels, Mat(), Mat(), params);
+	}
+	else {
+		cout << "Training SVM with " << points.rows << " Datapoints... (" << N_pos << ", " << N_neg << ")" << endl;
+		SVM.train_auto(points, labels, Mat(), Mat(), params);
+	}
 	SVM.save(SVM_LOCATION);
 	cout << "finished training" << endl << endl;
 }

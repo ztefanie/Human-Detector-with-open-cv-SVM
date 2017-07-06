@@ -59,7 +59,7 @@ vector<float> testQuantitativDET_neg() {
 	int counter = 0;
 
 	cout << "Reading in negativ Test Data" << endl;
-	while (getline(list, line) && counter < 50) {
+	while (getline(list, line)) {
 
 		counter++;
 
@@ -106,7 +106,7 @@ vector<float> testQuantitativDET_pos() {
 	int counter = 0;
 
 	cout << "Reading in positiv Test Data" << endl;
-	while (getline(list, line) && counter < 15) {
+	while (getline(list, line)&& counter < 1000) {
 		counter++;
 
 		string folder = "INRIAPerson";
@@ -115,7 +115,8 @@ vector<float> testQuantitativDET_pos() {
 		int nr_of_templates = 0;
 		int* nr_of_templates_ptr = &nr_of_templates;
 		vector<templatePos> posTemplates = multiscaleImg(in, nr_of_templates_ptr, start);
-		vector<templatePos> allTemplates = reduceTemplatesFound(posTemplates, false, in);	
+		cout << posTemplates.size() << endl;
+		////vector<templatePos> allTemplates = reduceTemplatesFound(posTemplates, false, in);	
 		vector<int> boundingBoxes = getBoundingBoxes(in);
 
 		//cout << "posTemplates.size()=" << posTemplates.size() << "\tallTemplates.size()="<< allTemplates.size() << endl;
@@ -126,10 +127,10 @@ vector<float> testQuantitativDET_pos() {
 		for (int k = 0; k < boundingBoxes.size() / 4; k++) {
 			for (float i = start; i <= stop; i += steps) {
 				cout << i << " ";
-				float out = isFound(allTemplates, boundingBoxes, k, i);
-				if (out < OVERLAP_CORRECT) {
+				///float out = isFound(allTemplates, boundingBoxes, k, i);
+				///if (out < OVERLAP_CORRECT) {
 					misses[floor((i - start) / steps) + 1]++;				
-				}
+				///}
 				cout << "misses[" << i << "] = " << misses[floor((i - start) / steps) + 1] << endl;
 			}
 		}
@@ -154,6 +155,7 @@ vector<float> testQuantitativDET_pos() {
 	}
 
 	list.close();
-
+	
 	return missrate_total;
+		
 }

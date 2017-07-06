@@ -24,7 +24,7 @@ void testextract() {
 }
 
 
-void testSVM(bool first, bool train) {
+/*void testSVM(bool first, bool train) {
 	
 	CvSVM SVM;
 	if (first) {
@@ -44,13 +44,27 @@ void testSVM(bool first, bool train) {
 	//testQuantitativ(first, ASSUMED_POSITIV);
 
 }
-
+*/
 //1.5 + 3.1
 void testMultiscale()
 {
-	String file = "INRIAPerson\\Test\\pos\\crop_000001.png";
+	//String file = "INRIAPerson\\Test\\pos\\crop_000001.png";
 	//vector<templatePos> posTemplates = multiscaleImg(file);
 	//reduceTemplatesFound(posTemplates, true, file);
+
+	string line;
+	ifstream list("INRIAPerson\\Test\\pos.lst");
+	cout << "Reading in positiv Test Data" << endl;
+	while (getline(list, line)) {
+		string folder = "INRIAPerson";
+		string in = folder + "/" + line;
+		cout << in << endl;
+		int nr_of_templates = 0;
+		int* nr_of_templates_ptr = &nr_of_templates;
+		vector<templatePos> posTemplates = multiscaleImg(in, nr_of_templates_ptr, 1);
+		cout << posTemplates.size() << endl;
+	}
+
 }
 
 void test3DTemplate()

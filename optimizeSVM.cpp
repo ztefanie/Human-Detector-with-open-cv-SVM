@@ -61,7 +61,7 @@ void trainOptimizedSVM(Mat hardNegatives) {
 Mat find_hardNegatives() {
 
 	if (!std::ifstream(SVM_LOCATION)){
-		firstStepTrain();
+		SVMtrain(false);
 	}
 
 	CvSVM SVM;
