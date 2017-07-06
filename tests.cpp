@@ -19,24 +19,20 @@
 using namespace std;
 using namespace cv;
 
-void testextract() {
-	//get1DTemplateFromPos("INRIAPerson\\Train\\pos\\crop_000607.png");
-}
 
-
-/*void testSVM(bool first, bool train) {
+/*
+void testSVM(bool first, bool train) {
 	
 	CvSVM SVM;
 	if (first) {
 		if (train) {
-			firstStepTrain();
+			trainSVM(false);
 		}
 		SVM.load(SVM_LOCATION);
 	}
 	else {
 		if (train) {
-			Mat hardNeg = find_hardNegatives();
-			trainOptimizedSVM(hardNeg);
+			trainSVM(true);
 		}
 		SVM.load(SVM_2_LOCATION);
 	}
@@ -45,44 +41,25 @@ void testextract() {
 
 }
 */
-//1.5 + 3.1
-void testMultiscale()
-{
-	//String file = "INRIAPerson\\Test\\pos\\crop_000001.png";
-	//vector<templatePos> posTemplates = multiscaleImg(file);
-	//reduceTemplatesFound(posTemplates, true, file);
 
-	string line;
-	ifstream list("INRIAPerson\\Test\\pos.lst");
-	cout << "Reading in positiv Test Data" << endl;
-	while (getline(list, line)) {
-		string folder = "INRIAPerson";
-		string in = folder + "/" + line;
-		cout << in << endl;
-		int nr_of_templates = 0;
-		int* nr_of_templates_ptr = &nr_of_templates;
-		vector<templatePos> posTemplates = multiscaleImg(in, nr_of_templates_ptr, 1);
-		cout << posTemplates.size() << endl;
-	}
 
-}
-
+//Task 1.3 - Test extracting a template at a specific position
 void test3DTemplate()
 {
+	//compute HoG of whole picture
 	vector<int> dims;
-	double*** hog = extractHOGFeatures("INRIAPerson\\train_64x128_H96\\pos", "crop_000010a.png", dims);
-	cout << "dims of hog: " << dims[0] << " " << dims[1] << endl;
-	Mat out = visualizeGradOrientations(hog, dims);
-	imshow("HoG of hole picture", out);	
+	double*** hog = extractHOGFeatures("INRIAPerson\\Train\\pos", "crop_000607.png", dims);
+
+	//extract template
 	vector<int> dims2 = vector<int>(3);
 	dims2[0] = TEMPLATE_HEIGHT_CELLS;
 	dims2[1] = TEMPLATE_WIDTH_CELLS;
 	dims2[2] = HOG_DEPTH;
-	cout << "dims of template: " << dims2[0] << " " << dims2[1] << endl;
-	double*** featureTemplate = compute3DTemplate(hog, dims, 1, 1);
+	double*** featureTemplate = compute3DTemplate(hog, dims, 10, 25);
 	Mat out2 = visualizeGradOrientations(featureTemplate, dims2);
-	imshow("Hog of template in th middle", out2);
+	imshow("Hog of template at given poistion", out2);
 
+	//clean up
 	destroy_3Darray(hog, dims[0], dims[1]);
 	destroy_3Darray(featureTemplate, dims2[0], dims2[1]);
 }
@@ -254,4 +231,69 @@ Mat visualizeGradOrientations(double*** hog, vector<int>& dims)
 		}
 	}
 	return img_out;
+}
+
+
+void testDownScale() {
+	String file = "INRIAPerson/Train/pos/crop_000607.png";
+	Mat img = imread(file);
+	int count = 0;
+
+	if (img.empty()) {
+		std::cout << "Error: no Image" << endl;
+		system("pause");
+		return;
+	}
+
+	double scale = pow(2.0, 1.0 / LAMBDA);
+
+	double akt_width = img.cols;
+	double akt_height = img.rows;
+	int int_akt_height = floor(akt_height);
+	int int_akt_width = floor(akt_width);
+	double hig_scale = 1;
+
+	while (floor(akt_width) >= TEMPLATE_WIDTH && floor(akt_height) >= TEMPLATE_HEIGHT) {
+		if (count % LAMBDA == 0) {
+			double help = pow(2, count / LAMBDA);
+			akt_width = img.cols / help;
+			akt_height = img.rows / help;
+		}
+		else {
+			akt_width = akt_width / scale;
+			akt_height = akt_height / scale;
+		}
+		int_akt_height = floor(akt_height);
+		int_akt_width = floor(akt_width);
+		Mat m(int_akt_height, int_akt_width, CV_8UC3, Scalar(0, 0, 0));
+		resize(img, m, Size(int_akt_width, int_akt_height));
+		cout << int_akt_height << " " << int_akt_width << endl;
+
+		vector<Point> temp_pos;
+		vector<Point> real_temp_pos;
+		vector<Point> real_temp_size;
+		int counter = 0;
+		double calc_size = (int_akt_height * int_akt_width * 2) / (TEMPLATE_WIDTH * TEMPLATE_HEIGHT);
+		temp_pos.resize(calc_size);
+		real_temp_pos.resize(calc_size);
+		real_temp_size.resize(calc_size);
+		Mat m2 = img.clone();
+		for (int i = 0; i + TEMPLATE_HEIGHT <= int_akt_height; i += floor(TEMPLATE_HEIGHT / 2)) {
+			for (int j = 0; j + TEMPLATE_WIDTH <= int_akt_width; j += floor(TEMPLATE_WIDTH / 2)) {
+				temp_pos[counter] = Point(j, i);
+				real_temp_pos[counter] = Point(j * hig_scale, i * hig_scale);
+				real_temp_size[counter] = Point(TEMPLATE_WIDTH * hig_scale + j * hig_scale, TEMPLATE_HEIGHT * hig_scale + i * hig_scale);
+				rectangle(m, temp_pos[counter], Point(j + TEMPLATE_WIDTH, i + TEMPLATE_HEIGHT), CV_RGB(255, 255, 0), 1, 8);
+				rectangle(m2, real_temp_pos[counter], real_temp_size[counter], CV_RGB(255, 255, 0), 1, 8);
+			}
+		}
+		rectangle(m, Point(0, 0), Point(TEMPLATE_WIDTH, TEMPLATE_HEIGHT), CV_RGB(0, 0, 255), 1, 8);
+		rectangle(m2, Point(0, 0), Point(TEMPLATE_WIDTH * hig_scale, TEMPLATE_HEIGHT * hig_scale), CV_RGB(0, 0, 255), 1, 8);
+		imshow("Template postition in the original sized Image", m2);
+		imshow("Downscaled Image", m);
+		waitKey();
+		destroyAllWindows();
+		count++;
+		hig_scale *= scale;
+	}
 }

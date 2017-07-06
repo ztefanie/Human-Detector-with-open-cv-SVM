@@ -17,7 +17,7 @@
 using namespace std;
 using namespace cv;
 
-void trainOptimizedSVM(Mat hardNegatives) {
+/*void trainOptimizedSVM(Mat hardNegatives) {
 	//Get Sizes of Datasets
 	int N_pos = 0;
 	std::string line;
@@ -55,7 +55,7 @@ void trainOptimizedSVM(Mat hardNegatives) {
 	SVM.train_auto(V, labels, Mat(), Mat(), params);
 	SVM.save(SVM_2_LOCATION);
 	cout << "finished retraining SVM" << endl << endl;
-}
+}*/
 
 
 Mat find_hardNegatives() {
@@ -140,6 +140,7 @@ Mat find_hardNegatives() {
 							allHardNeg.push_back(sampleTest);
 							predictMat.push_back(samplePredict);
 						}
+						free(featureTemplate);
 					}
 				}
 			}

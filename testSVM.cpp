@@ -36,13 +36,9 @@ void testQualitativ() {
 		int nr_of_templates = 0;
 		int* nr_of_templates_ptr = &nr_of_templates;
 
-		vector<templatePos> posTemplates = multiscaleImg(in, nr_of_templates_ptr, 0);
-		if (posTemplates.empty()) {
-			cout << "Empty" << endl;
-		}
-		else {
-			reduceTemplatesFound(posTemplates, true, in);
-		}
+		vector<templatePos> posTemplates = multiscaleImg(in, nr_of_templates_ptr, 1.0);
+		reduceTemplatesFound(posTemplates, true, in);
+
 		waitKey();
 	}
 	list_pos.close();
@@ -110,18 +106,9 @@ vector<templatePos> multiscaleImg(string file, int* nr_of_templates_ptr, float a
 			//for (int j = 0; j + TEMPLATE_WIDTH <= int_akt_width; j += floor(TEMPLATE_WIDTH / 2)) {
 			int template_count = 1;
 
-			for (int i = 0; i + TEMPLATE_HEIGHT_CELLS < dims.at(0); i += 1) {//floor(TEMPLATE_HEIGHT_CELLS / 4)) {
+			for (int i = 0; i + TEMPLATE_HEIGHT_CELLS < dims.at(0); i += floor(TEMPLATE_HEIGHT_CELLS / 4)) {//floor(TEMPLATE_HEIGHT_CELLS / 4)) {
 				for (int j = 0; j + TEMPLATE_WIDTH_CELLS < dims.at(1); j += floor(TEMPLATE_WIDTH_CELLS / 4)) {
-					//if (count == 5) { //Show only for a specific count (just for testing)
-					//if (i_cells + TEMPLATE_HEIGHT_CELLS < dims.at(0)) {
-					//cout << i << " " << j << endl;
 
-					//visualization
-					//double*** featureTemplate3D = compute3DTemplate(hog, dims, j, i); //wird nicht wieder freigegeben
-					//vector<int> dims_template{ TEMPLATE_HEIGHT_CELLS,TEMPLATE_WIDTH_CELLS, HOG_DEPTH };
-					//Mat out = visualizeGradOrientations(featureTemplate3D, dims_template);
-					//String pic = "template at " + to_string(i) + to_string(j);
-					//imshow(pic, out);
 
 					//3.1 //enumerate...
 					templatePos pos;
@@ -173,6 +160,7 @@ vector<templatePos> multiscaleImg(string file, int* nr_of_templates_ptr, float a
 					//destroyAllWindows();
 					template_count++;
 					(*nr_of_templates_ptr)++;
+					free(featureTemplate1D);
 				}
 				//}
 			}
@@ -187,7 +175,7 @@ vector<templatePos> multiscaleImg(string file, int* nr_of_templates_ptr, float a
 		destroy_3Darray(hog, dims[0], dims[1]);
 	}
 
-	//imshow("found_bevor_reducing", neuimg);
+	imshow("found_bevor_reducing", neuimg);
 	//cv::imwrite("found_bevor_reducing.jpg", neuimg);
 	return posTemplates;
 }

@@ -6,8 +6,8 @@
 #include <opencv2/imgproc/imgproc.hpp>
 
 void SVMtrain(bool retraining);
-cv::Mat createFirstSet(int N_pos, int N_neg);
+cv::Mat createFirstSet(int N_pos, int N_neg, int factor_pos, int factor_neg);
 cv::Mat createFirstLabels(int N_pos, int N_neg);
-float* getTemplate(std::string filename, bool positiv, bool training);
+float* getTemplate(std::string filename);
 
 #endif

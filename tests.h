@@ -15,11 +15,8 @@ void testHogSmallTestImg();
 cv::Mat visualizeGradOrientations(double*** hog, std::vector<int> &dims);
 void test3DTemplate();
 void testMultiscale();
-void testSVM(bool first, bool train);
-
-//1.5
+//void testSVM(bool first, bool train);
 void testDownScale();
 
-void testextract();
 
 #endif

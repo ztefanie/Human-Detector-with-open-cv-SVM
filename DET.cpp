@@ -22,6 +22,7 @@
 using namespace std;
 using namespace cv;
 
+/*
 void createDET() {
 
 	vector<float> responses_pos_first = createResponse(true, true);
@@ -131,4 +132,4 @@ vector<float> testQuantitativ(float assumed_positiv, vector<float>& responses_po
 
 
 	return out;
-}
+}*/

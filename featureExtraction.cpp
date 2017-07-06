@@ -7,7 +7,6 @@
 #include <iostream>
 #include <fstream>
 
-
 #include "tests.h"
 #include "utils.h"
 #include "hog.h"
@@ -19,15 +18,21 @@ using namespace std;
 using namespace cv;
 
 
-//Task 1.4
+/*
+* Computes a HoG-array of a template at a given position
+*
+* @returns HoG-array of template
+* @param hog: HoG of the whole picture
+* @param dims: dimension of the HoG of the whole picture
+* @param grid_pos_x and grid_pos_y: position which template should be extracted
+*
+*/
 double*** compute3DTemplate(double*** hog, const std::vector<int> &dims, int grid_pos_x, int grid_pos_y) {
 	//Test if input is valid
 	assert(grid_pos_x > 0);
 	assert(grid_pos_y > 0);
 	assert(grid_pos_y + TEMPLATE_HEIGHT_CELLS < dims.at(0));
 	assert(grid_pos_x + TEMPLATE_WIDTH_CELLS < dims.at(1));
-
-	//cout << "Hog-Size = (" << dims.at(0) << "," << dims.at(1) << "," << dims.at(2) << ")" << endl;
 
 	//init array
 	double*** featureRepresentation = 0;
@@ -41,21 +46,29 @@ double*** compute3DTemplate(double*** hog, const std::vector<int> &dims, int gri
 		}
 	}
 
+	//fill with values from the HoG
 	for (int y = 0; y < TEMPLATE_HEIGHT_CELLS; y++) {
 		for (int x = 0; x < TEMPLATE_WIDTH_CELLS; x++) {
 			for (int b = 0; b < HOG_DEPTH; b++) {
-				//copy template-part of hog to output array
-				//cout << y << " " << x << " " << b << endl;
-
 				double value = hog[y + grid_pos_y][x + grid_pos_x][b];
 				featureRepresentation[y][x][b] = value;
 
 			}
 		}
 	}
+
 	return featureRepresentation;
 }
 
+/*
+* Computes a 1D-array of a template at a given position
+*
+* @returns 1D-array of the HoGs of a template
+* @param hog: HoG of the whole picture
+* @param dims: dimension of the HoG of the whole picture
+* @param grid_pos_x and grid_pos_y: position which template should be extracted
+*
+*/
 float* compute1DTemplate(double*** hog, const std::vector<int> &dims, int grid_pos_x, int grid_pos_y, int scale) {
 	//Test if input is valid
 	assert(grid_pos_x >= 0);
@@ -63,42 +76,49 @@ float* compute1DTemplate(double*** hog, const std::vector<int> &dims, int grid_p
 	assert(grid_pos_y + TEMPLATE_HEIGHT_CELLS <= dims.at(0));
 	assert(grid_pos_x + TEMPLATE_WIDTH_CELLS <= dims.at(1));
 
-	//cout << "Hog-Size = (" << dims.at(0) << "," << dims.at(1) << "," << dims.at(2) << ")" << endl;
-
 	//allocate 1D array
 	float* featureRepresentation = (float*)malloc(sizeof(float)*(TEMPLATE_HEIGHT_CELLS*TEMPLATE_WIDTH_CELLS*HOG_DEPTH));
+	
+	//copy values from 3D to 1D array
 	for (int y = 0; y < TEMPLATE_HEIGHT_CELLS; y++) {
 		for (int x = 0; x < TEMPLATE_WIDTH_CELLS; x++) {
 			for (int b = 0; b < HOG_DEPTH; b++) {
-				//copy values from 3D to 1D array
 				float value = hog[y + grid_pos_y][x + grid_pos_x][b];
 				featureRepresentation[y*(TEMPLATE_WIDTH_CELLS)*HOG_DEPTH + x*HOG_DEPTH + b] = value;
 			}
 		}
 	}
+
 	return featureRepresentation;
 }
 
-vector<float*> get1DTemplateFromPos(string filename, Mat points, int* last) {
+/*
+* Get templates from positives images, which are marked as persons in the annotations file
+*
+* @returns vector of 1D template representations
+* @param filename: filename of the picture and annotations file
+* @points: Mat which takes all the templates for training the SVM
+* @param last: the last row in points where a template was added to
+* @param show: defines if the pictures (cropped, scaled, skipped) are showed or not
+*
+*/
+vector<float*> get1DTemplateFromPos(string filename, Mat points, int* last, bool show) {
 
 	vector<float*> out;
 
 	filename = "INRIAPerson\\" + filename;
 	Mat img = imread(filename);
 
-	//Mat img2 = showBoundingBox(img, filename);
-
 	std::vector<int> bboxes = getBoundingBoxes(filename);
 
 	int pos = 0;
+	//Iterate over all boundingboxes of the picture
 	while (bboxes.size() - pos > 3)
 	{
-		//cout << bboxes[0] << " " << bboxes[1] << " " << bboxes[2] << " " << bboxes[3] << " " << endl;
-
-		//verzieht es momentan noch, evtl verbessern
+		//compute the size an position of the template 
+		//depends on the width-to-height ratio of the bounding box and if the bounding box is on the pictures edges
 		int half_height = (bboxes[pos + 3] - bboxes[pos + 1]) / 2;
 		int diff = half_height - (bboxes[pos + 2] - bboxes[pos + 0]);
-		//cout << "diff:" << diff << endl;
 
 		int x1, y1, height, width;
 		if (bboxes[pos + 0] - 8 - diff/2 >= 0) {
@@ -125,34 +145,49 @@ vector<float*> get1DTemplateFromPos(string filename, Mat points, int* last) {
 		else {
 			height = img.rows - y1;
 		}
+
+		//cut out the interesting part of the image
 		Rect rect(x1, y1, width, height);
 		Mat img_croped = img(rect);
-		//imshow("croped", img_croped);
-
+		//scale it down
 		Mat img_scaled(TEMPLATE_HEIGHT + 16, TEMPLATE_WIDTH + 16, CV_8UC3, Scalar(0, 0, 0));
 		resize(img_croped, img_scaled, img_scaled.size(), 0, 0, INTER_LINEAR);
-		//imshow("scaled", img_scaled);
-		//cout << "Scaled: " << img_scaled.size().width << " " << img_scaled.size().height << endl;
+		//mirror it for better results
+		Mat img_mirrored = img_scaled.clone();
+		flip(img_scaled, img_mirrored, 1);
 
-		//imshow("bild", img2);
-
-		vector<int> dims;
-		double*** HoG = computeHoG(img_scaled, CELL_SIZE, dims);
-		//cout << dims[0] << " " << dims[1] << endl;
-		Mat grad = visualizeGradOrientations(HoG, dims);
-		//imshow("Grad", grad);
-		//waitKey();
-
-
-		float* templateHoG = compute1DTemplate(HoG, dims, 0, 0, 0);
-
-		for (int k = 0; k < points.cols; k++) {			
-			points.at<float>(*last, k) = templateHoG[k];
+		if (show) {
+			imshow("original", img);
+			imshow("croped", img_croped);
+			imshow("scaled", img_scaled);
+			imshow("flipped", img_mirrored);					
+			waitKey();
 		}
-		//cout << "added at:" << *last << " first=" << points.at<float>(*last, 0) << endl;
-		(*last)++;
+		else {
+			//compute HoG and 1D-representation for template
+			vector<int> dims;
+			double*** HoG = computeHoG(img_scaled, CELL_SIZE, dims);
+			float* templateHoG = compute1DTemplate(HoG, dims, 0, 0, 0);
+			//add it to points
+			for (int k = 0; k < points.cols; k++) {
+				points.at<float>(*last, k) = templateHoG[k];
+			}
+			(*last)++;
+
+			//compute HoG and 1D-representation for skipped template
+			HoG = computeHoG(img_scaled, CELL_SIZE, dims);
+			templateHoG = compute1DTemplate(HoG, dims, 0, 0, 0);
+			//add it to points
+			for (int k = 0; k < points.cols; k++) {
+				points.at<float>(*last, k) = templateHoG[k];
+			}
+			(*last)++;
+			
+			//free memory
+			free(templateHoG);
+			destroy_3Darray(HoG, dims[0], dims[1]);
+		}
 		pos += 4;
-		//cout << "added one at " << *last << endl;
 	}
 
 	return out;

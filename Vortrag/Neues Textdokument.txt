@@ -1,0 +1,4 @@
+- gespiegelten Bilder
+- 10 template je neg
+- oversampling
+- angepasstes oversampling bei retrain
