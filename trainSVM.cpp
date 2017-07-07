@@ -24,7 +24,7 @@
 using namespace std;
 using namespace cv;
 
-int iterations = 1000;
+int iterations = 100000;
 
 
 void SVMtrain(bool retraining) {
@@ -74,14 +74,16 @@ void SVMtrain(bool retraining) {
 
 	CvSVM SVM;
 	if (retraining) {
-		cout << "Training SVM with " << all_neg.rows << " Datapoints... (" << N_pos << ", " << all_neg - N_pos << ")" << endl;
+		cout << "Training SVM with " << all_neg.rows << " Datapoints... (" << N_pos << ", " << all_neg.rows - N_pos << ")" << endl;
 		SVM.train_auto(all_neg, labels, Mat(), Mat(), params);
+		SVM.save(SVM_2_LOCATION);
 	}
 	else {
 		cout << "Training SVM with " << points.rows << " Datapoints... (" << N_pos << ", " << N_neg << ")" << endl;
 		SVM.train_auto(points, labels, Mat(), Mat(), params);
+		SVM.save(SVM_LOCATION);
 	}
-	SVM.save(SVM_LOCATION);
+	
 	cout << "finished training" << endl << endl;
 }
 
@@ -134,7 +136,7 @@ Mat createFirstSet(int N_pos, int N_neg, int factor_pos, int factor_neg) {
 			}
 		}
 		//cout << "point at i=" << i << " from " << line_neg << endl;
-		if (i % 200 == 0) {
+		if ((i-N_pos) % (20* factor_neg) == 0) {
 			cout << "|";
 		}
 	}
