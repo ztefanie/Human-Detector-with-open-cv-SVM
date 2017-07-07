@@ -43,7 +43,11 @@ void testSVM(bool first, bool train) {
 */
 
 
-//Task 1.3 - Test extracting a template at a specific position
+/* Task 1.3 
+*
+* Test extracting a template at a specific position
+*
+*/
 void test3DTemplate()
 {
 	//compute HoG of whole picture
@@ -64,6 +68,11 @@ void test3DTemplate()
 	destroy_3Darray(featureTemplate, dims2[0], dims2[1]);
 }
 
+/* Task 1.3 / 1.4
+*
+* Shows HoG of a picture
+*
+*/
 void testHog()
 {
 	vector<int> dims;
@@ -73,6 +82,10 @@ void testHog()
 	destroy_3Darray(hog, dims[0], dims[1]);
 }
 
+/*
+* Test sizes of HoGs of small images
+*
+*/
 void testHogSmallTestImg()
 {
 	getchar();
@@ -100,7 +113,11 @@ void testHogSmallTestImg()
 	destroy_3Darray(hog3, dims3[0], dims3[1]);
 }
 
-
+/* Task 1.1
+*
+* Test drawing BoundingBoxes
+*
+*/
 void testDrawBoundingBox()
 {
 	String file = "INRIAPerson\\Train\\pos\\crop_000607.png";
@@ -111,6 +128,11 @@ void testDrawBoundingBox()
 	destroyAllWindows();
 }
 
+/* Task 1.2
+*
+* Testing the overlap computation for some test cases
+*
+*/
 void testOverlapBoundingBox()
 {
 	std::vector<int> truth = std::vector<int>(4, 0);
@@ -166,6 +188,10 @@ void testOverlapBoundingBox()
 	cout << "Shoud be 0.1428 is: " << ComputeOverlap(truth, detected) << endl;
 }
 
+/*
+* Changes degree to radient for gradient visualisation
+*
+*/
 double toRadiant(double degree)
 {
 	assert(degree >= 0 && degree <= 360.);
@@ -173,6 +199,10 @@ double toRadiant(double degree)
 	return rad;
 }
 
+/*
+* Visualize gradients for testing purpose
+*
+*/
 Mat visualizeGradOrientations(double*** hog, vector<int>& dims)
 {
 	assert(dims.size() == 3);
@@ -233,7 +263,11 @@ Mat visualizeGradOrientations(double*** hog, vector<int>& dims)
 	return img_out;
 }
 
-
+/* Task 1.5
+*
+* Visualizes the downscaling process
+*
+*/
 void testDownScale() {
 	String file = "INRIAPerson/Train/pos/crop_000607.png";
 	Mat img = imread(file);

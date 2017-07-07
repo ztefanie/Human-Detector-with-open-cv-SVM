@@ -83,7 +83,6 @@ void SVMtrain(bool retraining) {
 		SVM.train_auto(points, labels, Mat(), Mat(), params);
 		SVM.save(SVM_LOCATION);
 	}
-	
 	cout << "finished training" << endl << endl;
 }
 
