@@ -48,7 +48,7 @@ void trainOptimizedSVM(Mat hardNegatives) {
 	params.svm_type = CvSVM::C_SVC;
 	params.kernel_type = CvSVM::LINEAR;
 	//params.C = 0.01; //best option according to Dalal and Triggs
-	params.term_crit = cvTermCriteria(CV_TERMCRIT_ITER, 10000, 1e-6);
+	params.term_crit = cvTermCriteria(CV_TERMCRIT_ITER, 100000, 1e-6);
 
 	cout << "Retraining SVM with " << V.rows << " Datapoints... " << endl;
 	CvSVM SVM;
@@ -68,7 +68,7 @@ Mat find_hardNegatives() {
 	SVM.load(SVM_LOCATION);
 
 	//Init Mat for output
-	Mat allHardNeg(0, (TEMPLATE_WIDTH_CELLS-2)*(TEMPLATE_HEIGHT_CELLS-2)*HOG_DEPTH, CV_32FC1);
+	Mat allHardNeg(0, TEMPLATE_WIDTH_CELLS*TEMPLATE_HEIGHT_CELLS*HOG_DEPTH, CV_32FC1);
 	Mat predictMat(0, 1, CV_32FC1);
 	cout << endl << "Searching for hard negatives ... " << endl;
 
@@ -163,7 +163,7 @@ Mat find_hardNegatives() {
 
 	//Get only the hard negatives with the most positiv predict
 	cout << "Reducing hard negatives to " << MAX_HARD_NEG << "..." << endl;
-	Mat out(0, (TEMPLATE_WIDTH_CELLS-2)*(TEMPLATE_HEIGHT_CELLS-2)*HOG_DEPTH, CV_32FC1);
+	Mat out(0, TEMPLATE_WIDTH_CELLS*TEMPLATE_HEIGHT_CELLS*HOG_DEPTH, CV_32FC1);
 
 	double minVal;
 	double maxVal;
