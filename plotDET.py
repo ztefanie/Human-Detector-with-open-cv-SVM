@@ -43,7 +43,7 @@ content1 = [x.strip() for x in content1]
 xlist1 = list(range(0,0))
 ylist1 = list(range(0,0))
 
-while x < len(content1):
+while x < len(content2):
    print(content1[x+1] + " " + content1[x+2])
    #plt.plot(content1[x+2], content1[x+1], 'ro')
    xlist1.append(content1[x+2])

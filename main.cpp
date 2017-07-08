@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
 	*	Uses the find_hardNegatives()-Method from optimzeSVM	
 	*
 	*/
-	SVMtrain(true);
+	//SVMtrain(true);
 
 	/* Task 3.1 - 3.4
 	*
@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
 	//testQualitativ();
 
 	//Task 3.6
-	//createDETfile();
+	createDETfile();
 
 	cout << endl << "finished" << endl;
 	
