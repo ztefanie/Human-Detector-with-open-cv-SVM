@@ -40,11 +40,11 @@ int main(int argc, char* argv[])
 
 	//logOutput();
 	//Task 2.1
-	testSVM(true, true);
+	//testSVM(true, true);
 
 	//Task 2.2
 	//find_hardNegatives();	
-	testSVM(false, true);
+	//testSVM(false, true);
 
 	//Task 3.1
 	//testMultiscale();

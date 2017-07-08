@@ -29,7 +29,7 @@ void createDET() {
 
 	ofstream DETdata;
 	DETdata.open("DETdata_first.txt");
-	for (float i = -2; i <= 0; i += 0.1) {
+	for (float i = -2; i <= 2; i += 0.1) {
 		vector<float> out = testQuantitativ(i, responses_pos_first, responses_neg_first);
 		DETdata << i << endl;
 		DETdata << out[0] << endl;
@@ -40,7 +40,7 @@ void createDET() {
 	vector<float> responses_pos_retrained = createResponse(false, true);
 	vector<float> responses_neg_retrained = createResponse(false, false);
 	DETdata.open("DETdata_retrained.txt");
-	for (float i = -2; i <= 0; i += 0.1) {
+	for (float i = -2; i <= 2; i += 0.1) {
 		vector<float> out = testQuantitativ(i, responses_pos_retrained, responses_neg_retrained);
 		DETdata << i << endl;
 		DETdata << out[0] << endl;
