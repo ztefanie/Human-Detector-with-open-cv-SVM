@@ -36,7 +36,7 @@ void testQualitativ() {
 		int nr_of_templates = 0;
 		int* nr_of_templates_ptr = &nr_of_templates;
 
-		vector<templatePos> posTemplates = multiscaleImg(in, nr_of_templates_ptr, 1.0);
+		vector<templatePos> posTemplates = multiscaleImg(in, nr_of_templates_ptr, -1.0);
 		reduceTemplatesFound(posTemplates, true, in);
 
 		waitKey();
@@ -54,7 +54,7 @@ vector<templatePos> multiscaleImg(string file, int* nr_of_templates_ptr, float a
 	int count = 0;
 	vector<templatePos> posTemplates;
 	CvSVM SVM;
-	SVM.load(SVM_LOCATION);
+	SVM.load(SVM_2_LOCATION);
 
 	assert(!img.empty());
 

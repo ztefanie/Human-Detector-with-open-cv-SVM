@@ -178,7 +178,6 @@ Mat find_hardNegatives() {
 		out.push_back(allHardNeg.row(maxLoc.y));
 	}
 
-	cout << "finished reducing hard negatives to " << MAX_HARD_NEG << endl << endl;
 	cout << "finished reducing hard negatives to " << out.rows << endl << endl;
 
 	return out;

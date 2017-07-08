@@ -10,17 +10,18 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import FormatStrFormatter
 import matplotlib.backends.backend_tkagg
 import sys
+import matplotlib.patches as mpatches
 
 
 fig, ax = plt.subplots()
 
-ytickvalues = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1.0]
+ytickvalues = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5]
 	
 plt.xlabel('FPPW')
 plt.title('DET')
 plt.ylabel('miss rate')
 #plt.axis([0.000001, 0.1, 0.01, 0.5])
-plt.axis([0.000001, 1.5, 0.01, 0.5])
+plt.axis([0.000001, 0.5, 0.01, 0.5])
 
 ax.set_yscale('log')
 ax.set_xscale('log')
@@ -39,12 +40,17 @@ with open("DETdata_first.txt", "r") as f1:
 x = 0
 content1 = [x.strip() for x in content1] 
 
+xlist1 = list(range(0,0))
+ylist1 = list(range(0,0))
 
 while x < len(content1):
    print(content1[x+1] + " " + content1[x+2])
-   plt.plot(content1[x+2], content1[x+1], 'ro')
+   #plt.plot(content1[x+2], content1[x+1], 'ro')
+   xlist1.append(content1[x+2])
+   ylist1.append(content1[x+1])
    x += 3
 
+plt.plot(xlist1, ylist1, color='blue')
 f1.close
 
 #Draw DET of retrained-SVM
@@ -54,12 +60,22 @@ with open("DETdata_retrained.txt", "r") as f2:
 y = 0
 content2 = [y.strip() for y in content2] 
 
+xlist2 = list(range(0,0))
+ylist2 = list(range(0,0))
+
 while y < len(content2):
     #print(content2[y+1] + " " + content2[y+2])
-    plt.plot(content2[y+2], content2[y+1], 'bs')
+    #plt.plot(content2[y+2], content2[y+1], 'bs')
+    xlist2.append(content2[y+2])
+    ylist2.append(content2[y+1])
     y += 3
 
 
+plt.plot(xlist2, ylist2, color='orange')
+
+firstlabel = mpatches.Patch(color='blue', label='first SVM')
+retrainedlabel = mpatches.Patch(color='orange', label='retrained SVM')
+plt.legend(handles=[firstlabel, retrainedlabel])
 
 f2.close
 
@@ -73,4 +89,4 @@ f2.close
 
 #plt.show()
 
-#plt.savefig('myfig.png')
+plt.savefig('DET.png')

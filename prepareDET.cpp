@@ -38,6 +38,22 @@ void createDETfile() {
 	DETdata.close(); 
 	cout << "finished creating DET-File for first SVM... " << endl;
 
+
+	cout << "Creating DET-File for second SVM... " << endl;
+	vector<float> pos2 = testQuantitativDET_pos(false);
+	vector<long double> neg2 = testQuantitativDET_neg(false);
+
+	ofstream DETdata2;
+	DETdata2.open("DETdata_retrained.txt");
+	for (float i = start; i <= stop; i += steps) {
+		DETdata2 << i << endl;
+		DETdata2 << pos2[floor((i - start) / steps) + 1] << endl;
+		DETdata2 << neg2[floor((i - start) / steps) + 1] << endl;
+	}
+	DETdata2.close();
+	cout << "finished creating DET-File for second SVM... " << endl;
+
+
 		/*DETdata.open("DETdata_retrained.txt");
 		for (float i = min_score; i <= 0; i += 0.1) {
 			vector<float> out = testQuantitativDET(i);

@@ -31,7 +31,7 @@ void logOutput() {
 int main(int argc, char* argv[])
 {
 	//Uncomment next line if you wish output to log file
-	logOutput();
+	//logOutput();
 
 	//Task 1.1
 	//testDrawBoundingBox();
@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
 	*	Set input paramter to false = first training  or true = retraining
 	*
 	*/
-	SVMtrain(false);
+	//SVMtrain(false);
 
 	/* Task 2.2
 	*
