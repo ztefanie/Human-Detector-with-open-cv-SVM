@@ -1,24 +1,16 @@
 #include "main.h"
+#include "utils.h"
 #include "tests.h"
 #include "optimizeSVM.h"
 #include "testSVM.h"
 #include "DET.h"
 #include "prepareDET.h"
-#include <ctime>
+
 
 
 // Function to print the output to a log instead of printing to the commandline
 void logOutput() {
-	time_t t = time(0);   // get time now
-	struct tm * now = localtime(&t);
-	stringstream ss;
-	ss << "log_" << (now->tm_year + 1900) << '-'
-		<< (now->tm_mon + 1) << '-'
-		<< now->tm_mday << "-"
-		<< now->tm_hour << "-" << now->tm_min
-		<< ".txt";
-	string out_file = ss.str();
-
+	string out_file = "log_" + getTimeLog() + ".txt";
 	freopen(out_file.c_str(), "w", stdout);
 }
 
@@ -90,10 +82,12 @@ int main(int argc, char* argv[])
 	*	uses the multiscaleImg Function to find all templates with a score big enough
 	*	and reduceTemplatesFound Function to realize non-maxima suppression and remove overlapping templates
 	*
-	*	Uncomment line and use any key to get the results for the next test image
+	*	Uncomment line and use any key to get the results for the next test image 
+	*	first line for iterating over all positiv files from beginning, second line for random picture order
 	*
 	*/
-	testQualitativ();
+	//testQualitativ();
+	//testQualitativRand();
 
 	/* Task 3.6
 	*

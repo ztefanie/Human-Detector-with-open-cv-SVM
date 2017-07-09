@@ -25,6 +25,47 @@
 using namespace std;
 using namespace cv;
 
+void testQualitativRand() {
+	string line;
+	ifstream list_pos("INRIAPerson\\Test\\pos.lst");
+	int line_ctr = 0;
+
+	while (getline(list_pos, line)) {
+		line_ctr++;
+	}
+	list_pos.clear();
+	list_pos.seekg(0, ios::beg);
+
+	cout << "Number of lines: " << line_ctr << endl;
+
+	while (true) {
+		//back to first line
+		list_pos.clear();
+		list_pos.seekg(0, ios::beg);
+
+		//get random line
+		int pic_rand = rand() % line_ctr;
+		for (int i = 0; i < pic_rand; i++)
+		{
+			getline(list_pos, line);
+		}
+
+		//get picture
+		string folder = "INRIAPerson";
+		string in = folder + "/" + line;
+		cout << in << endl;
+		int nr_of_templates = 0;
+		int* nr_of_templates_ptr = &nr_of_templates;
+
+		//find persons
+		vector<templatePos> posTemplates = multiscaleImg(in, nr_of_templates_ptr, 1.0);
+		reduceTemplatesFound(posTemplates, true, in);
+
+		waitKey();
+	}
+}
+
+
 void testQualitativ() {
 	string line;
 	ifstream list_pos("INRIAPerson\\Test\\pos.lst");
@@ -54,7 +95,7 @@ vector<templatePos> multiscaleImg(string file, int* nr_of_templates_ptr, float a
 	int count = 0;
 	vector<templatePos> posTemplates;
 	CvSVM SVM;
-	SVM.load(SVM_2_LOCATION);
+	SVM.load(SVM_LOCATION);
 
 	assert(!img.empty());
 

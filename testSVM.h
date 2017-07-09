@@ -9,6 +9,7 @@
 #include "featureExtraction.h"
 
 void testQualitativ();
+void testQualitativRand();
 std::vector<templatePos> multiscaleImg(std::string file, int* nr_of_templates_ptr, float assumed_positiv);
 std::vector<templatePos> reduceTemplatesFound(std::vector<templatePos> posTemplates, bool showOutput, std::string file);
 float getOverlap(std::vector<int> truth, cv::Point p1, cv::Point p2);

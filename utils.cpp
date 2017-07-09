@@ -4,6 +4,7 @@
 #include <opencv2/ml/ml.hpp>
 #include <iostream>
 #include <fstream>
+#include <ctime>
 
 #include "utils.h"
 #include "hog.h"
@@ -226,5 +227,43 @@ std::vector<int> getBoundingBoxes(string file)
 	}
 	else cout << "Unable to open file";
 
+	return out;
+}
+
+/*
+* Get Time and Date for naming log-files
+*
+* returns date-time-string
+*
+*/
+string getTimeLog() {
+	time_t t = time(0);   // get time now
+	struct tm * now = localtime(&t);
+	stringstream ss;
+	ss << (now->tm_year + 1900) << '-'
+		<< (now->tm_mon + 1) << '-'
+		<< now->tm_mday << "-"
+		<< now->tm_hour << "-"
+		<< now->tm_min;
+	string out = ss.str();
+	return out;
+}
+
+/*
+* Get Time and Date for output
+*
+* returns: nicely formatted Date-Time-String
+*/
+string getTimeFormatted() {
+	time_t t = time(0); 
+	struct tm * now = localtime(&t);
+	stringstream ss;
+	ss << "Date: "
+		<< now->tm_mday << '.'
+		<< (now->tm_mon + 1) << '.'
+		<< (now->tm_year + 1900) << " Time: "
+		<< now->tm_hour << ":"
+		<< now->tm_min;
+	string out = ss.str();
 	return out;
 }
