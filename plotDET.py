@@ -21,16 +21,13 @@ plt.xlabel('FPPW')
 plt.title('DET')
 plt.ylabel('miss rate')
 #plt.axis([0.000001, 0.1, 0.01, 0.5])
-plt.axis([0.000001, 0.5, 0.01, 0.5])
+plt.axis([0.000001, 0.1, 0.01, 0.5])
 
 ax.set_yscale('log')
 ax.set_xscale('log')
 ax.set_yticks(ytickvalues)
 ax.get_yaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
 
-#plt.axis([0, 0.1, 0, 0.5])
-#plt.show()
-#plt.savefig('myfig.png')
 
 
 #Draw DET of First-SVM
@@ -43,7 +40,7 @@ content1 = [x.strip() for x in content1]
 xlist1 = list(range(0,0))
 ylist1 = list(range(0,0))
 
-while x < len(content2):
+while x < len(content1):
    print(content1[x+1] + " " + content1[x+2])
    #plt.plot(content1[x+2], content1[x+1], 'ro')
    xlist1.append(content1[x+2])
@@ -52,6 +49,7 @@ while x < len(content2):
 
 plt.plot(xlist1, ylist1, color='blue')
 f1.close
+
 
 #Draw DET of retrained-SVM
 with open("DETdata_retrained.txt", "r") as f2:
@@ -79,14 +77,5 @@ plt.legend(handles=[firstlabel, retrainedlabel])
 
 f2.close
 
-# evenly sampled time at 200ms intervals
-#t = np.arange(0., 5., 0.2)
-
-# red dashes, blue squares and green triangles
-#plt.plot(t, t, 'r--')
-#plt.plot(t, t**2, 'bs')
-#plt.plot(t, t**3, 'g^')
-
-#plt.show()
 
 plt.savefig('DET.png')

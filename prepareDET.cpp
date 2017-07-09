@@ -27,41 +27,34 @@ void createDETfile() {
 	cout << "Creating DET-File for first SVM... " << endl;
 	vector<float> pos = testQuantitativDET_pos(true);
 	vector<long double> neg = testQuantitativDET_neg(true);
-		
+
 	ofstream DETdata;
+	DETdata.precision(17);
 	DETdata.open("DETdata_first.txt");
 	for (float i = start; i <= stop; i += steps) {
 		DETdata << i << endl;
-		DETdata << pos[floor((i - start) / steps) + 1] << endl;
-		DETdata << neg[floor((i - start) / steps) + 1] << endl;
+		DETdata << fixed << pos[floor((i - start) / steps) + 1] << endl;
+		DETdata << fixed << neg[floor((i - start) / steps) + 1] << endl;
 	}
 	DETdata.close(); 
 	cout << "finished creating DET-File for first SVM... " << endl;
 
 
-	cout << "Creating DET-File for second SVM... " << endl;
+	cout << endl << "Creating DET-File for second SVM... " << endl;
 	vector<float> pos2 = testQuantitativDET_pos(false);
 	vector<long double> neg2 = testQuantitativDET_neg(false);
 
 	ofstream DETdata2;
+	DETdata2.precision(17);
 	DETdata2.open("DETdata_retrained.txt");
 	for (float i = start; i <= stop; i += steps) {
 		DETdata2 << i << endl;
-		DETdata2 << pos2[floor((i - start) / steps) + 1] << endl;
-		DETdata2 << neg2[floor((i - start) / steps) + 1] << endl;
+		DETdata2 << fixed << pos2[floor((i - start) / steps) + 1] << endl;
+		DETdata2 << fixed << neg2[floor((i - start) / steps) + 1] << endl;
 	}
 	DETdata2.close();
 	cout << "finished creating DET-File for second SVM... " << endl;
 
-
-		/*DETdata.open("DETdata_retrained.txt");
-		for (float i = min_score; i <= 0; i += 0.1) {
-			vector<float> out = testQuantitativDET(i);
-			DETdata << i << endl;
-			DETdata << out[0] << endl;
-			DETdata << out[1] << endl;
-		}
-		DETdata.close();*/
 }
 
 vector<long double> testQuantitativDET_neg(bool first) {
@@ -100,11 +93,11 @@ vector<long double> testQuantitativDET_neg(bool first) {
 			}
 		}
 		//cout << "point at i=" << i << " from " << line_neg << endl;
-		if (i % 200 == 0) {
+		if (i % 400 == 0) {
 			cout << "|";
 		}
 	}
-	cout << "Finished reading in negativ test data ..." << endl;
+	cout << endl << "Finished reading in negativ test data ..." << endl;
 	list.close();
 	
 	Mat template_temp(1, template_size, CV_32FC1);
@@ -127,7 +120,7 @@ vector<long double> testQuantitativDET_neg(bool first) {
 
 	for (float i = start; i <= stop; i += steps) {
 		fppw[floor((i - start) / steps) + 1] = fp[floor((i - start) / steps) + 1] / (double)test_size;
-		cout << "at i=" << i << " fppw=" << fppw[floor((i - start) / steps) + 1] << endl;
+		//cout << "at i=" << i << " fppw=" << fppw[floor((i - start) / steps) + 1] << endl;
 	}
 
 	return fppw;
@@ -160,7 +153,7 @@ vector<float> testQuantitativDET_pos(bool first) {
 	}
 	list.close();
 
-	cout << "Finished reading in positiv test data ..." << endl;
+	cout << endl << "Finished reading in positiv test data ..." << endl;
 
 	Mat template_temp(1, template_size, CV_32FC1);
 	int array_size = floor((stop - start) / steps) + 1;
@@ -186,7 +179,7 @@ vector<float> testQuantitativDET_pos(bool first) {
 
 	for (float i = start; i <= stop; i += steps) {
 		missrate_total[floor((i - start) / steps) + 1] = misses[floor((i - start) / steps) + 1] / (double)last;
-		cout << "at i=" << i << " missrate=" << missrate_total[floor((i - start) / steps) + 1] << endl;
+		//cout << "at i=" << i << " missrate=" << missrate_total[floor((i - start) / steps) + 1] << endl;
 	}		
 	return missrate_total;
 }

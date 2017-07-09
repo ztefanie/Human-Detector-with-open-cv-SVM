@@ -93,15 +93,20 @@ int main(int argc, char* argv[])
 	*	Uncomment line and use any key to get the results for the next test image
 	*
 	*/
-	//testQualitativ();
+	testQualitativ();
 
-	//Task 3.6
+	/* Task 3.6
+	*
+	*	Quantitativ Evaluation
+	*
+	*	uses Functions from prepareDET-class to write miss-rates and fppw for different detection thresholds
+	*	after executing this function, run the python-script to generate the plot.
+	*
+	*/
 	createDETfile();
 
-	cout << endl << "finished" << endl;
-	
-	//waitKey();
-	getchar();
 
+	cout << endl << "finished" << endl;
+	getchar();
 }
 
