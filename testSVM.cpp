@@ -58,7 +58,8 @@ void testQualitativRand() {
 		int* nr_of_templates_ptr = &nr_of_templates;
 
 		//find persons
-		vector<templatePos> posTemplates = multiscaleImg(in, nr_of_templates_ptr, 1.0);
+		vector<templatePos> posTemplates;
+		posTemplates = multiscaleImg(in, nr_of_templates_ptr, 1.0);
 		reduceTemplatesFound(posTemplates, true, in);
 
 		waitKey();
@@ -77,7 +78,8 @@ void testQualitativ() {
 		int nr_of_templates = 0;
 		int* nr_of_templates_ptr = &nr_of_templates;
 
-		vector<templatePos> posTemplates = multiscaleImg(in, nr_of_templates_ptr, 1.0);
+		vector<templatePos> posTemplates;
+		posTemplates = multiscaleImg(in, nr_of_templates_ptr, 1.0);
 		reduceTemplatesFound(posTemplates, true, in);
 
 		waitKey();
@@ -217,7 +219,7 @@ vector<templatePos> multiscaleImg(string file, int* nr_of_templates_ptr, float a
 }
 
 
-vector<templatePos> reduceTemplatesFound(vector<templatePos> posTemplates, bool showOutput, string file) { //, int* false_positives, float* miss_rate) {
+vector<templatePos> reduceTemplatesFound(vector<templatePos> posTemplates, bool showOutput, string file) {
 
 	Mat img = imread(file);
 
@@ -280,8 +282,6 @@ vector<templatePos> reduceTemplatesFound(vector<templatePos> posTemplates, bool 
 			}
 		}
 
-
-
 		//Reduce to maximum N templates
 		if (nonOverlappingTemplates.size() > max_templates) {
 			sort(nonOverlappingTemplates.begin(), nonOverlappingTemplates.end(), compareByScore);
@@ -315,15 +315,15 @@ vector<templatePos> reduceTemplatesFound(vector<templatePos> posTemplates, bool 
 					color = cvScalar(50, 200, 50);
 				}
 
-				rectangle(img, p1_old, p2_old, color, 1, 8);
+				rectangle(img, p1_old, p2_old, color, 2, 8);
 				String selection_score = "Selection Score: " + to_string(pos.score);
 				int baseline = 0;
-				int size = getTextSize("blubb", CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * pos.scale / 300, 1, &baseline).height;
+				int size = getTextSize("blubb", CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * pos.scale / 200, 1, &baseline).height;
 				putText(img, selection_score, Point(pos.x + 2, pos.y + size + 2), CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * pos.scale / 300, color, 1, CV_AA);
 
 				String overlap_out = "Overlap: " + to_string(overlap);
 				putText(img, overlap_out, Point(pos.x + 2, pos.y + size * 2 + 4), CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * pos.scale / 300, color, 1, CV_AA);
-				showBoundingBox(img, file);
+				//showBoundingBox(img, file);
 			}
 		}
 
@@ -340,7 +340,7 @@ vector<templatePos> reduceTemplatesFound(vector<templatePos> posTemplates, bool 
 
 /*
 * Computes the maximal overlap with any of the truth bounding boxes in a picture for a given box
-* 
+*
 * @returns: maximal overlap
 * @param truth: all truth bounding boxes of a picture
 * @param p1: (xMin, yMin) of the given box

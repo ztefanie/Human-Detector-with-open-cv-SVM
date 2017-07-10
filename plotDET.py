@@ -41,7 +41,7 @@ xlist1 = list(range(0,0))
 ylist1 = list(range(0,0))
 
 while x < len(content1):
-   print(content1[x+1] + " " + content1[x+2])
+   #print(content1[x+1] + " " + content1[x+2])
    #plt.plot(content1[x+2], content1[x+1], 'ro')
    xlist1.append(content1[x+2])
    ylist1.append(content1[x+1])
@@ -62,7 +62,7 @@ xlist2 = list(range(0,0))
 ylist2 = list(range(0,0))
 
 while y < len(content2):
-    #print(content2[y+1] + " " + content2[y+2])
+    print(content2[y+1] + " " + content2[y+2])
     #plt.plot(content2[y+2], content2[y+1], 'bs')
     xlist2.append(content2[y+2])
     ylist2.append(content2[y+1])

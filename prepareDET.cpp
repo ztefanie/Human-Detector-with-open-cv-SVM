@@ -70,8 +70,8 @@ vector<long double> testQuantitativDET_neg(bool first) {
 	string line;
 	ifstream list("INRIAPerson\\Test\\neg.lst");
 
-
-	int test_size = 453 * 50;
+	int factor = 100;
+	int test_size = 453 * factor;
 
 	const int template_size = (TEMPLATE_WIDTH_CELLS)*(TEMPLATE_HEIGHT_CELLS)*HOG_DEPTH;
 	Mat temp_neg(test_size, template_size, CV_32FC1);
@@ -80,10 +80,10 @@ vector<long double> testQuantitativDET_neg(bool first) {
 	vector<long double> fppw(array_size);
 
 	cout << "Reading in negativ test data ..." << endl;
-	for (int i = 0; i < test_size; i += 50) {
+	for (int i = 0; i < test_size; i += factor) {
 		getline(list, line);
 		//for each negativ 10 templates
-		for (int k = 0; k < 10; k++) {
+		for (int k = 0; k < factor; k++) {
 			float* templateHoG;
 			templateHoG = getTemplate(line);
 
@@ -101,7 +101,7 @@ vector<long double> testQuantitativDET_neg(bool first) {
 	list.close();
 	
 	Mat template_temp(1, template_size, CV_32FC1);
-	//iterate over rows ot points_temp_pos
+	//iterate over rows ot points_neg
 	for (int row = 0; row < temp_neg.rows; row++) {
 		//fill float-array
 		for (int i = 0; i < template_size; i++) {
@@ -119,7 +119,7 @@ vector<long double> testQuantitativDET_neg(bool first) {
 	}
 
 	for (float i = start; i <= stop; i += steps) {
-		fppw[floor((i - start) / steps) + 1] = fp[floor((i - start) / steps) + 1] / (double)test_size;
+		fppw[floor((i - start) / steps) + 1] = fp[floor((i - start) / steps) + 1] / (long double)test_size;
 		//cout << "at i=" << i << " fppw=" << fppw[floor((i - start) / steps) + 1] << endl;
 	}
 

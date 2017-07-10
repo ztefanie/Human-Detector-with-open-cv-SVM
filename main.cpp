@@ -87,7 +87,7 @@ int main(int argc, char* argv[])
 	*
 	*/
 	//testQualitativ();
-	//testQualitativRand();
+	testQualitativRand();
 
 	/* Task 3.6
 	*

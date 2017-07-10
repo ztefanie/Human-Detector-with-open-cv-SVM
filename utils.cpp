@@ -147,6 +147,7 @@ Mat showBoundingBox(Mat img, string file)
 {
 std:vector<int> boxes = getBoundingBoxes(file);
 	int pos = 0;
+	Mat imgClone = img.clone();
 	while (boxes.size() - pos > 3)
 	{
 		Scalar color = Scalar(0, 255, 0);
@@ -154,10 +155,11 @@ std:vector<int> boxes = getBoundingBoxes(file);
 		Point p2 = Point(boxes.at(pos + 0), boxes.at(pos + 3));
 		Point p3 = Point(boxes.at(pos + 2), boxes.at(pos + 1));
 		Point p4 = Point(boxes.at(pos + 2), boxes.at(pos + 3));
-		line(img, p1, p2, color, 5);
-		line(img, p1, p3, color, 5);
-		line(img, p2, p4, color, 5);
-		line(img, p3, p4, color, 5);
+		line(img, p1, p2, color, 0.15);
+		line(img, p1, p3, color, 0.15);
+		line(img, p2, p4, color, 0.15);
+		line(img, p3, p4, color, 0.15);
+
 		pos += 4;
 	}
 	return img;
