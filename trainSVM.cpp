@@ -66,7 +66,7 @@ void SVMtrain(bool retraining) {
 	CvSVMParams params;
 	params.svm_type = CvSVM::C_SVC;
 	params.kernel_type = CvSVM::LINEAR;
-	params.C = 0.01; //best option according to Dalal and Triggs
+	//params.C = 0.01; //best option according to Dalal and Triggs
 	params.term_crit = cvTermCriteria(CV_TERMCRIT_ITER, iterations, 1e-6);
 
 
