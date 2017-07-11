@@ -7,15 +7,12 @@
 #include <opencv2/ml/ml.hpp>
 #include <string.h>
 
-//declare functions here
 void testDrawBoundingBox();
 void testOverlapBoundingBox();
 void testHog();
 void testHogSmallTestImg();
 cv::Mat visualizeGradOrientations(double*** hog, std::vector<int> &dims);
 void test3DTemplate();
-void testMultiscale();
-//void testSVM(bool first, bool train);
 void testDownScale();
 
 

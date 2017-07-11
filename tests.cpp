@@ -20,29 +20,6 @@ using namespace std;
 using namespace cv;
 
 
-/*
-void testSVM(bool first, bool train) {
-	
-	CvSVM SVM;
-	if (first) {
-		if (train) {
-			trainSVM(false);
-		}
-		SVM.load(SVM_LOCATION);
-	}
-	else {
-		if (train) {
-			trainSVM(true);
-		}
-		SVM.load(SVM_2_LOCATION);
-	}
-
-	//testQuantitativ(first, ASSUMED_POSITIV);
-
-}
-*/
-
-
 /* Task 1.3 
 *
 * Test extracting a template at a specific position

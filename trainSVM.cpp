@@ -66,7 +66,7 @@ void SVMtrain(bool retraining) {
 	CvSVMParams params;
 	params.svm_type = CvSVM::C_SVC;
 	params.kernel_type = CvSVM::LINEAR;
-	//params.C = 0.01; //best option according to Dalal and Triggs
+	params.C = 0.01; //best option according to Dalal and Triggs
 	params.term_crit = cvTermCriteria(CV_TERMCRIT_ITER, iterations, 1e-6);
 
 
@@ -184,7 +184,7 @@ float* getTemplate(string filename) {
 	double*** HoG;
 	float* Template1D;
 
-	srand(time(NULL));
+	//srand(time(NULL));
 	int height_new = rand() % (img.size().height - (128 + 16)) + (128 + 16);
 	double new_size = height_new / (double)img.size().height;
 	resize(img, img, Size(), new_size, new_size, 1);
@@ -194,12 +194,14 @@ float* getTemplate(string filename) {
 
 	int offsetX = 0;
 	int offsetY = 0;
+	//cout << "dims[0] - TEMPLATE_HEIGHT_CELLS" << dims[0] - TEMPLATE_HEIGHT_CELLS << endl;
+	//cout << "dims[1] - TEMPLATE_WIDTH_CELLS " << dims[1] - TEMPLATE_WIDTH_CELLS << endl;
 	if (dims[0] > TEMPLATE_HEIGHT_CELLS && dims[1] > TEMPLATE_WIDTH_CELLS) {
-		int offsetX = rand() % (dims[0] - TEMPLATE_HEIGHT_CELLS);
-		int offsetY = rand() % (dims[1] - TEMPLATE_WIDTH_CELLS);
+		offsetX = rand() % (dims[0] - TEMPLATE_HEIGHT_CELLS) + 1;
+		offsetY = rand() % (dims[1] - TEMPLATE_WIDTH_CELLS) + 1;
 	}
-
-	Template1D = compute1DTemplate(HoG, dims, offsetX, offsetY, 0);
+	//cout << "height_new = " << height_new << " offsetX = " << offsetX << " offsetY = " << offsetY << endl;
+	Template1D = compute1DTemplate(HoG, dims, offsetY, offsetX, 0);
 	destroy_3Darray(HoG, dims[0], dims[1]);
 
 	return Template1D;

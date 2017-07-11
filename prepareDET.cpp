@@ -20,7 +20,7 @@ using namespace std;
 using namespace cv;
 
 float steps = 0.01;
-float start = -2.;
+float start = -2.5;
 float stop = 2.;
 
 void createDETfile() {
@@ -108,12 +108,13 @@ vector<long double> testQuantitativDET_neg(bool first) {
 			template_temp.at<float>(0, i) = temp_neg.at<float>(row, i);
 		}
 		float score = SVM.predict(template_temp, true);
+		//cout << "\ttemplate hast score = " << score << endl;
 
 		//iterate over miss array
-
 		for (float i = start; i <= stop; i += steps) {
 			if (score > i) {
 				fp[floor((i - start) / steps) + 1]++;
+				//cout << "\t\t " << i << " at: " << floor((i - start) / steps) + 1 << " increased" << endl;
 			}
 		}
 	}

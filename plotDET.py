@@ -21,7 +21,7 @@ plt.xlabel('FPPW')
 plt.title('DET')
 plt.ylabel('miss rate')
 #plt.axis([0.000001, 0.1, 0.01, 0.5])
-plt.axis([0.000001, 0.1, 0.01, 0.5])
+plt.axis([0.00001, 0.1, 0.01, 0.5])
 
 ax.set_yscale('log')
 ax.set_xscale('log')

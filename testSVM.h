@@ -16,5 +16,6 @@ float getOverlap(std::vector<int> truth, cv::Point p1, cv::Point p2);
 float isFound(std::vector<templatePos> allTemplates, std::vector<int> truth, int which_bounding_box, float min_score);
 bool compareTemplatePos(templatePos pos1, templatePos pos2); 
 bool sortXYScale(templatePos pos1, templatePos pos2);
+void visualize(std::vector<templatePos> nonOverlappingTemplates, std::string file);
 
 #endif
