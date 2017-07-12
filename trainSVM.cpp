@@ -29,11 +29,11 @@ int iterations = 100000;
 
 void SVMtrain(bool retraining) {
 
-	int factor_pos = 5;
+	int factor_pos = 1;
 	if (retraining) {
-		factor_pos = 7;
+		factor_pos = 2;
 	}
-	int factor_neg = 10;
+	int factor_neg = 2;
 
 	std::string line;
 	int N_pos = 2474;
