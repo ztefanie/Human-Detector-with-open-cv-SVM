@@ -1,6 +1,0 @@
-Read in Data for SVM ... 
-positives ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-negatives: |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-finished read in Data for SVM
-
-Training SVM with 4910 Datapoints... (2474, 2436) since: Date: 12.7.2017 Time: 13:58

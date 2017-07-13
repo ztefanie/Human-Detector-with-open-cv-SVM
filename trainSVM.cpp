@@ -29,11 +29,11 @@ int iterations = 100000;
 
 void SVMtrain(bool retraining) {
 
-	int factor_pos = 1;
+	int factor_pos = 5;
 	if (retraining) {
-		factor_pos = 2;
+		factor_pos = 6;
 	}
-	int factor_neg = 2;
+	int factor_neg = 10;
 
 	std::string line;
 	int N_pos = 2474;
@@ -66,7 +66,7 @@ void SVMtrain(bool retraining) {
 	CvSVMParams params;
 	params.svm_type = CvSVM::C_SVC;
 	params.kernel_type = CvSVM::LINEAR;
-	params.C = 0.01; //best option according to Dalal and Triggs
+	//params.C = 0.01; //best option according to Dalal and Triggs
 	params.term_crit = cvTermCriteria(CV_TERMCRIT_ITER, iterations, 1e-6);
 
 
