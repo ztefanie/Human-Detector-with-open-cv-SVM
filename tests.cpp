@@ -296,6 +296,7 @@ void testDownScale() {
 				real_temp_size[counter] = Point(TEMPLATE_WIDTH * hig_scale + j * hig_scale, TEMPLATE_HEIGHT * hig_scale + i * hig_scale);
 				rectangle(m, temp_pos[counter], Point(j + TEMPLATE_WIDTH, i + TEMPLATE_HEIGHT), CV_RGB(255, 255, 0), 1, 8);
 				rectangle(m2, real_temp_pos[counter], real_temp_size[counter], CV_RGB(255, 255, 0), 1, 8);
+				waitKey();
 			}
 		}
 		rectangle(m, Point(0, 0), Point(TEMPLATE_WIDTH, TEMPLATE_HEIGHT), CV_RGB(0, 0, 255), 1, 8);

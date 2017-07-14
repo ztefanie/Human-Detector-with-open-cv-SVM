@@ -30,10 +30,11 @@ int iterations = 100000;
 void SVMtrain(bool retraining) {
 
 	int factor_pos = 5;
-	if (retraining) {
-		factor_pos = 6;
-	}
 	int factor_neg = 10;
+	if (retraining) {
+		factor_pos = 5;
+		factor_neg = 8;
+	}
 
 	std::string line;
 	int N_pos = 2474;
@@ -52,15 +53,16 @@ void SVMtrain(bool retraining) {
 	if (retraining) {
 		//Mat hardNegatives = find_hardNegatives();
 		//hardNegatives.copyTo(points(Rect(0, points.rows - (MAX_HARD_NEG+1), hardNegatives.cols, hardNegatives.rows)));
-		
+		Mat hardNegatives = find_hardPositives();
+		vconcat(points, hardNegatives, all_neg);
+
 		Mat label_neg(1, 1, CV_32FC1);
 		label_neg.at<float>(0, 0) = 1.0;
-		Mat hardNegatives = find_hardNegatives();
-		vconcat(points, hardNegatives, all_neg);
 		for (int i = 0; i < hardNegatives.rows; i++) {
 			labels.push_back(label_neg);
 		}
 	}
+
 
 	// Train with SVM
 	CvSVMParams params;

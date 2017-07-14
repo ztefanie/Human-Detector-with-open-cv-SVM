@@ -81,33 +81,14 @@ double ComputeOverlap(std::vector<int> truth, std::vector<int> detected)
 	int union1;
 
 	//compute intersect
-	int width_intersect;
-	int height_intersect;
-	if (truth.at(0) < detected.at(0))
-	{
-		width_intersect = truth.at(2) - detected.at(0);
-	}
-	else
-	{
-		width_intersect = detected.at(2) - truth.at(0);
-	}
-	if (truth.at(1) < detected.at(1))
-	{
-		height_intersect = truth.at(3) - detected.at(1);
-	}
-	else
-	{
-		height_intersect = detected.at(3) - truth.at(1);
-	}
-	width_intersect < 0 ? width_intersect = 0 : 0;
-	height_intersect < 0 ? height_intersect = 0 : 0;
+	Rect truthRect(truth.at(0), truth.at(1), truth.at(2) - truth.at(0), truth.at(3) - truth.at(1));
+	Rect detecRect(detected.at(0), detected.at(1), detected.at(2) - detected.at(0), detected.at(3) - detected.at(1));
 
-	intersect = width_intersect * height_intersect;
+	Rect intersectRect = (truthRect & detecRect);
+	intersect = intersectRect.area();
 
 	//compute union
-	int size_truth = (truth.at(0) - truth.at(2)) * (truth.at(1) - truth.at(3));
-	int size_detected = (detected.at(0) - detected.at(2)) * (detected.at(1) - detected.at(3));
-	union1 = size_truth + size_detected - intersect;
+	union1 = truthRect.area() + detecRect.area() - intersect;
 
 	//compute overlap
 	double overlap = (double)intersect / union1;

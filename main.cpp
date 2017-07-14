@@ -22,6 +22,7 @@ void logOutput() {
 */
 int main(int argc, char* argv[])
 {
+	//find_hardPositives();
 	//Uncomment next line if you wish output to log file
 	logOutput();
 
@@ -63,7 +64,7 @@ int main(int argc, char* argv[])
 	*	
 	*	Function that trains SVM. 
 	*	Set input paramter to false = first training  or true = retraining
-	*
+	*	
 	*/
 	SVMtrain(false);
 

@@ -21,7 +21,7 @@ using namespace cv;
 
 float steps = 0.01;
 float start = -2.5;
-float stop = 2.;
+float stop = 1.9;
 
 void createDETfile() {
 	cout << "Creating DET-File for first SVM... " << endl;
