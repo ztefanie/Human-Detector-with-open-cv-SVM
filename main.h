@@ -26,7 +26,6 @@ using namespace cv;
 #define TEMPLATE_HEIGHT			128		// the height of a template (in pixels)
 #define TEMPLATE_WIDTH			64		// the width of a template (in pixels)
 
-// the width of a window (in pixels)
 #define TEMPLATE_HEIGHT_CELLS	16		// the height of a template (in cells)
 #define TEMPLATE_WIDTH_CELLS	8		// the width of a window (in cells)
 #define HOG_DEPTH				32		// dims_z from the hog-implementation
@@ -36,11 +35,11 @@ using namespace cv;
 #define LIST_POS				"INRIAPerson\\Train\\pos.lst"
 #define LIST_POS_NORM			"INRIAPerson\\train_64x128_H96\\pos.lst"
 #define LIST_NEG				"INRIAPerson\\Train\\neg.lst"
-#define MAX_HARD_NEG			5000	// Number-of-positives minus Number-of-negatives		
+#define MAX_HARD_NEG			5000	// maximum number of hard negatives	
 
 #define max_templates			5		// maximum number of templates that can be found in one picture
 #define ASSUMED_POSITIV			1		// min score a template needs for positiv detection
-#define OVERLAP_CORRECT			0.4
+#define OVERLAP_CORRECT			0.5		// detected box must overlap truth box 50%
 
 #endif
 

@@ -4,6 +4,7 @@
 #include <opencv2/ml/ml.hpp>
 #include <iostream>
 #include <fstream>
+#include <ctime>
 
 #include "utils.h"
 #include "hog.h"
@@ -13,20 +14,26 @@
 using namespace std;
 using namespace cv;
 
-//Check if running on Windows - if not ->no colors in console window!
-#ifdef _WIN32
-HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-
-void colorConsole(int color)
-{
-	SetConsoleTextAttribute(hConsole, color);
-}
-#endif
-
+/*
+* Comparison Function for templatePos-Struct to order templatePos depending on their score
+*
+* @returns: true if p1 is smaller, false otherwise
+* @param p1: first templatePos which should be compared
+* @param p2: second template Pos which should be compared
+*
+*/
 bool compareByScore(templatePos p1, templatePos p2) {
 	return p1.score < p2.score;
 }
 
+/*
+* Function to release allocated space of a 3D array
+*
+* @param inputArray: array that should be freed
+* @param width: width of the array
+* @param height: height of the array
+*
+*/
 void destroy_3Darray(double*** inputArray, int width, int height)
 {
 	for (int i = 0; i < width; i++)
@@ -40,7 +47,17 @@ void destroy_3Darray(double*** inputArray, int width, int height)
 	delete[] inputArray;
 }
 
-//Task 1.3
+
+/* Task 1.3
+*
+* Function to compute a HoG for a given file
+* 
+* @returns: HoG-array
+* @param folder: folder of the source
+* @param filename: filename of the folder
+* @dims: dimension of the HoG
+*
+*/
 double*** extractHOGFeatures(string folder, string filename, std::vector<int>& dims)
 {
 	String get = folder + "\\" + filename;
@@ -48,7 +65,16 @@ double*** extractHOGFeatures(string folder, string filename, std::vector<int>& d
 	return computeHoG(img, CELL_SIZE, dims);
 }
 
-//compute overlap
+
+/* Task 1.2
+*
+* Method to compute the overlap for two boxes with the given formula
+*
+* @returns: calculated overlap
+* @param truth: first box - normally the truth-box from the annotations
+* @param detected: second box - normally the detected one
+*
+*/
 double ComputeOverlap(std::vector<int> truth, std::vector<int> detected)
 {
 	int intersect;
@@ -88,7 +114,14 @@ double ComputeOverlap(std::vector<int> truth, std::vector<int> detected)
 	return overlap;
 }
 
-//compare
+/* Task 1.2
+*
+* Method to evaluate if a overlap is correct
+*
+* @returns: if calculated overlap is greater than 50%
+* @param overlap: size of the overlap
+*
+*/
 bool isOverlapCorrect(double overlap)
 {
 	if (overlap > 0.5)
@@ -102,11 +135,19 @@ bool isOverlapCorrect(double overlap)
 }
 
 
-//Read Picture, draw boundingBox inside and show
+/*
+* Read Picture, draw boundingBox inside and show
+*
+* @returns: image with bounding box drawn inside
+* @param img: picture to draw the bounding box inside
+* @param file: file where to get the annotations from
+*
+*/
 Mat showBoundingBox(Mat img, string file)
 {
 std:vector<int> boxes = getBoundingBoxes(file);
 	int pos = 0;
+	Mat imgClone = img.clone();
 	while (boxes.size() - pos > 3)
 	{
 		Scalar color = Scalar(0, 255, 0);
@@ -114,18 +155,26 @@ std:vector<int> boxes = getBoundingBoxes(file);
 		Point p2 = Point(boxes.at(pos + 0), boxes.at(pos + 3));
 		Point p3 = Point(boxes.at(pos + 2), boxes.at(pos + 1));
 		Point p4 = Point(boxes.at(pos + 2), boxes.at(pos + 3));
-		line(img, p1, p2, color, 5);
-		line(img, p1, p3, color, 5);
-		line(img, p2, p4, color, 5);
-		line(img, p3, p4, color, 5);
+		line(img, p1, p2, color, 0.15);
+		line(img, p1, p3, color, 0.15);
+		line(img, p2, p4, color, 0.15);
+		line(img, p3, p4, color, 0.15);
+
 		pos += 4;
 	}
 	return img;
 }
 
-//Read annotation file and get BoundingBoxes
+/*
+* Read and parse annotation file and get BoundingBoxes
+*
+* @returns: vector which contains the data of the BoundingBoxes (xmin, ymin, xmax, ymax) for each box
+* @file: filepath of the picture
+*
+*/
 std::vector<int> getBoundingBoxes(string file)
 {
+	//Change from given picture filepath to annoation filepath
 	string line;
 	size_t found = file.find("pos");
 	file.erase(found, 3);
@@ -134,10 +183,8 @@ std::vector<int> getBoundingBoxes(string file)
 	file.erase(found, 3);
 	file.insert(found, "txt");
 
-	//cout << "boundingBoxes form file: " << file << endl;
-
+	//read file
 	ifstream myfile(file);
-	//int Xmin, Ymin, Xmax, Ymax;
 
 	std::vector<int> out;
 	int pos = 0;
@@ -145,9 +192,9 @@ std::vector<int> getBoundingBoxes(string file)
 
 	if (myfile.is_open())
 	{
+		//iterate over lines and parse
 		while (getline(myfile, line))
 		{
-			//cout << line << endl;
 			if (line.find("\"PASperson\" (Xmin, Ymin) - (Xmax, Ymax) : ") != string::npos)
 			{
 				size++;
@@ -180,7 +227,45 @@ std::vector<int> getBoundingBoxes(string file)
 		}
 		myfile.close();
 	}
-
 	else cout << "Unable to open file";
+
+	return out;
+}
+
+/*
+* Get Time and Date for naming log-files
+*
+* returns date-time-string
+*
+*/
+string getTimeLog() {
+	time_t t = time(0);   // get time now
+	struct tm * now = localtime(&t);
+	stringstream ss;
+	ss << (now->tm_year + 1900) << '-'
+		<< (now->tm_mon + 1) << '-'
+		<< now->tm_mday << "-"
+		<< now->tm_hour << "-"
+		<< now->tm_min;
+	string out = ss.str();
+	return out;
+}
+
+/*
+* Get Time and Date for output
+*
+* returns: nicely formatted Date-Time-String
+*/
+string getTimeFormatted() {
+	time_t t = time(0); 
+	struct tm * now = localtime(&t);
+	stringstream ss;
+	ss << "Date: "
+		<< now->tm_mday << '.'
+		<< (now->tm_mon + 1) << '.'
+		<< (now->tm_year + 1900) << " Time: "
+		<< now->tm_hour << ":"
+		<< now->tm_min;
+	string out = ss.str();
 	return out;
 }

@@ -25,6 +25,48 @@
 using namespace std;
 using namespace cv;
 
+void testQualitativRand() {
+	string line;
+	ifstream list_pos("INRIAPerson\\Test\\pos.lst");
+	int line_ctr = 0;
+
+	while (getline(list_pos, line)) {
+		line_ctr++;
+	}
+	list_pos.clear();
+	list_pos.seekg(0, ios::beg);
+
+	cout << "Number of lines: " << line_ctr << endl;
+
+	while (true) {
+		//back to first line
+		list_pos.clear();
+		list_pos.seekg(0, ios::beg);
+
+		//get random line
+		int pic_rand = rand() % line_ctr;
+		for (int i = 0; i < pic_rand; i++)
+		{
+			getline(list_pos, line);
+		}
+
+		//get picture
+		string folder = "INRIAPerson";
+		string in = folder + "/" + line;
+		cout << in << endl;
+		int nr_of_templates = 0;
+		int* nr_of_templates_ptr = &nr_of_templates;
+
+		//find persons
+		vector<templatePos> posTemplates;
+		posTemplates = multiscaleImg(in, nr_of_templates_ptr, 1.0);
+		reduceTemplatesFound(posTemplates, true, in);
+
+		waitKey();
+	}
+}
+
+
 void testQualitativ() {
 	string line;
 	ifstream list_pos("INRIAPerson\\Test\\pos.lst");
@@ -36,7 +78,8 @@ void testQualitativ() {
 		int nr_of_templates = 0;
 		int* nr_of_templates_ptr = &nr_of_templates;
 
-		vector<templatePos> posTemplates = multiscaleImg(in, nr_of_templates_ptr, 1.0);
+		vector<templatePos> posTemplates;
+		posTemplates = multiscaleImg(in, nr_of_templates_ptr, 1.0);
 		reduceTemplatesFound(posTemplates, true, in);
 
 		if (waitKey() == 27)
@@ -46,7 +89,7 @@ void testQualitativ() {
 	list_pos.close();
 }
 
-//Task 1.5 - mostly the code from fabio (see a1.5.cpp)
+//Task 1.5 
 vector<templatePos> multiscaleImg(string file, int* nr_of_templates_ptr, float assumed_positiv) {
 	Mat img = imread(file);
 
@@ -61,13 +104,13 @@ vector<templatePos> multiscaleImg(string file, int* nr_of_templates_ptr, float a
 	assert(!img.empty());
 
 	double scale = pow(2.0, 1.0 / LAMBDA);
-
 	double akt_width = img.cols;
 	double akt_height = img.rows;
 	int int_akt_height = floor(akt_height);
 	int int_akt_width = floor(akt_width);
 	double hig_scale = 1;
 	Mat neuimg = img.clone();
+
 	//scale down every loop
 	while (floor(akt_width) >= TEMPLATE_WIDTH && floor(akt_height) >= TEMPLATE_HEIGHT) {
 		//octave full
@@ -88,7 +131,6 @@ vector<templatePos> multiscaleImg(string file, int* nr_of_templates_ptr, float a
 		//resize
 		Mat m(int_akt_height, int_akt_width, CV_8UC3, Scalar(0, 0, 0));
 		resize(img, m, m.size(), 0, 0, INTER_LINEAR);
-		//cout << int_akt_height << " " << int_akt_width << endl;
 
 		//compute HOG for every size
 		vector<int> dims;
@@ -104,11 +146,9 @@ vector<templatePos> multiscaleImg(string file, int* nr_of_templates_ptr, float a
 		real_temp_size.resize(calc_size);
 
 		if (dims.at(0) > TEMPLATE_HEIGHT_CELLS && dims.at(1) > TEMPLATE_HEIGHT_CELLS) {
-			//for (int i = 0; i + TEMPLATE_HEIGHT <= int_akt_height; i += floor(TEMPLATE_HEIGHT / 2)) {
-			//for (int j = 0; j + TEMPLATE_WIDTH <= int_akt_width; j += floor(TEMPLATE_WIDTH / 2)) {
 			int template_count = 1;
 
-			for (int i = 0; i + TEMPLATE_HEIGHT_CELLS < dims.at(0); i += floor(TEMPLATE_HEIGHT_CELLS / 4)) {//floor(TEMPLATE_HEIGHT_CELLS / 4)) {
+			for (int i = 0; i + TEMPLATE_HEIGHT_CELLS < dims.at(0); i += floor(TEMPLATE_HEIGHT_CELLS / 4)) {
 				for (int j = 0; j + TEMPLATE_WIDTH_CELLS < dims.at(1); j += floor(TEMPLATE_WIDTH_CELLS / 4)) {
 
 					//3.1 //enumerate...
@@ -182,7 +222,7 @@ vector<templatePos> multiscaleImg(string file, int* nr_of_templates_ptr, float a
 }
 
 
-vector<templatePos> reduceTemplatesFound(vector<templatePos> posTemplates, bool showOutput, string file) { //, int* false_positives, float* miss_rate) {
+vector<templatePos> reduceTemplatesFound(vector<templatePos> posTemplates, bool showOutput, string file) {
 
 	Mat img = imread(file);
 
@@ -245,8 +285,6 @@ vector<templatePos> reduceTemplatesFound(vector<templatePos> posTemplates, bool 
 			}
 		}
 
-
-
 		//Reduce to maximum N templates
 		if (nonOverlappingTemplates.size() > max_templates) {
 			sort(nonOverlappingTemplates.begin(), nonOverlappingTemplates.end(), compareByScore);
@@ -280,15 +318,15 @@ vector<templatePos> reduceTemplatesFound(vector<templatePos> posTemplates, bool 
 					color = cvScalar(50, 200, 50);
 				}
 
-				rectangle(img, p1_old, p2_old, color, 1, 8);
+				rectangle(img, p1_old, p2_old, color, 2, 8);
 				String selection_score = "Selection Score: " + to_string(pos.score);
 				int baseline = 0;
-				int size = getTextSize("blubb", CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * pos.scale / 300, 1, &baseline).height;
+				int size = getTextSize("blubb", CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * pos.scale / 200, 1, &baseline).height;
 				putText(img, selection_score, Point(pos.x + 2, pos.y + size + 2), CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * pos.scale / 300, color, 1, CV_AA);
 
 				String overlap_out = "Overlap: " + to_string(overlap);
 				putText(img, overlap_out, Point(pos.x + 2, pos.y + size * 2 + 4), CV_FONT_HERSHEY_SIMPLEX, TEMPLATE_WIDTH * pos.scale / 300, color, 1, CV_AA);
-				showBoundingBox(img, file);
+				//showBoundingBox(img, file);
 			}
 		}
 
@@ -303,6 +341,15 @@ vector<templatePos> reduceTemplatesFound(vector<templatePos> posTemplates, bool 
 
 }
 
+/*
+* Computes the maximal overlap with any of the truth bounding boxes in a picture for a given box
+*
+* @returns: maximal overlap
+* @param truth: all truth bounding boxes of a picture
+* @param p1: (xMin, yMin) of the given box
+* @param p2: (xMax, yMax) of the given box
+*
+*/
 float getOverlap(vector<int> truth, Point p1, Point p2) {
 	std::vector<int> detected = std::vector<int>(4, 0);
 	detected.at(0) = p1.x;
@@ -313,16 +360,12 @@ float getOverlap(vector<int> truth, Point p1, Point p2) {
 	float overlap = 0;
 	float overlap_temp = 0;
 	while (truth.size() - i > 3) {
-
-		//cout << "Boundingbox: " << i;
 		std::vector<int> truth_i = std::vector<int>(4, 0);
 		truth_i.at(0) = truth.at(0 + i);
 		truth_i.at(1) = truth.at(1 + i);
 		truth_i.at(2) = truth.at(2 + i);
 		truth_i.at(3) = truth.at(3 + i);
 		overlap_temp = ComputeOverlap(truth_i, detected);
-		//cout << " Overlap = " << overlap_temp << endl;
-		//cout << "Truth = " << 
 		if (overlap_temp >= overlap) {
 			overlap = overlap_temp;
 		}
@@ -331,6 +374,16 @@ float getOverlap(vector<int> truth, Point p1, Point p2) {
 	return overlap;
 }
 
+/*
+* Calculates if a bounding box was found of any of the detected templates in a picture
+*
+* @returns: the higest overlap of the bounding box with all of the found templates
+* @param allTempates: all templates which are detected as a human in a given picture
+* @param truth: all truth bounding boxes of the picture
+* @param which_bounding_box: which of the truth bounding boxes we are testing
+* @param min_score a template must have to be considered as positiv
+*
+*/
 float isFound(vector<templatePos> allTemplates, vector<int> truth, int which_bounding_box, float min_score) {
 
 	float overlap = 0;
@@ -368,6 +421,14 @@ float isFound(vector<templatePos> allTemplates, vector<int> truth, int which_bou
 	return overlap;
 }
 
+/*
+* Tests if two templatePos describe the same template
+*
+* @returns: true if they are the same
+* @param pos1: first templatePos for comparison
+* @param po2: second templatePos for comparison
+*
+*/
 bool compareTemplatePos(templatePos pos1, templatePos pos2) {
 	if (pos1.x == pos2.x && pos1.y && pos2.y && pos1.scale == pos2.scale) {
 		return true;
@@ -375,6 +436,14 @@ bool compareTemplatePos(templatePos pos1, templatePos pos2) {
 	else return false;
 }
 
+/*
+* Compares templates by position (Xmin, Ymin)
+*
+* returns: true if pos1 is smaller
+* @param pos1: first templatePos for comparison
+* @param po2: second templatePos for comparison
+*
+*/
 bool sortXYScale(templatePos pos1, templatePos pos2) {
 	if (pos1.x <= pos2.x) {
 		return true;

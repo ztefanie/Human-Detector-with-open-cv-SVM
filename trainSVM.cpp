@@ -36,7 +36,6 @@ void SVMtrain(bool retraining) {
 	int factor_neg = 10;
 
 	std::string line;
-	//int N_pos = 1237;
 	int N_pos = 2474;
 	N_pos *= factor_pos;
 
@@ -45,46 +44,44 @@ void SVMtrain(bool retraining) {
 	while (std::getline(myfile2, line))
 		++N_neg;
 	N_neg *= factor_neg;
-	//cout << "N_neg=" << N_neg << endl;
-	//cout << "N_pos=" << N_pos << endl;
 
 	Mat points = createFirstSet(N_pos, N_neg, factor_pos, factor_neg);
 	Mat labels = createFirstLabels(N_pos, N_neg);
 
 	Mat all_neg;
 	if (retraining) {
+		//Mat hardNegatives = find_hardNegatives();
+		//hardNegatives.copyTo(points(Rect(0, points.rows - (MAX_HARD_NEG+1), hardNegatives.cols, hardNegatives.rows)));
+		
 		Mat label_neg(1, 1, CV_32FC1);
 		label_neg.at<float>(0, 0) = 1.0;
 		Mat hardNegatives = find_hardNegatives();
-
 		vconcat(points, hardNegatives, all_neg);
-
 		for (int i = 0; i < hardNegatives.rows; i++) {
 			labels.push_back(label_neg);
 		}
-
 	}
 
 	// Train with SVM
 	CvSVMParams params;
 	params.svm_type = CvSVM::C_SVC;
 	params.kernel_type = CvSVM::LINEAR;
-	params.C = 0.01; //best option according to Dalal and Triggs
+	//params.C = 0.01; //best option according to Dalal and Triggs
 	params.term_crit = cvTermCriteria(CV_TERMCRIT_ITER, iterations, 1e-6);
+
 
 	CvSVM SVM;
 	if (retraining) {
-		cout << "Training SVM with " << all_neg.rows << " Datapoints... (" << N_pos << ", " << all_neg.rows - N_pos << ")" << endl;
+		cout << "Training SVM with " << all_neg.rows << " Datapoints... (" << N_pos << ", " << all_neg.rows - N_pos << ") since: " << getTimeFormatted()<< endl;
 		SVM.train_auto(all_neg, labels, Mat(), Mat(), params);
 		SVM.save(SVM_2_LOCATION);
 	}
 	else {
-		cout << "Training SVM with " << points.rows << " Datapoints... (" << N_pos << ", " << N_neg << ")" << endl;
+		cout << "Training SVM with " << points.rows << " Datapoints... (" << N_pos << ", " << N_neg << ") since: " << getTimeFormatted() << endl;
 		SVM.train_auto(points, labels, Mat(), Mat(), params);
 		SVM.save(SVM_LOCATION);
 	}
-	
-	cout << "finished training" << endl << endl;
+	cout << "finished training at " << getTimeFormatted() << endl << endl;
 }
 
 Mat createFirstSet(int N_pos, int N_neg, int factor_pos, int factor_neg) {
@@ -156,7 +153,6 @@ Mat createFirstSet(int N_pos, int N_neg, int factor_pos, int factor_neg) {
 
 	vconcat(points_all_pos, points_temp_neg, points);
 	//cout << "SIZE of points (after concat) = " << points.rows << endl;
-
 
 	return points;
 }
