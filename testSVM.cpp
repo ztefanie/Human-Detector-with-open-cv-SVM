@@ -39,7 +39,9 @@ void testQualitativ() {
 		vector<templatePos> posTemplates = multiscaleImg(in, nr_of_templates_ptr, 1.0);
 		reduceTemplatesFound(posTemplates, true, in);
 
-		waitKey();
+		if (waitKey() == 27)
+			break;
+		destroyAllWindows();
 	}
 	list_pos.close();
 }
@@ -108,7 +110,6 @@ vector<templatePos> multiscaleImg(string file, int* nr_of_templates_ptr, float a
 
 			for (int i = 0; i + TEMPLATE_HEIGHT_CELLS < dims.at(0); i += floor(TEMPLATE_HEIGHT_CELLS / 4)) {//floor(TEMPLATE_HEIGHT_CELLS / 4)) {
 				for (int j = 0; j + TEMPLATE_WIDTH_CELLS < dims.at(1); j += floor(TEMPLATE_WIDTH_CELLS / 4)) {
-
 
 					//3.1 //enumerate...
 					templatePos pos;
@@ -391,3 +392,123 @@ bool sortXYScale(templatePos pos1, templatePos pos2) {
 	return false;
 }
 
+void presentation() {
+	string line;
+	ifstream list_pos("INRIAPerson\\Test\\pos.lst");
+	ifstream list_neg("INRIAPerson\\Test\\neg.lst");
+	string folder = "INRIAPerson";
+
+	srand(time(NULL));
+
+	for (int i = 0; i < 10; i++) {
+
+		if (0/*rand() % 5 == 0*/) {
+			cout << "negative Image" << endl;
+			for (int j = 0; j < rand() % 453; j++) {
+				getline(list_neg, line);
+			}
+			string in = folder + "/" + line;
+			cout << in << endl;
+
+			list_neg.clear();
+			list_neg.seekg(0, ios::beg);
+
+			int nr_of_templates = 0;
+			int* nr_of_templates_ptr = &nr_of_templates;
+
+			vector<templatePos> posTemplates = multiscaleImg(in, nr_of_templates_ptr, 1.0);
+
+			waitKey();
+			destroyAllWindows();
+		}
+		else {
+			cout << "positive Image" << endl;
+			for (int j = 0; j < rand() % 288; j++) {
+				getline(list_pos, line);
+			}
+			string in = folder + "/" + line;
+			cout << in << endl;
+
+			list_pos.clear();
+			list_pos.seekg(0, ios::beg);
+
+			int nr_of_templates = 0;
+			int* nr_of_templates_ptr = &nr_of_templates;
+
+			vector<templatePos> posTemplates = multiscaleImg(in, nr_of_templates_ptr, 1.0);
+			reduceTemplatesFound(posTemplates, true, in);
+			waitKey();
+			destroyAllWindows();
+		}
+	}
+
+	list_pos.close();
+	list_neg.close();
+}
+
+
+void testTraining() {
+	string line;
+	ifstream list_pos("INRIAPerson\\Train\\pos.lst");
+	while (getline(list_pos, line)) {
+		string folder = "INRIAPerson";
+		string in = folder + "/" + line;
+		cout << in << endl;
+		int nr_of_templates = 0;
+		int* nr_of_templates_ptr = &nr_of_templates;
+
+		vector<templatePos> posTemplates = multiscaleImg(in, nr_of_templates_ptr, 1.0);
+		reduceTemplatesFound(posTemplates, true, in);
+
+		if (waitKey() == 27) {
+			destroyAllWindows();
+			break;
+		}
+		destroyAllWindows();
+	}
+	list_pos.close();
+}
+
+
+void negaivTest() {
+	string line;
+	ifstream list_pos("INRIAPerson\\Test\\neg.lst");
+	while (getline(list_pos, line)) {
+		string folder = "INRIAPerson";
+		string in = folder + "/" + line;
+		cout << in << endl;
+		int nr_of_templates = 0;
+		int* nr_of_templates_ptr = &nr_of_templates;
+
+		vector<templatePos> posTemplates = multiscaleImg(in, nr_of_templates_ptr, 1.0);
+
+		if (waitKey() == 27) {
+			destroyAllWindows();
+			break;
+		}
+		destroyAllWindows();
+	}
+	list_pos.close();
+}
+
+
+void negaivTrainTest() {
+	string line;
+	ifstream list_pos("INRIAPerson\\Train\\neg.lst");
+	while (getline(list_pos, line)) {
+		string folder = "INRIAPerson";
+		string in = folder + "/" + line;
+		cout << in << endl;
+		int nr_of_templates = 0;
+		int* nr_of_templates_ptr = &nr_of_templates;
+
+		vector<templatePos> posTemplates = multiscaleImg(in, nr_of_templates_ptr, 1.0);
+
+		if (waitKey() == 27) {
+			destroyAllWindows();
+			break;
+		}
+		destroyAllWindows();
+	}
+	list_pos.close();
+}
