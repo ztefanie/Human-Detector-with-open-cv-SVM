@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
 {
 	//find_hardPositives();
 	//Uncomment next line if you wish output to log file
-	logOutput();
+	//logOutput();
 
 	//Task 1.1
 	//testDrawBoundingBox();
@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
 	*	Set input paramter to false = first training  or true = retraining
 	*	
 	*/
-	SVMtrain(false);
+	//SVMtrain(false);
 
 	/* Task 2.2
 	*
@@ -74,7 +74,7 @@ int main(int argc, char* argv[])
 	*	Uses the find_hardNegatives()-Method from optimzeSVM	
 	*
 	*/
-	SVMtrain(true);
+	//SVMtrain(true);
 
 	/* Task 3.1 - 3.4
 	*
@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
 	*
 	*/
 	//testQualitativ();
-	//testQualitativRand();
+	testQualitativRand();
 
 	/* Task 3.6
 	*
@@ -98,7 +98,7 @@ int main(int argc, char* argv[])
 	*	after executing this function, run the python-script to generate the plot.
 	*
 	*/
-	createDETfile();
+	//createDETfile();
 
 
 	cout << endl << "finished" << endl;

@@ -165,7 +165,7 @@ Mat find_hardPositives() {
 						}
 					}
 
-					if (overlap < 0.5) {
+					if (overlap < 0.4) {
 						//DO TESTING IF FALSE POSITIV
 						/*double*** featureTemplate2 = compute3DTemplate(hog, dims, j/CELL_SIZE, i/CELL_SIZE);
 						vector<int> dims2 = vector<int>(3);

@@ -21,7 +21,7 @@ plt.xlabel('FPPW')
 plt.title('DET')
 plt.ylabel('miss rate')
 #plt.axis([0.000001, 0.1, 0.01, 0.5])
-plt.axis([0.00001, 0.1, 0.01, 0.5])
+plt.axis([0.0001, 0.1, 0.01, 0.5])
 
 ax.set_yscale('log')
 ax.set_xscale('log')
@@ -47,7 +47,7 @@ while x < len(content1):
    ylist1.append(content1[x+1])
    x += 3
 
-plt.plot(xlist1, ylist1, color='blue')
+plt.plot(xlist1, ylist1, color='orange')
 f1.close
 
 
@@ -69,7 +69,7 @@ while y < len(content2):
     y += 3
 
 
-plt.plot(xlist2, ylist2, color='orange')
+plt.plot(xlist2, ylist2, color='blue')
 
 firstlabel = mpatches.Patch(color='blue', label='first SVM')
 retrainedlabel = mpatches.Patch(color='orange', label='retrained SVM')

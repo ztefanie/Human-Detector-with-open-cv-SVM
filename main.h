@@ -39,7 +39,7 @@ using namespace cv;
 
 #define max_templates			5		// maximum number of templates that can be found in one picture
 #define ASSUMED_POSITIV			1		// min score a template needs for positiv detection
-#define OVERLAP_CORRECT			0.5		// detected box must overlap truth box 50%
+#define OVERLAP_CORRECT			0.4		// detected box must overlap truth box 50%
 
 #endif
 
