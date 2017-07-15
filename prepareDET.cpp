@@ -8,7 +8,6 @@
 #include <fstream>
 
 #include "prepareDET.h"
-#include "DET.h"
 #include "tests.h"
 #include "utils.h"
 #include "hog.h"
@@ -23,6 +22,11 @@ float steps = 0.01;
 float start = -2.5;
 float stop = 1.9;
 
+/* Task 3
+*
+* creates DETFiles which are used by a python script to create the DET-Plots
+*
+*/
 void createDETfile() {
 	cout << "Creating DET-File for first SVM... " << endl;
 	vector<float> pos = testQuantitativDET_pos(true);
@@ -57,6 +61,14 @@ void createDETfile() {
 
 }
 
+/* Task 3
+*
+* tests negativ test-Images
+* 
+* @returns: vector of different false positiv per windows depending on detection score
+* @params first: boolean if the first or the second SVM should be tested
+*
+*/
 vector<long double> testQuantitativDET_neg(bool first) {
 
 	CvSVM SVM;
@@ -108,25 +120,30 @@ vector<long double> testQuantitativDET_neg(bool first) {
 			template_temp.at<float>(0, i) = temp_neg.at<float>(row, i);
 		}
 		float score = SVM.predict(template_temp, true);
-		//cout << "\ttemplate hast score = " << score << endl;
 
 		//iterate over miss array
 		for (float i = start; i <= stop; i += steps) {
 			if (score > i) {
 				fp[floor((i - start) / steps) + 1]++;
-				//cout << "\t\t " << i << " at: " << floor((i - start) / steps) + 1 << " increased" << endl;
 			}
 		}
 	}
 
 	for (float i = start; i <= stop; i += steps) {
 		fppw[floor((i - start) / steps) + 1] = fp[floor((i - start) / steps) + 1] / (long double)test_size;
-		//cout << "at i=" << i << " fppw=" << fppw[floor((i - start) / steps) + 1] << endl;
 	}
 
 	return fppw;
 }
 
+/* Task 3
+*
+* tests positiv test-Images
+*
+* @returns: vector of different miss-rates depending on detection score
+* @params first: boolean if the first or the second SVM should be tested
+*
+*/
 vector<float> testQuantitativDET_pos(bool first) {
 	CvSVM SVM;
 	if (first) {
@@ -170,7 +187,6 @@ vector<float> testQuantitativDET_pos(bool first) {
 		float score = SVM.predict(template_temp, true);
 		
 		//iterate over miss array
-
 		for (float i = start; i <= stop; i += steps) {
 			if (score < i) {
 				misses[floor((i - start) / steps) + 1]++;
@@ -180,7 +196,6 @@ vector<float> testQuantitativDET_pos(bool first) {
 
 	for (float i = start; i <= stop; i += steps) {
 		missrate_total[floor((i - start) / steps) + 1] = misses[floor((i - start) / steps) + 1] / (double)last;
-		//cout << "at i=" << i << " missrate=" << missrate_total[floor((i - start) / steps) + 1] << endl;
 	}		
 	return missrate_total;
 }

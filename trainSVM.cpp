@@ -27,6 +27,13 @@ using namespace cv;
 int iterations = 100000;
 
 
+/* Task 2
+*
+* trains or retrains SVM
+*
+* @param retraining: bool if the SVM should be trained or retrained
+*
+*/
 void SVMtrain(bool retraining) {
 
 	int factor_pos = 5;
@@ -86,13 +93,24 @@ void SVMtrain(bool retraining) {
 	cout << "finished training at " << getTimeFormatted() << endl << endl;
 }
 
+
+/* Task 2
+*
+* creates input data for the SVM
+* 
+* @returns: Mat with all input data
+* @params N_pos: Number of positiv input data
+* @params N_neg: Number of negativ input pictures
+* @params factor_pos: factor for oversampling the positiv data
+* @params factor_neg: factor how much negativ templates should be extracted for each negativ image
+*
+*/
 Mat createFirstSet(int N_pos, int N_neg, int factor_pos, int factor_neg) {
 	int template_size = (TEMPLATE_WIDTH_CELLS)*(TEMPLATE_HEIGHT_CELLS)*HOG_DEPTH;
-	Mat points(N_pos + N_neg, template_size, CV_32FC1); //has size = 2*N (height) and Template-width_CELLS * template-height_cells (width)
+	Mat points(N_pos + N_neg, template_size, CV_32FC1); //has size = 2*N (height) and TEMPLATE_WIDTH_CELLS*TEMPLATE_HEIGHT_CELLS*HOG_DEPTH
 	Mat points_all_pos(N_pos, template_size, CV_32FC1);
 	Mat points_temp_pos(N_pos / factor_pos, template_size, CV_32FC1);
 	Mat points_temp_neg(N_neg, template_size, CV_32FC1);
-	//iterate over i = 2*N are the rows -> Each row represents one file=picture
 
 	cout << "Read in Data for SVM ... " << endl;
 	
@@ -104,12 +122,7 @@ Mat createFirstSet(int N_pos, int N_neg, int factor_pos, int factor_neg) {
 	int i = 0;
 	while (getline(myfile_pos, line_pos)) {
 		float* templateHoG;
-
-		//getline(myfile_pos, line_pos);
-		//cout << line_pos << endl;
 		vector<float*> templates = get1DTemplateFromPos(line_pos, points_temp_pos, &last, false);
-
-		//cout << "point at i=" << i << " from " << line_pos << endl;
 		if (i % 10 == 0) {
 			cout << "|";
 		}
@@ -124,17 +137,15 @@ Mat createFirstSet(int N_pos, int N_neg, int factor_pos, int factor_neg) {
 	cout << endl << "negatives: ";
 	for (int i = N_pos; i < points.rows; i += factor_neg) {
 		getline(myfile_neg, line_neg);
-		//for each negativ 10 templates
+		//for each negativ picture use #factor_neg templates
 		for (int k = 0; k < factor_neg; k++) {
 			float* templateHoG;
 			templateHoG = getTemplate(line_neg);
-
 			//copy values of template to Matrix
 			for (int j = 0; j < points.cols; j++) {
 				points_temp_neg.at<float>(i + k - N_pos, j) = templateHoG[j];
 			}
 		}
-		//cout << "point at i=" << i << " from " << line_neg << endl;
 		if ((i-N_pos) % (20* factor_neg) == 0) {
 			cout << "|";
 		}
@@ -142,23 +153,26 @@ Mat createFirstSet(int N_pos, int N_neg, int factor_pos, int factor_neg) {
 	cout << endl << "finished read in Data for SVM" << endl << endl;
 	myfile_neg.close();
 
-
-	//Add pos and neg points to points
-	//cout << "SIZE of points = " << points.rows << endl;
-	//cout << "SIZE of points_temp_pos = " << points_temp_pos.rows << " with N_pos = " << N_pos << endl;
-	//cout << "SIZE of points_temp_neg = " << points_temp_neg.rows << " with N_neg = " << N_neg << endl;
-
+	//Duplicate positiv input data for balances size
 	for (int p = 0; p < factor_pos; p++) {
 		Mat dst_roi = points_all_pos(Rect(0, p*(N_pos / factor_pos), points_temp_pos.cols, points_temp_pos.rows));
 		points_temp_pos.copyTo(dst_roi);
 	}
 
+	//Concat positiv and negativ to one Mat
 	vconcat(points_all_pos, points_temp_neg, points);
-	//cout << "SIZE of points (after concat) = " << points.rows << endl;
 
 	return points;
 }
 
+/* Task 2
+*
+* Creates Labels for the training
+*
+* @returns: Mat with all the labels
+* @params N_pos: Number of positiv input data
+* 
+*/
 Mat createFirstLabels(int N_pos, int N_neg) {
 
 	Mat labels(N_pos + N_neg, 1, CV_32FC1);
@@ -176,6 +190,13 @@ Mat createFirstLabels(int N_pos, int N_neg) {
 	return labels;
 }
 
+/*
+* Gets random template from an images, used for extracting negativ trainingsdata
+*
+* @returns: template es a float array
+* @param filename: filepath to the picture, where the template should be extracted from
+*
+*/
 float* getTemplate(string filename) {
 	vector<int> dims;
 	string folder = "INRIAPerson";
@@ -186,7 +207,6 @@ float* getTemplate(string filename) {
 	double*** HoG;
 	float* Template1D;
 
-	//srand(time(NULL));
 	int height_new = rand() % (img.size().height - (128 + 16)) + (128 + 16);
 	double new_size = height_new / (double)img.size().height;
 	resize(img, img, Size(), new_size, new_size, 1);
@@ -196,13 +216,10 @@ float* getTemplate(string filename) {
 
 	int offsetX = 0;
 	int offsetY = 0;
-	//cout << "dims[0] - TEMPLATE_HEIGHT_CELLS" << dims[0] - TEMPLATE_HEIGHT_CELLS << endl;
-	//cout << "dims[1] - TEMPLATE_WIDTH_CELLS " << dims[1] - TEMPLATE_WIDTH_CELLS << endl;
 	if (dims[0] > TEMPLATE_HEIGHT_CELLS && dims[1] > TEMPLATE_WIDTH_CELLS) {
 		offsetX = rand() % (dims[0] - TEMPLATE_HEIGHT_CELLS) + 1;
 		offsetY = rand() % (dims[1] - TEMPLATE_WIDTH_CELLS) + 1;
 	}
-	//cout << "height_new = " << height_new << " offsetX = " << offsetX << " offsetY = " << offsetY << endl;
 	Template1D = compute1DTemplate(HoG, dims, offsetY, offsetX, 0);
 	destroy_3Darray(HoG, dims[0], dims[1]);
 
