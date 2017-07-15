@@ -33,16 +33,10 @@
     <ClCompile Include="tests.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="a1.5.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="optimizeSVM.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="testSVM.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="DET.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="prepareDET.cpp">
@@ -72,9 +66,6 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="testSVM.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="DET.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="prepareDET.h">
