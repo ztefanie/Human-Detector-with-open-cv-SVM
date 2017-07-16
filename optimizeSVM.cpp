@@ -18,7 +18,7 @@ using namespace std;
 using namespace cv;
 
 
-Mat find_hardPositives() {
+Mat find_hardNegatives() {
 
 	if (!std::ifstream(SVM_LOCATION)){
 		SVMtrain(false);

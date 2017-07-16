@@ -21,7 +21,7 @@ void logOutput() {
 */
 int main(int argc, char* argv[])
 {
-	find_hardPositives();
+	find_hardNegatives();
 	//Uncomment next line if you wish output to log file
 	//logOutput();
 

@@ -60,7 +60,7 @@ void SVMtrain(bool retraining) {
 	if (retraining) {
 		//Mat hardNegatives = find_hardNegatives();
 		//hardNegatives.copyTo(points(Rect(0, points.rows - (MAX_HARD_NEG+1), hardNegatives.cols, hardNegatives.rows)));
-		Mat hardNegatives = find_hardPositives();
+		Mat hardNegatives = find_hardNegatives();
 		vconcat(points, hardNegatives, all_neg);
 
 		Mat label_neg(1, 1, CV_32FC1);
