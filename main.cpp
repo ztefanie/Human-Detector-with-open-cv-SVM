@@ -3,7 +3,6 @@
 #include "tests.h"
 #include "optimizeSVM.h"
 #include "testSVM.h"
-#include "DET.h"
 #include "prepareDET.h"
 
 
@@ -22,7 +21,7 @@ void logOutput() {
 */
 int main(int argc, char* argv[])
 {
-	//find_hardPositives();
+	find_hardPositives();
 	//Uncomment next line if you wish output to log file
 	//logOutput();
 
@@ -98,7 +97,7 @@ int main(int argc, char* argv[])
 	*	after executing this function, run the python-script to generate the plot.
 	*
 	*/
-	//createDETfile();
+	createDETfile();
 
 
 	cout << endl << "finished" << endl;

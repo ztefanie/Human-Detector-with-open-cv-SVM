@@ -5,6 +5,6 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-cv::Mat find_hardPositives();
+cv::Mat find_hardNegatives();
 
 #endif

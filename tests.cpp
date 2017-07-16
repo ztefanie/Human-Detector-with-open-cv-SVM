@@ -14,7 +14,6 @@
 #include "optimizeSVM.h"
 #include "featureExtraction.h"
 #include "testSVM.h"
-#include "DET.h"
 
 using namespace std;
 using namespace cv;
