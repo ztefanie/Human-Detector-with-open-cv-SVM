@@ -232,7 +232,7 @@ vector<templatePos> reduceTemplatesFound(vector<templatePos> posTemplates, bool 
 		imshow("Picture-after-reduction", img);
 		String out = "QualitativOutput\\" + file + ".png";
 		imwrite(out, img);
-		waitKey();
+		return vector<templatePos>();
 	}
 
 	if (!posTemplates.empty()) {
@@ -468,12 +468,13 @@ void presentation() {
 	string folder = "INRIAPerson";
 
 	srand(time(NULL));
-
+	int random = 0;
 	for (int i = 0; i < 10; i++) {
 
 		if (0/*rand() % 5 == 0*/) {
 			cout << "negative Image" << endl;
-			for (int j = 0; j < rand() % 453; j++) {
+			random = rand() % 453;
+			for (int j = 0; j < random; j++) {
 				getline(list_neg, line);
 			}
 			string in = folder + "/" + line;
@@ -492,7 +493,8 @@ void presentation() {
 		}
 		else {
 			cout << "positive Image" << endl;
-			for (int j = 0; j < rand() % 288; j++) {
+			random = rand() % 288;
+			for (int j = 0; j < random; j++) {
 				getline(list_pos, line);
 			}
 			string in = folder + "/" + line;
@@ -506,6 +508,11 @@ void presentation() {
 
 			vector<templatePos> posTemplates = multiscaleImg(in, nr_of_templates_ptr, 1.0);
 			reduceTemplatesFound(posTemplates, true, in);
+			Mat img = imread(in);
+			showBoundingBox(img, in);
+			imshow("Perfect boundingbox", img);
+
+
 			waitKey();
 			destroyAllWindows();
 		}
