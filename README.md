@@ -1,1 +1,6 @@
-# Multimedia-Projekt-Team4
+# Human Detector
+
+using: 
+- C++
+- open-cv SVM
+- INRIA Dataset
